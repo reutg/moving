@@ -1,9 +1,11 @@
 import "server-only";
-import { eq } from "drizzle-orm";
+
+import { count, eq, isNotNull } from "drizzle-orm";
 import { z } from "zod";
-import { BOX_PRIORITIES, BOX_STATUSES } from "@/constants";
+
+import { BOX_PRIORITIES, BOX_STATUSES, type BoxStatus } from "@/constants";
 import { db } from "@/lib/db/client";
-import { boxes, type Box } from "@/lib/db/schema";
+import { type Box, boxes } from "@/lib/db/schema";
 import { internal, notFound } from "@/lib/errors";
 
 export const CreateBoxInputSchema = z
@@ -23,12 +25,43 @@ export async function listBoxes(): Promise<Box[]> {
   return db.select().from(boxes).orderBy(boxes.id);
 }
 
-export async function createBox(input: CreateBoxInput): Promise<Box> {
-  const inserted = db
-    .insert(boxes)
-    .values(input)
-    .returning({ id: boxes.id })
+export type BoxesSummary = {
+  byStatus: Record<BoxStatus, number>;
+  byDestinationRoom: Record<string, number>;
+};
+
+export async function getBoxesSummary(): Promise<BoxesSummary> {
+  const statusRows = db
+    .select({ status: boxes.status, count: count() })
+    .from(boxes)
+    .groupBy(boxes.status)
     .all();
+
+  const roomRows = db
+    .select({ room: boxes.destinationRoom, count: count() })
+    .from(boxes)
+    .where(isNotNull(boxes.destinationRoom))
+    .groupBy(boxes.destinationRoom)
+    .all();
+
+  // Seed every known status with 0 so the response shape is stable even when
+  // a status has no rows yet. Adding a new status to BOX_STATUSES extends
+  // this map automatically.
+  const byStatus = Object.fromEntries(BOX_STATUSES.map((s) => [s, 0])) as Record<BoxStatus, number>;
+  for (const row of statusRows) {
+    byStatus[row.status] = row.count;
+  }
+
+  const byDestinationRoom: Record<string, number> = {};
+  for (const row of roomRows) {
+    if (row.room !== null) byDestinationRoom[row.room] = row.count;
+  }
+
+  return { byStatus, byDestinationRoom };
+}
+
+export async function createBox(input: CreateBoxInput): Promise<Box> {
+  const inserted = db.insert(boxes).values(input).returning({ id: boxes.id }).all();
 
   const created = inserted[0];
   if (!created) throw internal("Insert returned no rows");

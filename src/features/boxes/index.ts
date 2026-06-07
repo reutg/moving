@@ -1,8 +1,10 @@
+export { MyBoxes } from "./components/my-boxes";
 export {
-  listBoxes,
+  type BoxesSummary,
   createBox,
-  CreateBoxInputSchema,
   type CreateBoxInput,
+  CreateBoxInputSchema,
+  getBoxesSummary,
+  listBoxes,
 } from "./services/box-service";
-
 export type { Box } from "@/lib/db/schema";

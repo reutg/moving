@@ -22,6 +22,54 @@ is taste-based (not in `eslint.config.mjs`), follow the guidance here.
 - **Follow existing project patterns before introducing new ones.** When in doubt, grep for prior art.
 - **Make incremental changes** — small, reviewable commits over sweeping rewrites.
 
+## Comments
+
+**Don't add comments by default.** Prefer self-documenting code through clear naming, strong typing, small focused functions, and good file organization. If a piece of code seems to need a comment to explain what it does, first try to make the code itself more readable.
+
+Comments should be rare and only used when they convey information that cannot be expressed through code.
+
+### Allowed comments
+
+- Non-obvious business requirements.
+- Framework limitations or workarounds.
+- Browser-specific behavior.
+- Third-party library limitations.
+- Important architectural decisions.
+- Real `TODO` markers for tracked future work.
+
+### Avoid
+
+- Comments that restate the code.
+- Section separator comments (`// ─── helpers ───`).
+- Decorative banners.
+- Generated boilerplate left behind by scaffolding.
+- JSX comments describing UI elements.
+- Comments explaining simple logic.
+- Comments that exist only because the code is hard to understand — refactor instead.
+
+### When modifying existing files
+
+Remove comments that don't meet the "Allowed" criteria above:
+
+- Comments that repeat what the code already says.
+- Section separators.
+- Decorative banners.
+- Generated/scaffold comments.
+- Outdated comments.
+- JSX comments that describe UI structure.
+
+Keep an existing comment only if it clearly fits one of the allowed categories.
+
+### Prefer over comments
+
+- Better naming.
+- Early returns.
+- Smaller functions.
+- Extracted helper functions.
+- Clear file structure.
+
+The codebase should be understandable without comments. If a piece of code seems to need multiple comments to make sense, refactor the code instead of adding more comments.
+
 ## Architecture
 
 The project follows a layered structure. Respect the layer boundaries:

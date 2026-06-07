@@ -74,29 +74,32 @@ export default [
       "simple-import-sort/imports": [
         "error",
         {
+          // Group regexes use `(/|\u0000|$)` instead of `$` so they match both
+          // value imports (`import x from "react"`) and type-only imports
+          // (which simple-import-sort tags with a trailing `\u0000`).
           groups: [
             // 1. Side-effect imports (e.g. `import "server-only"`).
             ["^\\u0000"],
             // 2. React.
-            ["^react$", "^react/.*"],
+            ["^react(/|\\u0000|$)"],
             // 3. Next.js.
-            ["^next($|/)"],
+            ["^next(/|\\u0000|$)"],
             // 4. Other external libraries.
             ["^@?\\w"],
             // 5. Internal lib / utils / services / hooks / configs / constants / types.
-            ["^@/(lib|utils|services|hooks|configs?|constants|types)(/.*|$)"],
+            ["^@/(lib|utils|services|hooks|configs?|constants|types)(/|\\u0000|$)"],
             // 6. Feature/domain imports.
-            ["^@/features(/.*|$)"],
+            ["^@/features(/|\\u0000|$)"],
             // 7. UI components.
-            ["^@/components(/.*|$)"],
+            ["^@/components(/|\\u0000|$)"],
             // 8. Other internal `@/` imports.
             ["^@/"],
             // 9. Parent imports.
-            ["^\\.\\.(?!/?$)", "^\\.\\./?$"],
+            ["^\\.\\."],
             // 10. Sibling/index imports.
-            ["^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"],
+            ["^\\."],
             // 11. Style imports.
-            ["^.+\\.s?css$"],
+            ["^.+\\.s?css(\\u0000|$)"],
           ],
         },
       ],

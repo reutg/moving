@@ -1,4 +1,5 @@
 import { withApi } from "@/lib/api/handler";
+
 import { createBox, CreateBoxInputSchema, listBoxes } from "@/features/boxes";
 
 export const GET = withApi(async () => {

@@ -1,8 +1,10 @@
-import { NextResponse, type NextRequest } from "next/server";
-import { ZodError, z } from "zod";
+import { type NextRequest, NextResponse } from "next/server";
+
+import { z, ZodError } from "zod";
+
+import type { ApiFailure, ApiSuccess } from "@/lib/api/response";
 import { isAppError } from "@/lib/errors";
 import { logger } from "@/lib/logger";
-import type { ApiFailure, ApiSuccess } from "@/lib/api/response";
 
 type RouteContext = unknown;
 type HandlerFn<TCtx extends RouteContext, TData> = (
@@ -48,9 +50,7 @@ export function withApi<TCtx extends RouteContext, TData>(
 
       logger.error("Unhandled error in route handler", {
         error:
-          err instanceof Error
-            ? { name: err.name, message: err.message, stack: err.stack }
-            : err,
+          err instanceof Error ? { name: err.name, message: err.message, stack: err.stack } : err,
       });
 
       const body: ApiFailure = {

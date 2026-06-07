@@ -15,6 +15,8 @@ function emit(level: Level, message: string, payload?: unknown) {
     ...(payload && typeof payload === "object" ? payload : { payload }),
   };
 
+  // The logger is the project's console abstraction; this is the one place it's allowed to call console.log directly.
+  // eslint-disable-next-line no-console
   const out = level === "error" || level === "warn" ? console.error : console.log;
   out(JSON.stringify(line));
 }

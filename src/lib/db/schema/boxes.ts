@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+
 import {
   BOX_PRIORITIES,
   BOX_STATUSES,
@@ -18,13 +19,9 @@ export const boxes = sqliteTable("boxes", {
   sourceRoom: text("source_room"),
   destinationRoom: text("destination_room"),
 
-  status: text("status", { enum: BOX_STATUSES })
-    .notNull()
-    .default(DEFAULT_BOX_STATUS),
+  status: text("status", { enum: BOX_STATUSES }).notNull().default(DEFAULT_BOX_STATUS),
 
-  priority: text("priority", { enum: BOX_PRIORITIES })
-    .notNull()
-    .default(DEFAULT_BOX_PRIORITY),
+  priority: text("priority", { enum: BOX_PRIORITIES }).notNull().default(DEFAULT_BOX_PRIORITY),
 
   createdAt: integer("created_at", { mode: "timestamp_ms" })
     .notNull()

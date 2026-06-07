@@ -1,15 +1,16 @@
 import "server-only";
+
 import Database from "better-sqlite3";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
-import { env } from "@/lib/env";
+
 import * as schema from "@/lib/db/schema";
+import { env } from "@/lib/env";
 
 type DrizzleClient = ReturnType<typeof drizzle<typeof schema>>;
 
 declare global {
-  // eslint-disable-next-line no-var
   var __dbClient: DrizzleClient | undefined;
 }
 
@@ -26,5 +27,4 @@ function createClient(): DrizzleClient {
   return drizzle(sqlite, { schema });
 }
 
-export const db: DrizzleClient =
-  globalThis.__dbClient ?? (globalThis.__dbClient = createClient());
+export const db: DrizzleClient = globalThis.__dbClient ?? (globalThis.__dbClient = createClient());

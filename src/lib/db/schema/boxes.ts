@@ -17,7 +17,7 @@ export const boxes = sqliteTable("boxes", {
   description: text("description").notNull().default(""),
 
   sourceRoom: text("source_room"),
-  destinationRoom: text("destination_room"),
+  destinationRoom: text("destination_room").notNull(),
 
   status: text("status", { enum: BOX_STATUSES }).notNull().default(DEFAULT_BOX_STATUS),
 

@@ -1,10 +1,4 @@
-export { MyBoxes } from "./components/my-boxes";
-export {
-  type BoxesSummary,
-  createBox,
-  type CreateBoxInput,
-  CreateBoxInputSchema,
-  getBoxesSummary,
-  listBoxes,
-} from "./services/box-service";
+export { default as MyBoxes } from "./components/my-boxes";
+export { useAddBoxForm } from "./hooks/use-add-box-form";
+export { type AddBoxFormValues, AddBoxFormValuesSchema } from "./schemas/add-box-form-schema";
 export type { Box } from "@/lib/db/schema";

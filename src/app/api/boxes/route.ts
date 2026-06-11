@@ -1,6 +1,10 @@
 import { withApi } from "@/lib/api/handler";
 
-import { createBox, CreateBoxInputSchema, listBoxes } from "@/features/boxes";
+import {
+  createBox,
+  CreateBoxInputSchema,
+  listBoxes,
+} from "@/features/boxes/services/box-service";
 
 export const GET = withApi(async () => {
   return listBoxes();

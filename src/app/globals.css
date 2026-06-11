@@ -21,6 +21,7 @@
 
   --color-ring: var(--ring);
   --color-input: var(--input);
+  --color-border-light: var(--border-light);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
   --color-accent-foreground: var(--accent-foreground);
@@ -60,7 +61,7 @@
   color-scheme: light;
 
   /* Surfaces */
-  --background: #faf8f5;
+  --background: #ffffff;
   --card: #ffffff;
   --popover: #ffffff;
 
@@ -78,20 +79,21 @@
   --primary-hover: #4d8b7a;
   --accent: #dceee8;
 
-  /* Subdued surfaces (re-using the unpacked palette) */
-  --secondary: #f7fafc;
+  /* Subdued surfaces */
+  --secondary: #ffffff;
   --muted: #f7fafc;
 
   /* Borders & focus */
   --border: #e2e8f0;
-  --input: #e2e8f0;
+  --border-light: #eaeaea;
+  --input: #ffffff;
   --ring: #2f6f62;
 
   /* Status colors */
   --status-packed: #2f6f62;
   --status-packed-bg: #dceee8;
-  --status-unpacked: #a0aec0;
-  --status-unpacked-bg: #f7fafc;
+  --status-unpacked: #c9a23c;
+  --status-unpacked-bg: #f7efd6;
 
   /* AI accent */
   --ai: #c08457;
@@ -128,6 +130,15 @@ body {
   max-width: 960px;
   margin: 0 auto;
   padding: 2rem 1rem;
+}
+
+.flex-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .error {

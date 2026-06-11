@@ -13,6 +13,8 @@ const EnvSchema = z.object({
     .default("file:./data/moving.db"),
 
   LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
+
+  GEMINI_KEY: z.string().min(1, "GEMINI_KEY is required"),
 });
 
 const parsed = EnvSchema.safeParse(process.env);

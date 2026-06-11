@@ -3,8 +3,21 @@ import { type NextRequest, NextResponse } from "next/server";
 import { z, ZodError } from "zod";
 
 import type { ApiFailure, ApiSuccess } from "@/lib/api/response";
+import { env } from "@/lib/env";
 import { isAppError } from "@/lib/errors";
 import { logger } from "@/lib/logger";
+
+const serializeError = (err: unknown): unknown => {
+  if (err instanceof Error) {
+    return {
+      name: err.name,
+      message: err.message,
+      stack: err.stack,
+      ...(err.cause !== undefined ? { cause: serializeError(err.cause) } : {}),
+    };
+  }
+  return err;
+};
 
 type RouteContext = unknown;
 type HandlerFn<TCtx extends RouteContext, TData> = (
@@ -48,14 +61,17 @@ export function withApi<TCtx extends RouteContext, TData>(
         return NextResponse.json(body, { status: 400 });
       }
 
-      logger.error("Unhandled error in route handler", {
-        error:
-          err instanceof Error ? { name: err.name, message: err.message, stack: err.stack } : err,
-      });
+      const serialized = serializeError(err);
+      logger.error("Unhandled error in route handler", { error: serialized });
 
+      const isDev = env.NODE_ENV !== "production";
       const body: ApiFailure = {
         ok: false,
-        error: { code: "internal", message: "Internal server error" },
+        error: {
+          code: "internal",
+          message: isDev && err instanceof Error ? err.message : "Internal server error",
+          ...(isDev ? { details: serialized } : {}),
+        },
       };
       return NextResponse.json(body, { status: 500 });
     }

@@ -1,161 +1,142 @@
 ---
-description: Project-wide coding conventions for the Moving app (Next.js + TypeScript + Tailwind + Drizzle).
+
+description: Project-wide coding conventions for the Moving app.
 globs: ["**/*.{ts,tsx,mts,cts,js,jsx,mjs,cjs}"]
 alwaysApply: true
----
+-----------------
 
 # Moving — coding conventions
 
-These conventions are enforced by ESLint + Prettier where possible. When a rule
-is taste-based (not in `eslint.config.mjs`), follow the guidance here.
+These rules guide AI-generated and human-written code. Hard formatting and linting rules should live in ESLint, Prettier, and TypeScript config.
 
 ## General
 
-- Prefer **arrow functions** by default. Use regular `function` only when the framework requires it (e.g. Next.js `default export` for pages, server actions, etc.) or when the function genuinely benefits from hoisting / `this` binding.
-- **No one-letter variable names.** Use descriptive, meaningful names for variables, functions, types, hooks, and components. Even loop counters get real names (`index`, `boxIndex`).
-- **Prioritize readability over clever code.** If a clever one-liner is harder to read than the verbose version, choose the verbose version.
-- **Avoid deeply nested logic.** ESLint enforces `max-depth: 3`. Use early returns, guard clauses, and helper functions before nesting.
-- **Extract helper functions when complexity grows.** ESLint enforces `complexity: 8`. If a function trips the warning, extract.
-- **Keep files small and focused.** ESLint enforces `max-lines-per-function: 60`. Prefer many small files over a few big ones.
-- **Split large components into smaller components.** Same for hooks and utility files — focused over kitchen-sink.
-- **Avoid premature abstractions.** Don't introduce a layer of indirection until the duplication is real and stable.
-- **Follow existing project patterns before introducing new ones.** When in doubt, grep for prior art.
-- **Make incremental changes** — small, reviewable commits over sweeping rewrites.
+* Prefer arrow functions by default.
+* Use regular functions only when required by framework conventions or when they clearly improve readability.
+* Use meaningful variable names. Avoid one-letter names, including loop counters.
+* Prefer readable code over clever one-liners.
+* Prefer early returns over nested conditionals.
+* Keep files small, focused, and easy to scan.
+* Split large components, hooks, services, and utilities into smaller focused files.
+* Avoid premature abstractions. Extract only when duplication is real and stable.
+* Follow existing project patterns before introducing new ones.
+* Make small, incremental changes instead of large rewrites.
 
 ## Comments
 
-**Don't add comments by default.** Prefer self-documenting code through clear naming, strong typing, small focused functions, and good file organization. If a piece of code seems to need a comment to explain what it does, first try to make the code itself more readable.
+* Do not add comments by default.
+* Prefer self-documenting code through clear naming, strong typing, small functions, and good file structure.
+* Add comments only when they explain context that cannot be expressed clearly in code.
 
-Comments should be rare and only used when they convey information that cannot be expressed through code.
+Keep comments only for:
 
-### Allowed comments
+* Non-obvious business rules.
+* Framework, browser, or third-party library limitations.
+* Important architectural decisions.
+* Real TODOs for tracked follow-up work.
 
-- Non-obvious business requirements.
-- Framework limitations or workarounds.
-- Browser-specific behavior.
-- Third-party library limitations.
-- Important architectural decisions.
-- Real `TODO` markers for tracked future work.
+When modifying existing files:
 
-### Avoid
-
-- Comments that restate the code.
-- Section separator comments (`// ─── helpers ───`).
-- Decorative banners.
-- Generated boilerplate left behind by scaffolding.
-- JSX comments describing UI elements.
-- Comments explaining simple logic.
-- Comments that exist only because the code is hard to understand — refactor instead.
-
-### When modifying existing files
-
-Remove comments that don't meet the "Allowed" criteria above:
-
-- Comments that repeat what the code already says.
-- Section separators.
-- Decorative banners.
-- Generated/scaffold comments.
-- Outdated comments.
-- JSX comments that describe UI structure.
-
-Keep an existing comment only if it clearly fits one of the allowed categories.
-
-### Prefer over comments
-
-- Better naming.
-- Early returns.
-- Smaller functions.
-- Extracted helper functions.
-- Clear file structure.
-
-The codebase should be understandable without comments. If a piece of code seems to need multiple comments to make sense, refactor the code instead of adding more comments.
+* Remove comments that restate the code.
+* Remove decorative, generated, outdated, or section-separator comments.
+* Remove JSX comments that only describe UI structure.
+* Refactor unclear code instead of explaining it with comments.
 
 ## Architecture
 
-The project follows a layered structure. Respect the layer boundaries:
+Respect the project layers:
 
-```
+```txt
 src/
-  app/          ← Next.js routes (Server Components, route handlers)
-  features/     ← Domain slices (boxes/, items/, ...) — components, services, schema fragments
-  components/ui/← Atomic UI primitives (shadcn-style)
-  lib/          ← Cross-cutting concerns (db, env, logger, errors, api wrapper)
-  constants/    ← Shared enums and constants
+  app/           Next.js routes and route handlers
+  features/      Domain-specific code
+  components/ui/ Shared UI primitives
+  lib/           Cross-cutting infrastructure
+  constants/     Shared constants
+  types/         Shared types
 ```
 
-- **`app/` may import from `features/`, `components/`, `lib/`, `constants/`.**
-- **`features/<x>/` may import from `lib/`, `components/`, `constants/`, and within itself.**
-- **Features should not import from each other directly** — go through their public `index.ts` barrel if you must.
-- **`lib/` and `components/ui/` must not import from `features/` or `app/`.**
-- Server-only modules (DB clients, services with side effects) start with `import "server-only";` to fail-fast if pulled into a client bundle.
+Rules:
+
+* `app/` may import from `features/`, `components/`, `lib/`, `constants/`, and `types/`.
+* `features/` may import from `lib/`, `components/`, `constants/`, `types/`, and within itself.
+* Avoid direct feature-to-feature imports unless there is a clear public export.
+* `lib/` and `components/ui/` must not import from `features/` or `app/`.
+* Server-only modules should use `import "server-only";`.
 
 ## React
 
-- Prefer **functional components** with the Composition API equivalent — props in, JSX out.
-- Prefer **composition over large components**. If a component does three things, it's three components.
-- Keep component responsibilities focused — one screen / one widget / one decision per component.
-- Avoid large JSX trees in a single file. If the JSX is hard to scan, extract subtrees.
-- Extract reusable logic into hooks when it appears more than twice.
-- **Server Components by default**, Client Components (`"use client"`) only when state, effects, or browser APIs are needed.
+* Use functional components.
+* Prefer arrow functions for components.
+* Prefer one main component per file.
+* Use kebab-case file names and PascalCase component names.
+* Keep shadcn-generated components in `components/ui/` close to their generated structure.
+* Prefer composition over large components.
+* Keep JSX easy to scan. Extract subcomponents when the file becomes hard to read.
+* Use Server Components by default.
+* Use `"use client"` only when state, effects, event handlers, or browser APIs are needed.
+
+Example:
+
+```tsx
+type Props = {
+  title: string;
+};
+
+const MyBoxes = ({ title }: Props) => {
+  return <h2>{title}</h2>;
+};
+
+export default MyBoxes;
+```
 
 ## Styling
 
-- **No inline styles.** Use Tailwind utility classes.
-- Use the reusable UI primitives from `@/components/ui/*` when one exists.
-- For class composition, use the `cn()` helper from `@/lib/utils`.
-- Keep styling consistent across screens — the brand palette lives in `globals.css` as CSS variables and is exposed via shadcn theme tokens.
-- Tailwind class order is sorted automatically by `prettier-plugin-tailwindcss` — don't fight it.
+* Do not use inline styles.
+* Use Tailwind utilities and shared UI components.
+* Use `cn()` from `@/lib/utils` for conditional classes.
+* Keep styling consistent with the app theme.
+* Do not fight automatic Tailwind class sorting.
 
 ## TypeScript
 
-- **Strict typing.** `strict: true` and `noUncheckedIndexedAccess: true` are on. Don't escape via `any`.
-- **Prefer `import type` for type-only imports** — enforced by `@typescript-eslint/consistent-type-imports`.
-- **Avoid `any`.** If you genuinely need it, leave a comment explaining why and use `// eslint-disable-next-line @typescript-eslint/no-explicit-any` so it's a deliberate, searchable exception.
-- **Prefer explicit return types on exported functions** — improves readability and prevents surprises across module boundaries.
-- For component props, prefer `type Props = { ... }` (not `interface`) unless extension/declaration-merging is actually needed.
+* Use strict typing.
+* Avoid `any`. Use it only as a deliberate exception.
+* Prefer `import type` for type-only imports.
+* Prefer explicit return types for exported functions when it improves readability.
+* Prefer `type Props = { ... }` for component props unless an interface is clearly better.
 
 ## Imports
 
-ESLint sorts and groups imports automatically (`simple-import-sort`). The order is:
+Imports are sorted automatically by ESLint. Do not manually fight the order.
 
-1. Side-effect imports (`import "server-only"`)
-2. React (`react`, `react-dom`)
-3. Next.js (`next`, `next/*`)
-4. Other external libraries (`zod`, `clsx`, `drizzle-orm`, ...)
-5. Internal infra (`@/lib`, `@/utils`, `@/services`, `@/hooks`, `@/configs`, `@/constants`, `@/types`)
-6. Feature/domain imports (`@/features/*`)
-7. UI components (`@/components/*`)
-8. Other internal `@/*` imports
-9. Parent imports (`..`)
-10. Sibling/index imports (`./...`)
-11. Style imports (`*.css`, `*.scss`)
+Expected order:
 
-Don't hand-organize imports — save the file and let ESLint do it.
+1. Side-effect imports.
+2. React.
+3. Next.js.
+4. External libraries.
+5. Internal infrastructure, utilities, hooks, constants, and types.
+6. Feature/domain imports.
+7. UI/shared component imports.
+8. Relative imports.
+9. Style imports.
 
-## Database (Drizzle + SQLite)
+## Data and API
 
-- Schema lives in `src/lib/db/schema/<table>.ts`, re-exported from `schema/index.ts`.
-- Generate migrations with `pnpm db:generate`. Never hand-edit `0000_*.sql` and friends.
-- For things Drizzle-Kit can't express (triggers, custom indexes), use `drizzle-kit generate --custom` and commit the SQL.
-- Apply migrations with `pnpm db:migrate`.
-- DB queries belong in `features/<x>/services/*-service.ts`, never in route handlers or components.
+* Keep route handlers thin.
+* Validate inputs close to the boundary.
+* Keep business logic in services or feature-level utilities.
+* Keep database queries out of UI components.
+* Use shared error and logging utilities instead of ad-hoc handling.
 
-## API routes
+## Avoid
 
-- Use the `withApi(fn)` wrapper from `@/lib/api/handler` for every route — it standardizes error mapping (Zod, AppError, unknown) and response shape.
-- Validate request bodies with Zod schemas defined alongside the service.
-- Route handlers are thin: parse → call service → return. Business logic stays in the service layer.
-
-## Errors and logging
-
-- Throw `AppError` (from `@/lib/errors`) with the right factory (`badRequest`, `notFound`, `unauthorized`, `internal`) for known failure modes.
-- Use the `logger` from `@/lib/logger` instead of `console.log`. `console.warn` and `console.error` are allowed for genuine warning/error paths only.
-
-## Things to avoid
-
-- **`no-nested-ternary`** — refactor to `if`/early return or extract a helper.
-- **`no-else-return`** — once you `return` in an `if` branch, drop the `else`.
-- **`prefer-template`** — `\`hello ${name}\`` instead of `"hello " + name`.
-- **`object-shorthand`** — `{ name }` instead of `{ name: name }`.
-- **`eqeqeq`** — always `===` / `!==`.
-- **`curly`** — even single-statement `if` bodies get braces.
+* Nested ternaries.
+* Deep nesting.
+* Large functions.
+* Large JSX blocks.
+* `console.log`.
+* Duplicate logic.
+* Unclear abbreviations.
+* Mixing unrelated responsibilities in one file.

@@ -1,12 +1,17 @@
-export const BOX_STATUSES = ["packed", "unpacked"] as const;
+import { PackageOpen, CircleCheckBig, LucideIcon } from "lucide-react";
+
+export const BOX_STATUSES = ["packing", "packed"] as const;
 
 export type BoxStatus = (typeof BOX_STATUSES)[number];
 
-// Boxes are created as empty slots first (status "unpacked"), then transition
-// to "packed" once their contents are filmed and the AI fills in the details.
-export const DEFAULT_BOX_STATUS: BoxStatus = "unpacked";
+export const DEFAULT_BOX_STATUS: BoxStatus = "packing";
 
 export const BOX_STATUS_LABELS: Record<BoxStatus, string> = {
   packed: "Packed",
-  unpacked: "Unpacked",
+  packing: "Packing",
+};
+
+export const BOX_STATUS_ICONS: Record<BoxStatus, LucideIcon> = {
+  packed: CircleCheckBig,
+  packing: PackageOpen,
 };

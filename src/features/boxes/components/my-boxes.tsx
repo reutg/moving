@@ -21,8 +21,8 @@ const STATUS_DISPLAY: Record<BoxStatus, StatusDisplay> = {
     color: "var(--status-packed)",
     icon: <BoxIcon size={ICON_SIZE} />,
   },
-  unpacked: {
-    color: "var(--status-unpacked)",
+  packing: {
+    color: "var(--status-packing)",
     icon: <PackageOpen size={ICON_SIZE} />,
   },
 };

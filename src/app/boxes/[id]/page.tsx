@@ -17,7 +17,7 @@ import { Box as BoxIcon, CalendarDays, List, MapPinIcon } from "lucide-react";
 
 const STATUS_CLASS: Record<BoxStatus, string> = {
   packed: "bg-status-packed-bg text-status-packed",
-  unpacked: "bg-status-unpacked-bg text-status-unpacked",
+  packing: "bg-status-packing-bg text-status-packing",
 };
 
 type BoxPageProps = {

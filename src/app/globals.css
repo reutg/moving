@@ -43,8 +43,8 @@
   --color-primary-hover: var(--primary-hover);
   --color-status-packed: var(--status-packed);
   --color-status-packed-bg: var(--status-packed-bg);
-  --color-status-unpacked: var(--status-unpacked);
-  --color-status-unpacked-bg: var(--status-unpacked-bg);
+  --color-status-packing: var(--status-packing);
+  --color-status-packing-bg: var(--status-packing-bg);
   --color-ai: var(--ai);
   --color-ai-bg: var(--ai-bg);
   --color-blue: var(--blue);
@@ -94,8 +94,8 @@
   /* Status colors */
   --status-packed: #2f6f62;
   --status-packed-bg: #dceee8;
-  --status-unpacked: #c9a23c;
-  --status-unpacked-bg: #f7efd6;
+  --status-packing: #c9a23c;
+  --status-packing-bg: #f7efd6;
 
   /* AI accent */
   --ai: #c08457;

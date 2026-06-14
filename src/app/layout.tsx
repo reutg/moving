@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Moving",
+  title: "GetMoving",
   description: "Track packed boxes from one home to the next.",
 };
 

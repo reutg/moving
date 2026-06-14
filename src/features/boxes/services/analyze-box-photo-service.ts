@@ -5,7 +5,8 @@ import { z } from "zod";
 
 import { COMMON_LOCATIONS, type CommonLocationKey } from "@/constants";
 import { gemini } from "@/lib/ai/gemini";
-import { internal } from "@/lib/errors";
+import { internal, isAppError, serviceUnavailable } from "@/lib/errors";
+import { logger } from "@/lib/logger";
 
 const LOCATION_KEYS = Object.keys(COMMON_LOCATIONS) as [CommonLocationKey, ...CommonLocationKey[]];
 
@@ -39,36 +40,65 @@ type AnalyzeBoxPhotoInput = {
   mimeType: string;
 };
 
+// Gemini surfaces transient capacity issues with 429/503 codes or
+// "UNAVAILABLE"/"overloaded" status strings. Treat those as retryable
+// upstream outages rather than internal bugs.
+const isUpstreamUnavailable = (err: unknown): boolean => {
+  if (!(err instanceof Error)) return false;
+  const message = err.message.toLowerCase();
+  return (
+    message.includes("unavailable") ||
+    message.includes("overloaded") ||
+    message.includes("\"code\":503") ||
+    message.includes("\"code\":429")
+  );
+};
+
 export const analyzeBoxPhoto = async (input: AnalyzeBoxPhotoInput): Promise<BoxPhotoAnalysis> => {
-  const response = await gemini.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: [
-      {
-        role: "user",
-        parts: [{ inlineData: { data: input.data, mimeType: input.mimeType } }, { text: PROMPT }],
-      },
-    ],
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: {
-        type: Type.OBJECT,
-        properties: {
-          name: { type: Type.STRING },
-          description: { type: Type.STRING },
-          destinationRoom: {
-            type: Type.STRING,
-            enum: [...LOCATION_KEYS],
-            nullable: true,
-          },
+  try {
+    const response = await gemini.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: [
+        {
+          role: "user",
+          parts: [{ inlineData: { data: input.data, mimeType: input.mimeType } }, { text: PROMPT }],
         },
-        required: ["name", "description"],
+      ],
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            name: { type: Type.STRING },
+            description: { type: Type.STRING },
+            destinationRoom: {
+              type: Type.STRING,
+              enum: [...LOCATION_KEYS],
+              nullable: true,
+            },
+          },
+          required: ["name", "description"],
+        },
       },
-    },
-  });
+    });
 
-  const text = response.text;
-  if (!text) throw internal("Gemini returned an empty response");
+    const text = response.text;
+    if (!text) throw internal("Gemini returned an empty response");
 
-  const json: unknown = JSON.parse(text);
-  return BoxPhotoAnalysisSchema.parse(json);
+    const json: unknown = JSON.parse(text);
+    return BoxPhotoAnalysisSchema.parse(json);
+  } catch (err) {
+    if (isAppError(err)) throw err;
+
+    logger.error("Failed to analyze box photo", { error: err });
+
+    if (isUpstreamUnavailable(err)) {
+      throw serviceUnavailable(
+        "Image analysis is busy right now. Please try again in a moment.",
+        err,
+      );
+    }
+
+    throw internal("We couldn't analyze this photo. Please try again.", err);
+  }
 };

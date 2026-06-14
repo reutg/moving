@@ -45,3 +45,12 @@ export function unauthorized(message = "Unauthorized"): AppError {
 export function internal(message: string, cause?: unknown): AppError {
   return new AppError({ code: "internal", httpStatus: 500, message, cause });
 }
+
+export function serviceUnavailable(message: string, cause?: unknown): AppError {
+  return new AppError({
+    code: "service_unavailable",
+    httpStatus: 503,
+    message,
+    cause,
+  });
+}

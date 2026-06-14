@@ -31,6 +31,13 @@ export const CreateBoxInputSchema = z
 
 export type CreateBoxInput = z.infer<typeof CreateBoxInputSchema>;
 
+// Update accepts the same fields as create, but all are optional so callers
+// can PATCH any subset. `id`, `createdAt`, `updatedAt` are intentionally not
+// listed — they're managed by the DB / service.
+export const UpdateBoxInputSchema = CreateBoxInputSchema.partial();
+
+export type UpdateBoxInput = z.infer<typeof UpdateBoxInputSchema>;
+
 export async function listBoxes(): Promise<Box[]> {
   return db.select().from(boxes).orderBy(boxes.id);
 }
@@ -45,6 +52,19 @@ export async function getBoxById(id: number): Promise<Box> {
 export async function deleteBox(id: number): Promise<void> {
   const result = db.delete(boxes).where(eq(boxes.id, id)).run();
   if (result.changes === 0) throw notFound(`Box ${id} not found`);
+}
+
+export async function updateBox(id: number, input: UpdateBoxInput): Promise<Box> {
+  const updated = db
+    .update(boxes)
+    .set({ ...input, updatedAt: new Date() })
+    .where(eq(boxes.id, id))
+    .returning()
+    .all();
+
+  const box = updated[0];
+  if (!box) throw notFound(`Box ${id} not found`);
+  return box;
 }
 
 export type BoxesSummary = {

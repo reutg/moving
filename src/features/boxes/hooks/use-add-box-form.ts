@@ -5,17 +5,27 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
-import { BOX_STATUS_LABELS, BOX_STATUSES, COMMON_LOCATIONS, DEFAULT_BOX_STATUS } from "@/constants";
+import {
+  BOX_STATUS_ICONS,
+  BOX_STATUS_LABELS,
+  BOX_STATUSES,
+  COMMON_LOCATIONS,
+  DEFAULT_BOX_STATUS,
+  FALLBACK_LOCATION_ICON,
+  LOCATION_ICONS,
+} from "@/constants";
+import type { CommonLocationKey } from "@/constants/common-locations";
 import type { ApiResponse } from "@/lib/api/response";
 
-import { AddBoxFormValues, AddBoxFormValuesSchema } from "../schemas/add-box-form-schema";
 import type { BoxPhotoAnalysis } from "../services/analyze-box-photo-service";
+import { Box } from "@/lib/db/schema";
+import { BoxFormValues, BoxFormValuesSchema } from "../schemas/box-form-schema";
 
-export const useAddBoxForm = () => {
+export const useAddBoxForm = (box?: Box) => {
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const defaultValues: AddBoxFormValues = {
+  const defaultValues: BoxFormValues = {
     name: "",
     description: "",
     destinationRoom: "",
@@ -26,19 +36,20 @@ export const useAddBoxForm = () => {
     control,
     setValue,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, isDirty },
     watch,
-  } = useForm<AddBoxFormValues>({
-    resolver: zodResolver(AddBoxFormValuesSchema),
-    defaultValues,
+  } = useForm<BoxFormValues>({
+    resolver: zodResolver(BoxFormValuesSchema),
+    defaultValues: box ? { ...defaultValues, ...box } : defaultValues,
   });
 
-  const onSubmit = async (values: AddBoxFormValues) => {
-    console.log("onSubmit - values", values);
+  const isEdit = box !== undefined;
+
+  const onSubmit = async (values: BoxFormValues) => {
     setSubmitError(null);
     try {
-      const response = await fetch("/api/boxes", {
-        method: "POST",
+      const response = await fetch(isEdit ? `/api/boxes/${box.id}` : "/api/boxes", {
+        method: isEdit ? "PATCH" : "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(values),
       });
@@ -47,17 +58,15 @@ export const useAddBoxForm = () => {
         setSubmitError(json.error.message);
         return;
       }
-      router.push("/");
+      router.push(isEdit ? `/boxes/${box.id}` : "/");
       router.refresh();
     } catch (cause) {
-      setSubmitError(cause instanceof Error ? cause.message : "Failed to create box.");
+      setSubmitError(cause instanceof Error ? cause.message : "Failed to save box.");
     }
   };
 
   const submit = handleSubmit(onSubmit);
-  console.log("form values", watch());
   const onFinishedAnalyzing = (analysis: BoxPhotoAnalysis) => {
-    console.log("onFinishedAnalyzing - analysis", analysis);
     setValue("name", analysis.name);
     setValue("description", analysis.description);
     if (analysis.destinationRoom) {
@@ -65,22 +74,28 @@ export const useAddBoxForm = () => {
     }
   };
 
-  const commonLocations = Object.entries(COMMON_LOCATIONS).map(([value, label]) => ({
-    value,
-    label,
-  }));
+  const commonLocations = (Object.entries(COMMON_LOCATIONS) as [CommonLocationKey, string][]).map(
+    ([value, label]) => ({
+      value,
+      label,
+      icon: LOCATION_ICONS[value] ?? FALLBACK_LOCATION_ICON,
+    }),
+  );
   const statusOptions = BOX_STATUSES.map((status) => ({
     value: status,
     label: BOX_STATUS_LABELS[status],
+    icon: BOX_STATUS_ICONS[status],
   }));
 
   return {
     control,
     submit,
     isSubmitting,
+    isDirty,
     submitError,
     onFinishedAnalyzing,
     commonLocations,
     statusOptions,
+    isEdit,
   };
 };

@@ -1,10 +1,14 @@
-import { MapPinIcon, Box as BoxIcon } from "lucide-react";
+import { MapPinIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Box } from "@/lib/db/schema";
 import Link from "next/link";
 import Chip from "@/components/ui/chip";
-import { LOCATION_ICONS } from "@/constants/location-icons";
-import { FALLBACK_LOCATION_COLOR, LOCATION_COLORS } from "@/constants/location-colors";
+import {
+  FALLBACK_LOCATION_COLOR,
+  FALLBACK_LOCATION_ICON,
+  LOCATION_COLORS,
+  LOCATION_ICONS,
+} from "@/constants";
 import { COMMON_LOCATIONS, CommonLocationKey } from "@/constants/common-locations";
 
 interface BoxCardProps {
@@ -13,7 +17,7 @@ interface BoxCardProps {
 
 const BoxCard: React.FC<BoxCardProps> = ({ box }) => {
   const roomKey = box.destinationRoom as CommonLocationKey;
-  const RoomIcon = LOCATION_ICONS[roomKey] ?? BoxIcon;
+  const RoomIcon = LOCATION_ICONS[roomKey] ?? FALLBACK_LOCATION_ICON;
   const iconColor = LOCATION_COLORS[roomKey] ?? FALLBACK_LOCATION_COLOR;
   const destinationRoomName = box.destinationRoom ? COMMON_LOCATIONS[roomKey] : "";
 
@@ -34,7 +38,7 @@ const BoxCard: React.FC<BoxCardProps> = ({ box }) => {
             </div>
             <div className="flex flex-col gap-1">
               <span className="text-foreground text-md font-semibold">{box.name}</span>
-              <span className="text-muted-foreground text-sm">{box.description}</span>
+              <span className="text-muted-foreground line-clamp-2 text-sm">{box.description}</span>
 
               <p className="flex items-center gap-1">
                 <MapPinIcon size={16} /> {destinationRoomName}

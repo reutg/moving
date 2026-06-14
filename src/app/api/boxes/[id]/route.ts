@@ -1,6 +1,11 @@
 import { z } from "zod";
 
-import { deleteBox, getBoxById } from "@/features/boxes/services/box-service";
+import {
+  deleteBox,
+  getBoxById,
+  updateBox,
+  UpdateBoxInputSchema,
+} from "@/features/boxes/services/box-service";
 import { withApi } from "@/lib/api/handler";
 import { badRequest } from "@/lib/errors";
 
@@ -17,6 +22,17 @@ const parseId = (raw: string) => {
 export const GET = withApi(async (_request, ctx: RouteParams) => {
   const { id } = await ctx.params;
   return getBoxById(parseId(id));
+});
+
+export const PATCH = withApi(async (request, ctx: RouteParams) => {
+  const { id } = await ctx.params;
+  const numericId = parseId(id);
+
+  const body = await request.json().catch(() => null);
+  if (body === null) throw badRequest("Expected JSON body");
+
+  const input = UpdateBoxInputSchema.parse(body);
+  return updateBox(numericId, input);
 });
 
 export const DELETE = withApi(async (_request, ctx: RouteParams) => {

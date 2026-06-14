@@ -6,12 +6,10 @@ import {
   type BoxStatus,
   COMMON_LOCATIONS,
   type CommonLocationKey,
-  FALLBACK_LOCATION_COLOR,
-  LOCATION_COLORS,
-  LOCATION_ICONS,
 } from "@/constants";
 import BoxLabelActions from "@/features/boxes/components/box-label-actions";
 import DeleteBoxButton from "@/features/boxes/components/delete-box-button";
+import RoomIcon from "@/features/boxes/components/room-icon";
 import { getBoxById } from "@/features/boxes/services/box-service";
 import { Box as BoxIcon, CalendarDays, List, MapPinIcon } from "lucide-react";
 
@@ -30,8 +28,6 @@ export default async function BoxPage({ params }: BoxPageProps) {
   const box = await getBoxById(Number(id));
 
   const roomKey = box.destinationRoom as CommonLocationKey;
-  const RoomIcon = LOCATION_ICONS[roomKey] ?? BoxIcon;
-  const iconColor = LOCATION_COLORS[roomKey] ?? FALLBACK_LOCATION_COLOR;
 
   const tableData: { icon: typeof List; label: string; value: React.ReactNode }[] = [
     {
@@ -58,21 +54,9 @@ export default async function BoxPage({ params }: BoxPageProps) {
 
   return (
     <>
-      <PageHeader title="Box Details" />
+      <PageHeader title="Box Details" showEdit />
       <div className="flex flex-col gap-8">
-        <div className="flex flex-col items-center gap-2">
-          <div
-            aria-hidden
-            className="flex size-16 shrink-0 items-center justify-center rounded-md"
-            style={{
-              color: iconColor,
-              backgroundColor: `color-mix(in srgb, ${iconColor} 15%, transparent)`,
-            }}
-          >
-            <RoomIcon />
-          </div>
-          <p className="text-lg font-semibold">{box.name}</p>
-        </div>
+        <RoomIcon box={box} />
         <Table>
           <TableBody className="[&_td]:align-top">
             {tableData.map((row) => (

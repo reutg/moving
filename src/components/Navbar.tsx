@@ -8,7 +8,7 @@ export function Navbar() {
       <nav className="mx-auto flex max-w-[960px] items-center justify-between px-6 py-4">
         <Link href="/" className="flex items-center gap-2">
           <Boxes className="text-primary" size={28} aria-hidden />
-          <span className="text-lg font-semibold">Moving</span>
+          <span className="text-lg font-semibold">{process.env.NEXT_PUBLIC_APP_NAME}</span>
         </Link>
         <Link
           href="/boxes/new"

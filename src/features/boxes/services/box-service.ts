@@ -1,19 +1,29 @@
 import "server-only";
 
-import { count, eq, isNotNull } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { BOX_PRIORITIES, BOX_STATUSES, type BoxStatus } from "@/constants";
+import { getLocationKeyByName } from "@/constants/common-locations";
 import { db } from "@/lib/db/client";
 import { type Box, boxes } from "@/lib/db/schema";
 import { internal, notFound } from "@/lib/errors";
+
+const DestinationRoomSchema = z.string().trim().min(1).transform((value, ctx) => {
+  const key = getLocationKeyByName(value);
+  if (!key) {
+    ctx.addIssue({ code: "custom", message: `Unknown room: ${value}` });
+    return z.NEVER;
+  }
+  return key;
+});
 
 export const CreateBoxInputSchema = z
   .object({
     name: z.string().trim().max(200).optional(),
     description: z.string().max(2000).optional(),
     sourceRoom: z.string().trim().max(100).nullable().optional(),
-    destinationRoom: z.string().trim().max(100).nullable().optional(),
+    destinationRoom: DestinationRoomSchema,
     status: z.enum(BOX_STATUSES).optional(),
     priority: z.enum(BOX_PRIORITIES).optional(),
   })
@@ -23,6 +33,18 @@ export type CreateBoxInput = z.infer<typeof CreateBoxInputSchema>;
 
 export async function listBoxes(): Promise<Box[]> {
   return db.select().from(boxes).orderBy(boxes.id);
+}
+
+export async function getBoxById(id: number): Promise<Box> {
+  const rows = db.select().from(boxes).where(eq(boxes.id, id)).all();
+  const box = rows[0];
+  if (!box) throw notFound(`Box ${id} not found`);
+  return box;
+}
+
+export async function deleteBox(id: number): Promise<void> {
+  const result = db.delete(boxes).where(eq(boxes.id, id)).run();
+  if (result.changes === 0) throw notFound(`Box ${id} not found`);
 }
 
 export type BoxesSummary = {
@@ -40,7 +62,6 @@ export async function getBoxesSummary(): Promise<BoxesSummary> {
   const roomRows = db
     .select({ room: boxes.destinationRoom, count: count() })
     .from(boxes)
-    .where(isNotNull(boxes.destinationRoom))
     .groupBy(boxes.destinationRoom)
     .all();
 
@@ -54,7 +75,7 @@ export async function getBoxesSummary(): Promise<BoxesSummary> {
 
   const byDestinationRoom: Record<string, number> = {};
   for (const row of roomRows) {
-    if (row.room !== null) byDestinationRoom[row.room] = row.count;
+    byDestinationRoom[row.room] = row.count;
   }
 
   return { byStatus, byDestinationRoom };

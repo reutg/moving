@@ -21,32 +21,18 @@ const LOCATION_LIST = (Object.entries(COMMON_LOCATIONS) as [CommonLocationKey, s
   .map(([key, label]) => `- "${key}" (${label})`)
   .join("\n");
 
-const PROMPT = `You are labelling a moving box from a photo of its contents.
-
-Survey ALL visible items before labelling. Treat the box as a whole, not as its most prominent item.
-
-Name (2-4 words, title case):
-- If MOST items belong to the same brand or franchise, use that name (e.g. "Paw Patrol Toys", "Lego Sets").
-- Otherwise, name the box by the dominant category covering the items (e.g. "Board Games", "Kitchen Knives", "Toy Cars").
-- No filler words ("Assortment", "Collection", "Various", "Miscellaneous").
-
-Description (one short sentence, 15-20 words):
-- Mention the main items collectively. Do not focus on a single item if several distinct ones are visible.
-- Describe the ITEMS ONLY. Never mention the box, bin, container, or photo. Never say items are stored, kept, contained, or placed.
-- Do not invent items you cannot see.
-
-Destination room (optional):
-- Pick the most likely room these items belong in from this list:
+const PROMPT = `Label a moving box from this photo.
+Name: 2-4 words, title case. Use a common brand or franchise if most items belong to one (e.g. "Paw Patrol Toys", "Lego Sets"); otherwise the dominant item category (e.g. "Board Games", "Kitchen Knives"). No filler ("Assortment", "Various", "Misc").
+Description: a comma-separated list of items. No sentences, no verbs, no counts, no quantifiers, no mention of the box, container, or photo. Group identical or near-identical items into one plural entry (e.g. "mugs"; "Paw Patrol cars"; "pots and pans"). Do not invent items.
+Destination room: pick the key these items most likely belong in. Return null if unsure.
 ${LOCATION_LIST}
-- Reply with the exact key (e.g. "kitchen"), NOT the label.
-- Return null if you are not confident. Do not guess.
 
 Examples:
-{ "name": "Board Games", "description": "Super Wings puzzle, a chess set, two card games, and a small Tetris travel game.", "destinationRoom": "livingRoom" }
-{ "name": "Paw Patrol Toys", "description": "Paw Patrol rescue vehicles, three pup figurines, and a fold-out lookout tower.", "destinationRoom": "kidsRoom" }
-{ "name": "Mixed Cables", "description": "A bundle of HDMI, USB, and power cables of various lengths.", "destinationRoom": null }
+{ "name": "Board Games", "description": "Super Wings puzzle; chess set; card games; Tetris travel game", "destinationRoom": "livingRoom" }
+{ "name": "Paw Patrol Toys", "description": "Paw Patrol rescue vehicles; pup figurines; fold-out lookout tower", "destinationRoom": "kidsRoom" }
+{ "name": "Mixed Cables", "description": "HDMI cables; USB cables; power cables", "destinationRoom": null }
 
-Reply strictly as JSON matching the schema.`;
+Reply as JSON matching the schema.`;
 
 type AnalyzeBoxPhotoInput = {
   data: string;
@@ -59,10 +45,7 @@ export const analyzeBoxPhoto = async (input: AnalyzeBoxPhotoInput): Promise<BoxP
     contents: [
       {
         role: "user",
-        parts: [
-          { inlineData: { data: input.data, mimeType: input.mimeType } },
-          { text: PROMPT },
-        ],
+        parts: [{ inlineData: { data: input.data, mimeType: input.mimeType } }, { text: PROMPT }],
       },
     ],
     config: {

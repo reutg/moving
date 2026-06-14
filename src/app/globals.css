@@ -47,6 +47,7 @@
   --color-status-unpacked-bg: var(--status-unpacked-bg);
   --color-ai: var(--ai);
   --color-ai-bg: var(--ai-bg);
+  --color-blue: var(--blue);
 
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -73,6 +74,7 @@
   --secondary-foreground: #2d3748;
   --accent-foreground: #2f6f62;
   --primary-foreground: #ffffff;
+  --blue: #3b82f6;
 
   /* Brand */
   --primary: #2f6f62;
@@ -143,6 +145,26 @@ body {
 
 .error {
   color: var(--destructive);
+}
+
+.print-area {
+  position: absolute;
+  left: -10000px;
+  top: 0;
+  background-color: var(--background);
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-area {
+    left: 0;
+  }
+  .print-area,
+  .print-area * {
+    visibility: visible;
+  }
 }
 
 .card {

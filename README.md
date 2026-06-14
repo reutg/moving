@@ -1,6 +1,6 @@
 # GetMoving
 
-> A web application for organizing boxes during a house move.
+A web application for organizing boxes during a house move.
 
 Instead of manually tracking what's packed where, users can take a photo of a box and let AI generate a suggested name, description, and destination room. Each box has its own page, printable label, and QR code for quick access during packing and unpacking.
 

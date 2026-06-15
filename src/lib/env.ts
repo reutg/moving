@@ -5,12 +5,17 @@ const EnvSchema = z.object({
     .enum(["development", "test", "production"])
     .default("development"),
 
-  // SQLite path. Accepts the `file:` prefix used by libSQL/Turso for forward
-  // compatibility; we strip it before handing the path to better-sqlite3.
+  // libSQL/Turso connection string. `file:` URLs work locally; in production
+  // this should point at a hosted Turso DB (libsql://...). Same code path
+  // either way — only the URL (and auth token) change between environments.
   DATABASE_URL: z
     .string()
     .min(1, "DATABASE_URL is required")
     .default("file:./data/moving.db"),
+
+  // Auth token issued by Turso for the hosted DB. Not needed for local file
+  // databases, which is why this is optional.
+  DATABASE_AUTH_TOKEN: z.string().optional(),
 
   LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
 

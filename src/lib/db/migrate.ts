@@ -1,29 +1,33 @@
-import Database from "better-sqlite3";
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import { migrate } from "drizzle-orm/better-sqlite3/migrator";
+import { createClient } from "@libsql/client";
+import { drizzle } from "drizzle-orm/libsql";
+import { migrate } from "drizzle-orm/libsql/migrator";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 
 import { env } from "@/lib/env";
 
-function main() {
-  const dbPath = env.DATABASE_URL.replace(/^file:/, "");
-  mkdirSync(dirname(dbPath), { recursive: true });
+const ensureLocalDir = (url: string): void => {
+  if (!url.startsWith("file:")) return;
+  const path = url.replace(/^file:/, "");
+  mkdirSync(dirname(path), { recursive: true });
+};
 
-  const sqlite = new Database(dbPath);
-  sqlite.pragma("foreign_keys = ON");
-  sqlite.pragma("journal_mode = WAL");
+const main = async () => {
+  ensureLocalDir(env.DATABASE_URL);
 
-  const db = drizzle(sqlite);
+  const client = createClient({
+    url: env.DATABASE_URL,
+    authToken: env.DATABASE_AUTH_TOKEN,
+  });
+  const db = drizzle(client);
 
-  // CLI script — stdout progress messages are intentional.
   /* eslint-disable no-console */
-  console.log(`Applying migrations to ${dbPath}…`);
-  migrate(db, { migrationsFolder: "./drizzle" });
+  console.log(`Applying migrations to ${env.DATABASE_URL}…`);
+  await migrate(db, { migrationsFolder: "./drizzle" });
   console.log("Migrations applied.");
   /* eslint-enable no-console */
 
-  sqlite.close();
-}
+  client.close();
+};
 
-main();
+await main();

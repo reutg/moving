@@ -43,19 +43,19 @@ export async function listBoxes(): Promise<Box[]> {
 }
 
 export async function getBoxById(id: number): Promise<Box> {
-  const rows = db.select().from(boxes).where(eq(boxes.id, id)).all();
+  const rows = await db.select().from(boxes).where(eq(boxes.id, id)).all();
   const box = rows[0];
   if (!box) throw notFound(`Box ${id} not found`);
   return box;
 }
 
 export async function deleteBox(id: number): Promise<void> {
-  const result = db.delete(boxes).where(eq(boxes.id, id)).run();
-  if (result.changes === 0) throw notFound(`Box ${id} not found`);
+  const result = await db.delete(boxes).where(eq(boxes.id, id)).run();
+  if (result.rowsAffected === 0) throw notFound(`Box ${id} not found`);
 }
 
 export async function updateBox(id: number, input: UpdateBoxInput): Promise<Box> {
-  const updated = db
+  const updated = await db
     .update(boxes)
     .set({ ...input, updatedAt: new Date() })
     .where(eq(boxes.id, id))
@@ -73,17 +73,18 @@ export type BoxesSummary = {
 };
 
 export async function getBoxesSummary(): Promise<BoxesSummary> {
-  const statusRows = db
-    .select({ status: boxes.status, count: count() })
-    .from(boxes)
-    .groupBy(boxes.status)
-    .all();
-
-  const roomRows = db
-    .select({ room: boxes.destinationRoom, count: count() })
-    .from(boxes)
-    .groupBy(boxes.destinationRoom)
-    .all();
+  const [statusRows, roomRows] = await Promise.all([
+    db
+      .select({ status: boxes.status, count: count() })
+      .from(boxes)
+      .groupBy(boxes.status)
+      .all(),
+    db
+      .select({ room: boxes.destinationRoom, count: count() })
+      .from(boxes)
+      .groupBy(boxes.destinationRoom)
+      .all(),
+  ]);
 
   // Seed every known status with 0 so the response shape is stable even when
   // a status has no rows yet. Adding a new status to BOX_STATUSES extends
@@ -102,7 +103,7 @@ export async function getBoxesSummary(): Promise<BoxesSummary> {
 }
 
 export async function createBox(input: CreateBoxInput): Promise<Box> {
-  const inserted = db.insert(boxes).values(input).returning({ id: boxes.id }).all();
+  const inserted = await db.insert(boxes).values(input).returning({ id: boxes.id }).all();
 
   const created = inserted[0];
   if (!created) throw internal("Insert returned no rows");
@@ -110,7 +111,7 @@ export async function createBox(input: CreateBoxInput): Promise<Box> {
   // Re-select to capture the row state AFTER the `boxes_set_default_name`
   // trigger has run. SQLite's RETURNING fires before AFTER triggers, so
   // a trigger-filled `name` would not appear in the insert's return value.
-  const fresh = db.select().from(boxes).where(eq(boxes.id, created.id)).all();
+  const fresh = await db.select().from(boxes).where(eq(boxes.id, created.id)).all();
   const box = fresh[0];
   if (!box) throw notFound(`Box ${created.id} not found after insert`);
 

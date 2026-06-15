@@ -26,10 +26,6 @@ type FormSelectProps<T extends FieldValues> = FormFieldProps<T> & {
   placeholder?: string;
 };
 
-// Matches the dropdown items' icon styling (plain muted-foreground SVG).
-// `mr-1.5` adds 6px on top of the trigger's own `gap-1.5`, giving `gap-3`
-// (12px) between the icon and the label without widening the
-// value-to-chevron spacing.
 const triggerIconClass = "text-muted-foreground mr-1.5 size-4 shrink-0";
 
 const FormSelect = <T extends FieldValues>({

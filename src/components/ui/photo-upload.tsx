@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import type { ApiResponse } from "@/lib/api/response";
 import { cn } from "@/lib/utils";
 import type { BoxPhotoAnalysis } from "@/features/boxes/services/analyze-box-photo-service";
+import Image from "next/image";
 
 const MAX_BYTES = 8 * 1024 * 1024;
 
@@ -47,8 +48,6 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ onFinishedAnalyzing }) => {
         body: formData,
       });
       const json: ApiResponse<BoxPhotoAnalysis> = await response.json();
-      // eslint-disable-next-line no-console
-      console.log("analyzeBoxPhoto response:", json);
       if (json.ok) {
         await onFinishedAnalyzing(json.data);
       } else {
@@ -71,39 +70,38 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ onFinishedAnalyzing }) => {
           isAnalyzing ? "cursor-wait" : "cursor-pointer",
         )}
       >
-      <input
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={handleChange}
-        disabled={isAnalyzing}
-      />
-      {previewUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={previewUrl}
-          alt="Box content preview"
-          className="absolute inset-0 h-full w-full object-contain"
+        <input
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleChange}
+          disabled={isAnalyzing}
         />
-      ) : (
-        <>
-          <div className="bg-primary/10 flex size-16 items-center justify-center rounded-full">
-            <CameraIcon className="text-primary size-8" />
+        {previewUrl ? (
+          <Image
+            src={previewUrl}
+            alt="Box content preview"
+            className="absolute inset-0 h-full w-full object-contain"
+          />
+        ) : (
+          <>
+            <div className="bg-primary/10 flex size-16 items-center justify-center rounded-full">
+              <CameraIcon className="text-primary size-8" />
+            </div>
+            <span className="text-foreground text-md text-center font-semibold">
+              Click to take a photo
+            </span>
+            <span className="text-muted-foreground text-center text-sm">
+              We&apos;ll analyze the content and suggest a name and description for your box.
+            </span>
+          </>
+        )}
+        {isAnalyzing && (
+          <div className="bg-background/80 absolute inset-0 flex items-center justify-center gap-2">
+            <Loader2 className="text-primary size-5 animate-spin" />
+            <span className="text-foreground text-sm font-medium">Analyzing image…</span>
           </div>
-          <span className="text-foreground text-md text-center font-semibold">
-            Tap to take a photo
-          </span>
-          <span className="text-muted-foreground text-center text-sm">
-            We&apos;ll analyze the content and suggest a name and description for your box.
-          </span>
-        </>
-      )}
-      {isAnalyzing && (
-        <div className="bg-background/80 absolute inset-0 flex items-center justify-center gap-2">
-          <Loader2 className="text-primary size-5 animate-spin" />
-          <span className="text-foreground text-sm font-medium">Analyzing image…</span>
-        </div>
-      )}
+        )}
       </label>
       {error && (
         <p role="alert" className="text-destructive text-sm">

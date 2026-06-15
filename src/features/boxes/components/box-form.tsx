@@ -44,6 +44,7 @@ const BoxForm = ({ box }: { box?: Box }) => {
         </div>
       )}
 
+      <h6 className="text-md text-primary font-bold">Box details</h6>
       <div className="space-y-4">
         <FormInput
           name="name"

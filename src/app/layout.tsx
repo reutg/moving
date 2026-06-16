@@ -7,12 +7,12 @@ import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "GetMoving",
+  title: "Moving On",
   description: "Track packed boxes from one home to the next.",
-  applicationName: "GetMoving",
+  applicationName: "Moving On",
   appleWebApp: {
     capable: true,
-    title: "GetMoving",
+    title: "Moving On",
     statusBarStyle: "default",
   },
   formatDetection: {
@@ -37,7 +37,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body>
+      {/* `suppressHydrationWarning` is scoped to <body>: silences attribute
+          mismatches added by browser extensions (ColorZilla, Grammarly,
+          LastPass, etc.) without masking real hydration bugs deeper in the tree. */}
+      <body suppressHydrationWarning>
         {children}
         <ServiceWorkerRegistration />
       </body>

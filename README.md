@@ -1,4 +1,4 @@
-# GetMoving
+# Moving On
 
 A web application for organizing boxes during a house move.
 

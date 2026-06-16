@@ -1,8 +1,8 @@
 import type { MetadataRoute } from "next";
 
 const manifest = (): MetadataRoute.Manifest => ({
-  name: "GetMoving",
-  short_name: "GetMoving",
+  name: "Moving On",
+  short_name: "Moving On",
   description: "Track packed boxes from one home to the next.",
   start_url: "/",
   scope: "/",

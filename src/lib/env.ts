@@ -20,6 +20,13 @@ const EnvSchema = z.object({
   LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
 
   GEMINI_KEY: z.string().min(1, "GEMINI_KEY is required"),
+
+  // Auth.js v5 reads these conventionally-named env vars automatically.
+  // We still validate them here so missing values fail loudly with a clear
+  // error rather than via a confusing OAuth callback failure later.
+  AUTH_SECRET: z.string().min(1, "AUTH_SECRET is required"),
+  AUTH_GOOGLE_ID: z.string().min(1, "AUTH_GOOGLE_ID is required"),
+  AUTH_GOOGLE_SECRET: z.string().min(1, "AUTH_GOOGLE_SECRET is required"),
 });
 
 const parsed = EnvSchema.safeParse(process.env);

@@ -9,14 +9,18 @@ import { db } from "@/lib/db/client";
 import { type Box, boxes } from "@/lib/db/schema";
 import { internal, notFound } from "@/lib/errors";
 
-const DestinationRoomSchema = z.string().trim().min(1).transform((value, ctx) => {
-  const key = getLocationKeyByName(value);
-  if (!key) {
-    ctx.addIssue({ code: "custom", message: `Unknown room: ${value}` });
-    return z.NEVER;
-  }
-  return key;
-});
+const DestinationRoomSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .transform((value, ctx) => {
+    const key = getLocationKeyByName(value);
+    if (!key) {
+      ctx.addIssue({ code: "custom", message: `Unknown room: ${value}` });
+      return z.NEVER;
+    }
+    return key;
+  });
 
 export const CreateBoxInputSchema = z
   .object({
@@ -31,9 +35,6 @@ export const CreateBoxInputSchema = z
 
 export type CreateBoxInput = z.infer<typeof CreateBoxInputSchema>;
 
-// Update accepts the same fields as create, but all are optional so callers
-// can PATCH any subset. `id`, `createdAt`, `updatedAt` are intentionally not
-// listed — they're managed by the DB / service.
 export const UpdateBoxInputSchema = CreateBoxInputSchema.partial();
 
 export type UpdateBoxInput = z.infer<typeof UpdateBoxInputSchema>;
@@ -74,11 +75,7 @@ export type BoxesSummary = {
 
 export async function getBoxesSummary(): Promise<BoxesSummary> {
   const [statusRows, roomRows] = await Promise.all([
-    db
-      .select({ status: boxes.status, count: count() })
-      .from(boxes)
-      .groupBy(boxes.status)
-      .all(),
+    db.select({ status: boxes.status, count: count() }).from(boxes).groupBy(boxes.status).all(),
     db
       .select({ room: boxes.destinationRoom, count: count() })
       .from(boxes)
@@ -86,9 +83,6 @@ export async function getBoxesSummary(): Promise<BoxesSummary> {
       .all(),
   ]);
 
-  // Seed every known status with 0 so the response shape is stable even when
-  // a status has no rows yet. Adding a new status to BOX_STATUSES extends
-  // this map automatically.
   const byStatus = Object.fromEntries(BOX_STATUSES.map((s) => [s, 0])) as Record<BoxStatus, number>;
   for (const row of statusRows) {
     byStatus[row.status] = row.count;
@@ -108,9 +102,6 @@ export async function createBox(input: CreateBoxInput): Promise<Box> {
   const created = inserted[0];
   if (!created) throw internal("Insert returned no rows");
 
-  // Re-select to capture the row state AFTER the `boxes_set_default_name`
-  // trigger has run. SQLite's RETURNING fires before AFTER triggers, so
-  // a trigger-filled `name` would not appear in the insert's return value.
   const fresh = await db.select().from(boxes).where(eq(boxes.id, created.id)).all();
   const box = fresh[0];
   if (!box) throw notFound(`Box ${created.id} not found after insert`);

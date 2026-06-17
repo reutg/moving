@@ -1,4 +1,3 @@
-import PageHeader from "@/components/PageHeader";
 import Chip from "@/components/ui/chip";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import {
@@ -53,29 +52,26 @@ export default async function BoxPage({ params }: BoxPageProps) {
   ];
 
   return (
-    <>
-      <PageHeader title="Box Details" showEdit />
-      <div className="flex flex-col gap-8">
-        <RoomIcon box={box} />
-        <Table>
-          <TableBody className="[&_td]:align-top">
-            {tableData.map((row) => (
-              <TableRow key={row.label}>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <row.icon className="size-4" />
-                    <span className="text-sm font-medium">{row.label}</span>
-                  </div>
-                </TableCell>
-                <TableCell className="break-words whitespace-normal">{row.value}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+    <div className="flex flex-col gap-8">
+      <RoomIcon box={box} />
+      <Table>
+        <TableBody className="[&_td]:align-top">
+          {tableData.map((row) => (
+            <TableRow key={row.label}>
+              <TableCell>
+                <div className="flex items-center gap-2">
+                  <row.icon className="size-4" />
+                  <span className="text-sm font-medium">{row.label}</span>
+                </div>
+              </TableCell>
+              <TableCell className="break-words whitespace-normal">{row.value}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
 
-        <BoxLabelActions box={box} />
-        <DeleteBoxButton box={box} />
-      </div>
-    </>
+      <BoxLabelActions box={box} />
+      <DeleteBoxButton box={box} />
+    </div>
   );
 }

@@ -3,7 +3,6 @@
 import Link from "next/link";
 
 import { ChevronLeft } from "lucide-react";
-import { Button } from "./ui/button";
 import { useParams } from "next/navigation";
 
 type PageHeaderProps = {
@@ -14,7 +13,7 @@ type PageHeaderProps = {
 const PageHeader = ({ title, showEdit }: PageHeaderProps) => {
   const { id } = useParams();
   return (
-    <header className="grid grid-cols-[1fr_auto_1fr] items-center pb-6">
+    <header className="border-border bg-card z-10 grid shrink-0 grid-cols-[1fr_auto_1fr] items-center border-b p-4 pb-3">
       <Link
         href="/"
         className="text-muted-foreground hover:text-foreground inline-flex w-fit items-center gap-1 justify-self-start text-sm transition-colors"
@@ -24,15 +23,11 @@ const PageHeader = ({ title, showEdit }: PageHeaderProps) => {
       </Link>
       <h1 className="text-md justify-self-center font-semibold">{title}</h1>
       <div className="justify-self-end">
-        {showEdit ? (
-          <Button
-            variant="ghost"
-            nativeButton={false}
-            render={<Link href={`/boxes/${id}/edit`} />}
-          >
+        {showEdit && (
+          <Link href={`/boxes/${id}/edit`} className="text-primary">
             Edit
-          </Button>
-        ) : null}
+          </Link>
+        )}
       </div>
     </header>
   );

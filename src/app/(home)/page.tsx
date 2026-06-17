@@ -9,7 +9,7 @@ export default async function HomePage() {
   const [boxes, summary] = await Promise.all([listBoxes(), getBoxesSummary()]);
 
   return (
-    <main className="flex-container">
+    <main className="flex-container page-content">
       <MyBoxes summary={summary} />
       <SearchBox />
       <BoxesList boxes={boxes} />

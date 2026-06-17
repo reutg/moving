@@ -133,18 +133,21 @@ body {
 }
 
 .container {
+  height: 100%;
   max-width: 960px;
   margin: 0 auto;
-  padding: 2rem 1rem;
 }
 
 .flex-container {
   max-width: 960px;
   margin: 0 auto;
-  padding: 2rem 1rem;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
+}
+
+.page-content {
+  padding: 1rem;
 }
 
 .error {

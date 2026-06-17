@@ -4,8 +4,8 @@ import { Plus } from "lucide-react";
 
 export function Navbar() {
   return (
-    <header className="border-border bg-card sticky top-0 z-10 border-b">
-      <nav className="mx-auto flex max-w-[960px] items-center justify-between px-6 py-4">
+    <header className="border-border bg-card sticky top-0 z-10 shrink-0 border-b">
+      <nav className="mx-auto flex max-w-[960px] items-center justify-between p-3">
         <Link href="/" className="flex items-end gap-3">
           <Image
             src="/logo2.png"

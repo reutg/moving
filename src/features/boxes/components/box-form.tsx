@@ -36,7 +36,7 @@ const BoxForm = ({ box }: { box?: Box }) => {
       : "Create box";
 
   return (
-    <form onSubmit={submit} className={cn("space-y-6 px-3 py-4", isEdit && "pb-32")}>
+    <form onSubmit={submit}>
       {!isEdit && (
         <div className="space-y-4">
           <h6 className="text-md text-primary font-bold">Film box content</h6>

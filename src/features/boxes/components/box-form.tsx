@@ -7,7 +7,6 @@ import FormTextarea from "@/components/form/form-textarea";
 import { Button } from "@/components/ui/button";
 import PhotoUpload from "@/components/ui/photo-upload";
 import type { Box } from "@/lib/db/schema";
-import { cn } from "@/lib/utils";
 
 import { useAddBoxForm } from "../hooks/use-add-box-form";
 
@@ -36,16 +35,16 @@ const BoxForm = ({ box }: { box?: Box }) => {
       : "Create box";
 
   return (
-    <form onSubmit={submit}>
+    <form onSubmit={submit} className="flex-content">
       {!isEdit && (
-        <div className="space-y-4">
+        <div className="flex-content">
           <h6 className="text-md text-primary font-bold">Film box content</h6>
           <PhotoUpload onFinishedAnalyzing={onFinishedAnalyzing} />
         </div>
       )}
 
-      <h6 className="text-md text-primary font-bold">Box details</h6>
-      <div className="space-y-4">
+      <div className="flex-content">
+        <h6 className="text-md text-primary font-bold">Box details</h6>
         <FormInput
           name="name"
           label="Name"

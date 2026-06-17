@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import type { ApiResponse } from "@/lib/api/response";
 import { cn } from "@/lib/utils";
 import type { BoxPhotoAnalysis } from "@/features/boxes/services/analyze-box-photo-service";
-import Image from "next/image";
 
 const MAX_BYTES = 8 * 1024 * 1024;
 
@@ -78,7 +77,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ onFinishedAnalyzing }) => {
           disabled={isAnalyzing}
         />
         {previewUrl ? (
-          <Image
+          <img
             src={previewUrl}
             alt="Box content preview"
             className="absolute inset-0 h-full w-full object-contain"

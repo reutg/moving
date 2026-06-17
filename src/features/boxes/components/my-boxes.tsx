@@ -42,7 +42,6 @@ const MyBoxes = ({ summary }: Props) => {
               count={count}
               icon={display.icon}
               iconColor={display.color}
-              className="flex-1"
             />
           );
         })}

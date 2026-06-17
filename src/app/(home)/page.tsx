@@ -1,6 +1,6 @@
 import { getBoxesSummary, listBoxes } from "@/features/boxes/services/box-service";
 import MyBoxes from "@/features/boxes/components/my-boxes";
-import BoxesList from "@/features/boxes/components/boxes-list";
+import BoxesList from "@/features/boxes/components/boxes-list/boxes-list";
 import SearchBox from "@/features/boxes/components/search-box";
 
 export const dynamic = "force-dynamic";

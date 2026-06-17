@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 type StatCardProps = {
   title: string;
@@ -12,7 +13,7 @@ type StatCardProps = {
 
 export function StatCard({ title, count, icon, iconColor, className }: StatCardProps) {
   return (
-    <Card className={className}>
+    <Card className={cn("flex-1", className)}>
       <CardContent className="flex items-center gap-4">
         <div
           aria-hidden

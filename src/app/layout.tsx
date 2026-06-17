@@ -37,10 +37,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      {/* `suppressHydrationWarning` is scoped to <body>: silences attribute
-          mismatches added by browser extensions (ColorZilla, Grammarly,
-          LastPass, etc.) without masking real hydration bugs deeper in the tree. */}
-      <body suppressHydrationWarning>
+      <body className="flex h-dvh flex-col">
         {children}
         <ServiceWorkerRegistration />
       </body>

@@ -23,15 +23,17 @@ const LOCATION_LIST = (Object.entries(COMMON_LOCATIONS) as [CommonLocationKey, s
   .join("\n");
 
 const PROMPT = `Label a moving box from this photo.
-Name: 2-4 words, title case. Use a common brand or franchise if most items belong to one (e.g. "Paw Patrol Toys", "Lego Sets"); otherwise the dominant item category (e.g. "Board Games", "Kitchen Knives"). No filler ("Assortment", "Various", "Misc").
-Description: a comma-separated list of items. No sentences, no verbs, no counts, no quantifiers, no mention of the box, container, or photo. Group identical or near-identical items into one plural entry (e.g. "mugs"; "Paw Patrol cars"; "pots and pans"). Do not invent items.
+Name: 2-4 words, title case. Use a common brand or franchise only if most items clearly belong to one (e.g. "Lego Sets"); otherwise the dominant category (e.g. "Kitchen Cookware", "Bedding", "Office Supplies"). No filler ("Assortment", "Various", "Misc").
+Description: a short comma-separated list of broad item categories — the kind of label you'd write on a moving box, not an inventory. Use general nouns only (e.g. "pots", "towels", "toys"). Do not include material, size, color, theme, or style qualifiers when a simpler category exists (prefer "pens" over "fibre pens"; "party supplies" over "dinosaur-themed party supplies"; "costumes" over "animal ear headbands"). Merge related items into one category. No sentences, no verbs, no counts, no quantifiers, no mention of the box, container, or photo. Do not invent items.
 Destination room: pick the key these items most likely belong in. Return null if unsure.
 ${LOCATION_LIST}
 
 Examples:
-{ "name": "Board Games", "description": "Super Wings puzzle; chess set; card games; Tetris travel game", "destinationRoom": "livingRoom" }
-{ "name": "Paw Patrol Toys", "description": "Paw Patrol rescue vehicles; pup figurines; fold-out lookout tower", "destinationRoom": "kidsRoom" }
-{ "name": "Mixed Cables", "description": "HDMI cables; USB cables; power cables", "destinationRoom": null }
+{ "name": "Kitchen Cookware", "description": "pots, pans, lids, utensils", "destinationRoom": "kitchen" }
+{ "name": "Bedding", "description": "sheets, pillows, blankets", "destinationRoom": "bedroom" }
+{ "name": "Office Supplies", "description": "pens, notebooks, folders", "destinationRoom": "office" }
+{ "name": "Kids Toys", "description": "toys, books, puzzles", "destinationRoom": "kidsRoom" }
+{ "name": "Laundry Essentials", "description": "detergent, hangers, linens", "destinationRoom": "laundryRoom" }
 
 Reply as JSON matching the schema.`;
 
@@ -40,17 +42,14 @@ type AnalyzeBoxPhotoInput = {
   mimeType: string;
 };
 
-// Gemini surfaces transient capacity issues with 429/503 codes or
-// "UNAVAILABLE"/"overloaded" status strings. Treat those as retryable
-// upstream outages rather than internal bugs.
 const isUpstreamUnavailable = (err: unknown): boolean => {
   if (!(err instanceof Error)) return false;
   const message = err.message.toLowerCase();
   return (
     message.includes("unavailable") ||
     message.includes("overloaded") ||
-    message.includes("\"code\":503") ||
-    message.includes("\"code\":429")
+    message.includes('"code":503') ||
+    message.includes('"code":429')
   );
 };
 

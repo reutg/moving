@@ -14,7 +14,7 @@ const SignInPage = async () => {
       <div className="w-full max-w-sm p-8">
         <div className="flex flex-col items-center gap-3 text-center">
           <Image
-            src="/logo-signin.png"
+            src="/logo2.png"
             alt={process.env.NEXT_PUBLIC_APP_NAME ?? "Moving on"}
             width={160}
             height={160}

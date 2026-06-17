@@ -75,10 +75,10 @@ export const useAddBoxForm = (box?: Box) => {
   };
 
   const commonLocations = (Object.entries(COMMON_LOCATIONS) as [CommonLocationKey, string][]).map(
-    ([value, label]) => ({
-      value,
+    ([key, label]) => ({
+      key,
       label,
-      icon: LOCATION_ICONS[value] ?? FALLBACK_LOCATION_ICON,
+      icon: LOCATION_ICONS[key] ?? FALLBACK_LOCATION_ICON,
     }),
   );
   const statusOptions = BOX_STATUSES.map((status) => ({

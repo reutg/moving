@@ -16,14 +16,15 @@ import {
 import type { FormFieldProps } from "./types";
 
 type FormSelectOption = {
-  label: string;
-  value: string;
+  key: string;
+  label?: string;
   icon?: LucideIcon | null;
 };
 
 type FormSelectProps<T extends FieldValues> = FormFieldProps<T> & {
   options: FormSelectOption[];
   placeholder?: string;
+  getOptionLabel?: (key: string) => string;
 };
 
 const triggerIconClass = "text-muted-foreground mr-1.5 size-4 shrink-0";
@@ -35,11 +36,14 @@ const FormSelect = <T extends FieldValues>({
   options,
   placeholder,
   control,
+  getOptionLabel,
 }: FormSelectProps<T>) => {
   const { field } = useController({ name, control });
 
-  const selectedOption = options.find((option) => option.value === field.value);
+  const selectedOption = options.find((option) => option.key === field.value);
   const SelectedIcon = selectedOption?.icon ?? null;
+  const getLabel = (key: string) =>
+    getOptionLabel?.(key) ?? options.find((option) => option.key === key)?.label ?? key;
 
   return (
     <Field>
@@ -47,7 +51,9 @@ const FormSelect = <T extends FieldValues>({
       <Select onValueChange={field.onChange} value={field.value || null}>
         <SelectTrigger>
           {SelectedIcon && <SelectedIcon aria-hidden className={triggerIconClass} />}
-          <SelectValue placeholder={placeholder} />
+          <SelectValue placeholder={placeholder}>
+            {field.value ? getLabel(field.value) : null}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
@@ -55,11 +61,11 @@ const FormSelect = <T extends FieldValues>({
               const Icon = option.icon;
               return (
                 <SelectItem
-                  key={option.value}
-                  value={option.value}
+                  key={option.key}
+                  value={option.key}
                   icon={Icon ? <Icon className="text-muted-foreground" /> : null}
                 >
-                  {option.label}
+                  {getLabel(option.key)}
                 </SelectItem>
               );
             })}

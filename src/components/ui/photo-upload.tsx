@@ -73,6 +73,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ onFinishedAnalyzing }) => {
           type="file"
           accept="image/*"
           className="hidden"
+          capture="environment"
           onChange={handleChange}
           disabled={isAnalyzing}
         />

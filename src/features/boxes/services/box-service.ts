@@ -1,10 +1,14 @@
 import "server-only";
 
-import { count, eq } from "drizzle-orm";
+import { and, count, eq, inArray, like, or } from "drizzle-orm";
 import { z } from "zod";
 
-import { BOX_PRIORITIES, BOX_STATUSES, type BoxStatus } from "@/constants";
-import { getLocationKeyByName } from "@/constants/common-locations";
+import { BOX_PRIORITIES, BOX_STATUS_LABELS, BOX_STATUSES, type BoxStatus } from "@/constants";
+import {
+  COMMON_LOCATIONS,
+  type CommonLocationKey,
+  getLocationKeyByName,
+} from "@/constants/common-locations";
 import { db } from "@/lib/db/client";
 import { type Box, boxes } from "@/lib/db/schema";
 import { internal, notFound } from "@/lib/errors";
@@ -39,8 +43,93 @@ export const UpdateBoxInputSchema = CreateBoxInputSchema.partial();
 
 export type UpdateBoxInput = z.infer<typeof UpdateBoxInputSchema>;
 
+const LOCATION_KEYS = Object.keys(COMMON_LOCATIONS) as [CommonLocationKey, ...CommonLocationKey[]];
+
+const parseCommaSeparated = (value: string | undefined) =>
+  value
+    ?.split(",")
+    .map((part) => part.trim())
+    .filter(Boolean) ?? [];
+
+export const SearchBoxesQuerySchema = z.object({
+  query: z.string().trim().min(1),
+});
+
+export type SearchBoxesQuery = z.infer<typeof SearchBoxesQuerySchema>;
+
+export const FilterBoxesQuerySchema = z.object({
+  status: z
+    .string()
+    .optional()
+    .transform(parseCommaSeparated)
+    .pipe(z.array(z.enum(BOX_STATUSES))),
+  destinationRoom: z
+    .string()
+    .optional()
+    .transform(parseCommaSeparated)
+    .pipe(z.array(z.enum(LOCATION_KEYS))),
+});
+
+export type FilterBoxesQuery = z.infer<typeof FilterBoxesQuerySchema>;
+
+const matchesSearchTerm = (value: string, search: string) =>
+  value.toLowerCase().includes(search.toLowerCase());
+
 export async function listBoxes(): Promise<Box[]> {
   return db.select().from(boxes).orderBy(boxes.id);
+}
+
+export async function searchBoxes({ query }: SearchBoxesQuery): Promise<Box[]> {
+  const term = `%${query}%`;
+
+  const matchingRoomKeys = (Object.entries(COMMON_LOCATIONS) as [CommonLocationKey, string][])
+    .filter(
+      ([roomKey, roomLabel]) =>
+        matchesSearchTerm(roomKey, query) || matchesSearchTerm(roomLabel, query),
+    )
+    .map(([roomKey]) => roomKey);
+
+  const matchingStatuses = BOX_STATUSES.filter(
+    (status) =>
+      matchesSearchTerm(status, query) || matchesSearchTerm(BOX_STATUS_LABELS[status], query),
+  );
+
+  const conditions = [
+    like(boxes.name, term),
+    like(boxes.description, term),
+    like(boxes.destinationRoom, term),
+    like(boxes.status, term),
+  ];
+
+  if (matchingRoomKeys.length > 0) {
+    conditions.push(inArray(boxes.destinationRoom, matchingRoomKeys));
+  }
+
+  if (matchingStatuses.length > 0) {
+    conditions.push(inArray(boxes.status, matchingStatuses));
+  }
+
+  return db
+    .select()
+    .from(boxes)
+    .where(or(...conditions))
+    .orderBy(boxes.id);
+}
+
+export async function filterBoxes({ status, destinationRoom }: FilterBoxesQuery): Promise<Box[]> {
+  const conditions = [];
+
+  if (status.length > 0) {
+    conditions.push(inArray(boxes.status, status));
+  }
+
+  if (destinationRoom.length > 0) {
+    conditions.push(inArray(boxes.destinationRoom, destinationRoom));
+  }
+
+  const where = conditions.length > 0 ? and(...conditions) : undefined;
+
+  return db.select().from(boxes).where(where).orderBy(boxes.id);
 }
 
 export async function getBoxById(id: number): Promise<Box> {
@@ -83,7 +172,9 @@ export async function getBoxesSummary(): Promise<BoxesSummary> {
       .all(),
   ]);
 
-  const byStatus = Object.fromEntries(BOX_STATUSES.map((s) => [s, 0])) as Record<BoxStatus, number>;
+  const byStatus = Object.fromEntries(
+    BOX_STATUSES.map((status) => [status, 0]),
+  ) as Record<BoxStatus, number>;
   for (const row of statusRows) {
     byStatus[row.status] = row.count;
   }

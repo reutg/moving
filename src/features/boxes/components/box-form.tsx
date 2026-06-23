@@ -1,18 +1,20 @@
 "use client";
 
-import FormButtonsSwitch from "@/components/form/form-buttons-switch";
-import FormInput from "@/components/form/form-input";
-import FormSelect from "@/components/form/form-select";
-import FormTextarea from "@/components/form/form-textarea";
-import { Button } from "@/components/ui/button";
 import PhotoUpload from "@/components/ui/photo-upload";
 import type { Box } from "@/lib/db/schema";
 
 import { useAddBoxForm } from "../hooks/use-add-box-form";
+import FormInput from "@/components/form/form-input";
+import FormTextarea from "@/components/form/form-textarea";
+import FormSelect from "@/components/form/form-select";
+import FormButtonsSwitch from "@/components/form/form-buttons-switch";
+import { Button } from "@/components/ui/button";
 
-const STATUS_HELPER_TEXT = "Packed boxes are ready for labeling and moving.";
+interface BoxFormProps {
+  box?: Box;
+}
 
-const BoxForm = ({ box }: { box?: Box }) => {
+const BoxForm = ({ box }: BoxFormProps) => {
   const {
     onFinishedAnalyzing,
     commonLocations,
@@ -20,44 +22,29 @@ const BoxForm = ({ box }: { box?: Box }) => {
     control,
     submit,
     isSubmitting,
-    isDirty,
     submitError,
     isEdit,
   } = useAddBoxForm(box);
 
-  const submitDisabled = isSubmitting || (isEdit && !isDirty);
-  const submitLabel = isSubmitting
-    ? isEdit
-      ? "Saving…"
-      : "Creating…"
-    : isEdit
-      ? "Save changes"
-      : "Create box";
-
   return (
     <form onSubmit={submit} className="flex-content">
-      {!isEdit && (
-        <div className="flex-content">
-          <h6 className="text-md text-primary font-bold">Film box content</h6>
-          <PhotoUpload onFinishedAnalyzing={onFinishedAnalyzing} />
-        </div>
-      )}
+      {!isEdit && <PhotoUpload onFinishedAnalyzing={onFinishedAnalyzing} />}
 
       <div className="flex-content">
-        <h6 className="text-md text-primary font-bold">Box details</h6>
         <FormInput
           name="name"
           label="Name"
           placeholder="e.g. Kitchen essentials"
           control={control}
         />
+
         <FormTextarea
           name="description"
           label="Description"
           placeholder="Auto generated description will be shown here"
-          rows={2}
           control={control}
         />
+
         <FormSelect
           name="destinationRoom"
           label="Destination room"
@@ -65,44 +52,25 @@ const BoxForm = ({ box }: { box?: Box }) => {
           placeholder="Select destination room"
           control={control}
         />
+
         <FormButtonsSwitch
           name="status"
           label="Status"
-          description={STATUS_HELPER_TEXT}
           size="sm"
           options={statusOptions}
           control={control}
         />
       </div>
 
-      {!isEdit && (
-        <>
-          {submitError && (
-            <p role="alert" className="text-destructive text-sm">
-              {submitError}
-            </p>
-          )}
-          <Button type="submit" disabled={submitDisabled}>
-            {submitLabel}
-          </Button>
-          <p className="text-center text-sm text-gray-400">You can edit details later</p>
-        </>
+      {submitError && (
+        <p role="alert" className="text-destructive text-sm">
+          {submitError}
+        </p>
       )}
 
-      {isEdit && (
-        <div className="bg-background/95 border-border fixed inset-x-0 bottom-0 z-30 border-t px-4 py-4 backdrop-blur">
-          <div className="mx-auto max-w-[960px] space-y-2">
-            {submitError && (
-              <p role="alert" className="text-destructive text-sm">
-                {submitError}
-              </p>
-            )}
-            <Button type="submit" disabled={submitDisabled}>
-              {submitLabel}
-            </Button>
-          </div>
-        </div>
-      )}
+      <Button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? "Saving..." : "Save"}
+      </Button>
     </form>
   );
 };

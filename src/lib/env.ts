@@ -27,6 +27,8 @@ const EnvSchema = z.object({
   AUTH_SECRET: z.string().min(1, "AUTH_SECRET is required"),
   AUTH_GOOGLE_ID: z.string().min(1, "AUTH_GOOGLE_ID is required"),
   AUTH_GOOGLE_SECRET: z.string().min(1, "AUTH_GOOGLE_SECRET is required"),
+
+  NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
 });
 
 const parsed = EnvSchema.safeParse(process.env);

@@ -8,12 +8,15 @@ import Dialog from "@/components/dialog";
 import { Button } from "@/components/ui/button";
 import type { ApiResponse } from "@/lib/api/response";
 import type { Box } from "@/lib/db/schema";
+import { cn } from "@/lib/utils";
 
 type DeleteBoxButtonProps = {
   box: Box;
+  label?: string;
+  className?: string;
 };
 
-const DeleteBoxButton = ({ box }: DeleteBoxButtonProps) => {
+const DeleteBoxButton = ({ box, label = "Delete box", className }: DeleteBoxButtonProps) => {
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -50,15 +53,17 @@ const DeleteBoxButton = ({ box }: DeleteBoxButtonProps) => {
 
   return (
     <>
-      <Button variant="destructive" onClick={openDialog}>
-        <Trash2 />
-        Delete box
-      </Button>
-      {error && (
-        <p role="alert" className="text-destructive text-sm">
-          {error}
-        </p>
-      )}
+      <div className={cn("flex min-w-0 flex-col gap-2", className)}>
+        <Button variant="destructive" onClick={openDialog}>
+          <Trash2 />
+          {label}
+        </Button>
+        {error && (
+          <p role="alert" className="text-destructive text-sm">
+            {error}
+          </p>
+        )}
+      </div>
       <Dialog
         title={`Delete "${box.name}"?`}
         description="This action cannot be undone."

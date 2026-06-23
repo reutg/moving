@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 import {
   BOX_PRIORITIES,
@@ -8,28 +8,41 @@ import {
   DEFAULT_BOX_STATUS,
 } from "@/constants";
 
-export const boxes = sqliteTable("boxes", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+import { moves } from "./moves";
 
-  // Empty `name` on insert is rewritten to `Box #<id>` by the
-  // `boxes_set_default_name` trigger (see drizzle/0001_box_name_default.sql).
-  name: text("name").notNull().default(""),
-  description: text("description").notNull().default(""),
+export const boxes = sqliteTable(
+  "boxes",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
 
-  sourceRoom: text("source_room"),
-  destinationRoom: text("destination_room").notNull(),
+    moveId: integer("move_id")
+      .notNull()
+      .references(() => moves.id, { onDelete: "cascade" }),
 
-  status: text("status", { enum: BOX_STATUSES }).notNull().default(DEFAULT_BOX_STATUS),
+    // Per-move label number. Assigned once at creation, never renumbered on delete.
+    number: integer("number").notNull(),
 
-  priority: text("priority", { enum: BOX_PRIORITIES }).notNull().default(DEFAULT_BOX_PRIORITY),
+    // Empty `name` on insert is rewritten to `Box #<number>` by the
+    // `boxes_set_default_name` trigger (see drizzle/0006_box_numbers.sql).
+    name: text("name").notNull().default(""),
+    description: text("description").notNull().default(""),
 
-  createdAt: integer("created_at", { mode: "timestamp_ms" })
-    .notNull()
-    .default(sql`(unixepoch() * 1000)`),
-  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
-    .notNull()
-    .default(sql`(unixepoch() * 1000)`),
-});
+    sourceRoom: text("source_room"),
+    destinationRoom: text("destination_room").notNull(),
+
+    status: text("status", { enum: BOX_STATUSES }).notNull().default(DEFAULT_BOX_STATUS),
+
+    priority: text("priority", { enum: BOX_PRIORITIES }).notNull().default(DEFAULT_BOX_PRIORITY),
+
+    createdAt: integer("created_at", { mode: "timestamp_ms" })
+      .notNull()
+      .default(sql`(unixepoch() * 1000)`),
+    updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+      .notNull()
+      .default(sql`(unixepoch() * 1000)`),
+  },
+  (table) => [uniqueIndex("boxes_move_id_number_unique").on(table.moveId, table.number)],
+);
 
 export type Box = typeof boxes.$inferSelect;
 export type NewBox = typeof boxes.$inferInsert;

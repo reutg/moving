@@ -81,10 +81,10 @@ export const useAddBoxForm = (box?: Box) => {
       icon: LOCATION_ICONS[key] ?? FALLBACK_LOCATION_ICON,
     }),
   );
+
   const statusOptions = BOX_STATUSES.map((status) => ({
     value: status,
     label: BOX_STATUS_LABELS[status],
-    icon: BOX_STATUS_ICONS[status],
   }));
 
   return {

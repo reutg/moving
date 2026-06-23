@@ -24,6 +24,7 @@
   --color-border-light: var(--border-light);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-destructive-border: var(--destructive-border);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -41,6 +42,7 @@
 
   /* Brand-specific tokens */
   --color-primary-hover: var(--primary-hover);
+  --color-primary-light: var(--primary-light);
   --color-status-packed: var(--status-packed);
   --color-status-packed-bg: var(--status-packed-bg);
   --color-status-packing: var(--status-packing);
@@ -49,6 +51,13 @@
   --color-ai-bg: var(--ai-bg);
   --color-blue: var(--blue);
   --color-label: var(--label);
+  --color-progress-background: var(--progress-background);
+  --color-chip-text: var(--chip-text);
+  --color-chip-background: var(--chip-background);
+  --color-input-border: var(--input-border);
+  --color-input-text: var(--input-text);
+  --color-input-placeholder: var(--input-placeholder);
+  --color-field-label: var(--field-label);
 
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -63,7 +72,7 @@
   color-scheme: light;
 
   /* Surfaces */
-  --background: #ffffff;
+  --background: #f4f4f5;
   --card: #ffffff;
   --popover: #ffffff;
 
@@ -77,10 +86,14 @@
   --primary-foreground: #ffffff;
   --blue: #3b82f6;
 
+  --icon-background: #598c81;
+
   /* Brand */
   --primary: #2f6f62;
   --primary-hover: #4d8b7a;
+  --primary-light: #3c8475;
   --accent: #dceee8;
+  --sage: #cfd8d5;
 
   /* Subdued surfaces */
   --secondary: #ffffff;
@@ -88,7 +101,7 @@
 
   /* Borders & focus */
   --border: #e2e8f0;
-  --border-light: #eaeaea;
+  --border-light: #eaeaed;
   --input: #ffffff;
   --ring: #2f6f62;
 
@@ -98,6 +111,10 @@
   --status-packing: #c9a23c;
   --status-packing-bg: #f7efd6;
 
+  /* Chip */
+  --chip-text: #2f6f62;
+  --chip-background: #dceee8;
+
   /* AI accent */
   --ai: #c08457;
   --ai-bg: #f4e6d8;
@@ -105,10 +122,17 @@
   /* Form labels — warm graphite, sits alongside the cool slate body text */
   --label: #5e574e;
 
-  /* Errors (kept; no replacement provided) */
-  --destructive: #c53030;
+  /* Form fields */
+  --field-label: #71717a;
+  --input-border: #e4e4e7;
+  --input-text: #26262a;
+  --input-placeholder: #a6a6ac;
 
-  --radius: 0.625rem;
+  /* Errors (kept; no replacement provided) */
+  --destructive: #c0584f;
+  --destructive-border: #f0dada;
+
+  --radius: 22px;
 }
 
 /* ---------------------------------------------------------------------------
@@ -140,20 +164,25 @@ body {
 
 .flex-container {
   max-width: 960px;
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.125rem;
+  height: 100%;
 }
 
 .page-content {
-  padding: 1rem;
+  padding: 1.5rem;
 }
 
 .flex-content {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  height: 100%;
+}
+
+.border-dash {
+  border: 1.5px dashed var(--border);
 }
 
 .error {

@@ -64,8 +64,8 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ onFinishedAnalyzing }) => {
       <label
         aria-busy={isAnalyzing}
         className={cn(
-          "border-border relative flex h-44 flex-col items-center justify-center gap-2 overflow-hidden rounded-md border p-4",
-          previewUrl ? "border-solid" : "border-dashed",
+          "border-border bg-card relative flex h-44 flex-col items-center justify-center gap-2 overflow-hidden rounded-md border p-4",
+          previewUrl ? "border-solid" : "border-dash",
           isAnalyzing ? "cursor-wait" : "cursor-pointer",
         )}
       >
@@ -85,15 +85,12 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ onFinishedAnalyzing }) => {
           />
         ) : (
           <>
-            <div className="bg-primary/10 flex size-16 items-center justify-center rounded-full">
+            <div className="bg-accent flex size-16 items-center justify-center rounded-lg">
               <CameraIcon className="text-primary size-8" />
             </div>
-            <span className="text-foreground text-md text-center font-semibold">
-              Click to take a photo
-            </span>
-            <span className="text-muted-foreground text-center text-sm">
-              We&apos;ll analyze the content and suggest a name and description for your box.
-            </span>
+
+            <span className="text-muted-foreground text-center text-sm">Add a photo</span>
+            <span className="text-muted-foreground text-center text-xs">(optional)</span>
           </>
         )}
         {isAnalyzing && (

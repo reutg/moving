@@ -2,6 +2,7 @@ import { toPng } from "html-to-image";
 import { useRef, useState } from "react";
 
 import type { Box } from "@/lib/db/schema";
+import { appUrl } from "@/lib/app-url";
 
 export type LabelPart = "boxNumber" | "name" | "qrCode";
 
@@ -45,13 +46,12 @@ const useBoxLabelActions = (box: Box) => {
     const dataUrl = await toPng(labelRef.current, { pixelRatio: 2 });
     const link = document.createElement("a");
     link.href = dataUrl;
-    link.download = `box-${box.id}-label.png`;
+    link.download = `box-${box.number}-label.png`;
     link.click();
   };
 
   const handleShareLink = async () => {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin;
-    const url = `${baseUrl}/boxes/${box.id}`;
+    const url = appUrl(`/boxes/${box.id}`);
 
     if (typeof navigator.share === "function") {
       try {

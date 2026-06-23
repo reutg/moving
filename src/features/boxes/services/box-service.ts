@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, count, eq, inArray, like, or } from "drizzle-orm";
+import { and, count, desc, eq, inArray, like, max, or } from "drizzle-orm";
 import { z } from "zod";
 
 import { BOX_PRIORITIES, BOX_STATUS_LABELS, BOX_STATUSES, type BoxStatus } from "@/constants";
@@ -9,6 +9,8 @@ import {
   type CommonLocationKey,
   getLocationKeyByName,
 } from "@/constants/common-locations";
+import { getCurrentMoveId } from "@/features/moves/services/move-service";
+import type { BoxStatusCounts } from "@/features/boxes/types/box-status-counts";
 import { db } from "@/lib/db/client";
 import { type Box, boxes } from "@/lib/db/schema";
 import { internal, notFound } from "@/lib/errors";
@@ -75,11 +77,38 @@ export type FilterBoxesQuery = z.infer<typeof FilterBoxesQuerySchema>;
 const matchesSearchTerm = (value: string, search: string) =>
   value.toLowerCase().includes(search.toLowerCase());
 
+const getNextBoxNumber = async (moveId: number): Promise<number> => {
+  const [row] = await db
+    .select({ maxNumber: max(boxes.number) })
+    .from(boxes)
+    .where(eq(boxes.moveId, moveId));
+
+  return (row?.maxNumber ?? 0) + 1;
+};
+
 export async function listBoxes(): Promise<Box[]> {
-  return db.select().from(boxes).orderBy(boxes.id);
+  const moveId = await getCurrentMoveId();
+
+  return db
+    .select()
+    .from(boxes)
+    .where(eq(boxes.moveId, moveId))
+    .orderBy(boxes.number);
+}
+
+export async function listRecentlyUpdatedBoxes(limit = 3): Promise<Box[]> {
+  const moveId = await getCurrentMoveId();
+
+  return db
+    .select()
+    .from(boxes)
+    .where(eq(boxes.moveId, moveId))
+    .orderBy(desc(boxes.updatedAt))
+    .limit(limit);
 }
 
 export async function searchBoxes({ query }: SearchBoxesQuery): Promise<Box[]> {
+  const moveId = await getCurrentMoveId();
   const term = `%${query}%`;
 
   const matchingRoomKeys = (Object.entries(COMMON_LOCATIONS) as [CommonLocationKey, string][])
@@ -101,6 +130,11 @@ export async function searchBoxes({ query }: SearchBoxesQuery): Promise<Box[]> {
     like(boxes.status, term),
   ];
 
+  const numericQuery = Number(query);
+  if (!Number.isNaN(numericQuery)) {
+    conditions.push(eq(boxes.number, numericQuery));
+  }
+
   if (matchingRoomKeys.length > 0) {
     conditions.push(inArray(boxes.destinationRoom, matchingRoomKeys));
   }
@@ -112,12 +146,13 @@ export async function searchBoxes({ query }: SearchBoxesQuery): Promise<Box[]> {
   return db
     .select()
     .from(boxes)
-    .where(or(...conditions))
-    .orderBy(boxes.id);
+    .where(and(eq(boxes.moveId, moveId), or(...conditions)))
+    .orderBy(boxes.number);
 }
 
 export async function filterBoxes({ status, destinationRoom }: FilterBoxesQuery): Promise<Box[]> {
-  const conditions = [];
+  const moveId = await getCurrentMoveId();
+  const conditions = [eq(boxes.moveId, moveId)];
 
   if (status.length > 0) {
     conditions.push(inArray(boxes.status, status));
@@ -127,28 +162,40 @@ export async function filterBoxes({ status, destinationRoom }: FilterBoxesQuery)
     conditions.push(inArray(boxes.destinationRoom, destinationRoom));
   }
 
-  const where = conditions.length > 0 ? and(...conditions) : undefined;
-
-  return db.select().from(boxes).where(where).orderBy(boxes.id);
+  return db
+    .select()
+    .from(boxes)
+    .where(and(...conditions))
+    .orderBy(boxes.number);
 }
 
 export async function getBoxById(id: number): Promise<Box> {
-  const rows = await db.select().from(boxes).where(eq(boxes.id, id)).all();
+  const moveId = await getCurrentMoveId();
+  const rows = await db
+    .select()
+    .from(boxes)
+    .where(and(eq(boxes.id, id), eq(boxes.moveId, moveId)))
+    .all();
   const box = rows[0];
   if (!box) throw notFound(`Box ${id} not found`);
   return box;
 }
 
 export async function deleteBox(id: number): Promise<void> {
-  const result = await db.delete(boxes).where(eq(boxes.id, id)).run();
+  const moveId = await getCurrentMoveId();
+  const result = await db
+    .delete(boxes)
+    .where(and(eq(boxes.id, id), eq(boxes.moveId, moveId)))
+    .run();
   if (result.rowsAffected === 0) throw notFound(`Box ${id} not found`);
 }
 
 export async function updateBox(id: number, input: UpdateBoxInput): Promise<Box> {
+  const moveId = await getCurrentMoveId();
   const updated = await db
     .update(boxes)
     .set({ ...input, updatedAt: new Date() })
-    .where(eq(boxes.id, id))
+    .where(and(eq(boxes.id, id), eq(boxes.moveId, moveId)))
     .returning()
     .all();
 
@@ -157,27 +204,52 @@ export async function updateBox(id: number, input: UpdateBoxInput): Promise<Box>
   return box;
 }
 
+export type { BoxStatusCounts } from "@/features/boxes/types/box-status-counts";
+
 export type BoxesSummary = {
   byStatus: Record<BoxStatus, number>;
   byDestinationRoom: Record<string, number>;
 };
 
-export async function getBoxesSummary(): Promise<BoxesSummary> {
-  const [statusRows, roomRows] = await Promise.all([
-    db.select({ status: boxes.status, count: count() }).from(boxes).groupBy(boxes.status).all(),
-    db
-      .select({ room: boxes.destinationRoom, count: count() })
-      .from(boxes)
-      .groupBy(boxes.destinationRoom)
-      .all(),
-  ]);
+const loadStatusCounts = async (moveId: number): Promise<Record<BoxStatus, number>> => {
+  const statusRows = await db
+    .select({ status: boxes.status, count: count() })
+    .from(boxes)
+    .where(eq(boxes.moveId, moveId))
+    .groupBy(boxes.status)
+    .all();
 
   const byStatus = Object.fromEntries(
     BOX_STATUSES.map((status) => [status, 0]),
   ) as Record<BoxStatus, number>;
+
   for (const row of statusRows) {
-    byStatus[row.status] = row.count;
+    byStatus[row.status as BoxStatus] = row.count;
   }
+
+  return byStatus;
+};
+
+export const getBoxStatusCounts = async (): Promise<BoxStatusCounts> => {
+  const moveId = await getCurrentMoveId();
+  const byStatus = await loadStatusCounts(moveId);
+  const total = BOX_STATUSES.reduce((sum, status) => sum + byStatus[status], 0);
+
+  return { ...byStatus, total };
+};
+
+export async function getBoxesSummary(): Promise<BoxesSummary> {
+  const moveId = await getCurrentMoveId();
+
+  const [byStatus, roomRows] = await Promise.all([
+    loadStatusCounts(moveId),
+    db
+      .select({ room: boxes.destinationRoom, count: count() })
+      .from(boxes)
+      .where(eq(boxes.moveId, moveId))
+      .groupBy(boxes.destinationRoom)
+      .all(),
+  ]);
 
   const byDestinationRoom: Record<string, number> = {};
   for (const row of roomRows) {
@@ -188,14 +260,17 @@ export async function getBoxesSummary(): Promise<BoxesSummary> {
 }
 
 export async function createBox(input: CreateBoxInput): Promise<Box> {
-  const inserted = await db.insert(boxes).values(input).returning({ id: boxes.id }).all();
+  const moveId = await getCurrentMoveId();
+  const number = await getNextBoxNumber(moveId);
 
-  const created = inserted[0];
-  if (!created) throw internal("Insert returned no rows");
+  const inserted = await db
+    .insert(boxes)
+    .values({ ...input, moveId, number })
+    .returning()
+    .all();
 
-  const fresh = await db.select().from(boxes).where(eq(boxes.id, created.id)).all();
-  const box = fresh[0];
-  if (!box) throw notFound(`Box ${created.id} not found after insert`);
+  const box = inserted[0];
+  if (!box) throw internal("Insert returned no rows");
 
   return box;
 }

@@ -9,6 +9,7 @@ import QuickActionsWrapper from "@/features/main/quick-actions-wrapper";
 import RecentlyUpdated from "@/features/main/recently-updated";
 import { CurrentUser } from "@/features/users/services/user-service";
 import { Sparkles } from "lucide-react";
+import { redirect } from "next/navigation";
 
 export default async function HomePage() {
   const [recentlyUpdatedBoxes, currentMove] = await Promise.all([
@@ -17,6 +18,11 @@ export default async function HomePage() {
   ]);
 
   const session = await auth();
+
+  if (!session?.user) {
+    redirect("/sign-in");
+  }
+
   const user = session?.user;
   const { firstName, lastName } = user as CurrentUser;
   const initials = `${firstName?.[0] ?? ""}${lastName?.[0] ?? ""}`;

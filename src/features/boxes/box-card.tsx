@@ -15,6 +15,7 @@ import {
 import type { Box } from "@/lib/db/schema";
 
 import BoxCardPrintButton from "./box-card-print-button";
+import Chip from "@/components/ui/chip";
 
 type BoxCardProps = {
   box: Box;
@@ -33,9 +34,12 @@ const BoxCard = ({ box }: BoxCardProps) => {
   const destinationRoom = COMMON_LOCATIONS[roomKey] ?? box.destinationRoom;
 
   return (
-    <Card className="rounded-md transition-colors">
+    <Card className="rounded-xl transition-colors">
       <CardContent className="flex items-center gap-3.5">
-        <Link href={`/boxes/${box.id}/preview`} className="flex min-w-0 flex-1 items-center gap-3.5">
+        <Link
+          href={`/boxes/${box.id}/preview`}
+          className="flex min-w-0 flex-1 items-center gap-3.5"
+        >
           <IconTile
             icon={RoomIcon}
             backgroundColor={tileColors.backgroundColor}
@@ -44,9 +48,11 @@ const BoxCard = ({ box }: BoxCardProps) => {
 
           <div className="min-w-0 flex-1">
             <div className="mb-1 flex items-center justify-between gap-2">
-              <span className="bg-muted text-muted-foreground rounded-md px-1.5 py-0.5 font-mono text-[10px] font-bold tracking-wide uppercase">
-                Box {box.number}
-              </span>
+              <Chip
+                label={`Box ${box.number}`}
+                size="sm"
+                className="bg-muted text-muted-foreground px-1.5 py-0.5 font-mono font-bold tracking-wide uppercase"
+              />
               <span
                 className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_CHIP_CLASS[status]}`}
               >

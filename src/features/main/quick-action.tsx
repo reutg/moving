@@ -4,6 +4,7 @@ import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 
 import ComingSoonBanner from "@/components/ui/coming-soon-banner";
+import IconTile from "@/components/ui/icon-tile";
 
 type QuickActionProps = {
   icon: LucideIcon;
@@ -17,12 +18,10 @@ const QuickAction = ({ icon: Icon, title, linkTo, comingSoon = false }: QuickAct
     <Link
       href={linkTo}
       type="button"
-      className="border-border-light bg-card flex w-full flex-col items-center gap-1.5 rounded-md border px-2 py-3.5"
+      className="border-border-light bg-card flex w-full flex-col items-center gap-1.5 rounded-xl border px-2 py-3.5"
     >
-      <span className="bg-accent text-primary flex size-9 items-center justify-center rounded-sm">
-        <Icon className="size-5" aria-hidden />
-      </span>
-      <span className="text-[10.5px] font-medium text-zinc-600">{title}</span>
+      <IconTile icon={Icon} size="sm" />
+      <span className="text-field-label text-[10.5px] font-medium">{title}</span>
     </Link>
   );
 

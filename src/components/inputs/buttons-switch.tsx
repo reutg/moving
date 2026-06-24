@@ -35,10 +35,10 @@ const ButtonsSwitch: React.FC<ButtonsSwitchProps & InputProps> = ({
     <>
       {label && <FieldLabel htmlFor={name}>{label}</FieldLabel>}
 
-      <ButtonGroup className="relative flex w-full rounded-sm bg-zinc-200 p-0.5">
+      <ButtonGroup className="bg-input-border relative flex w-full rounded-lg p-0.5">
         <div
           aria-hidden
-          className="absolute top-0.5 bottom-0.5 left-0.5 rounded-sm bg-white shadow-sm transition-transform duration-200 ease-in-out"
+          className="absolute top-0.5 bottom-0.5 left-0.5 rounded-lg bg-white shadow-sm transition-transform duration-200 ease-in-out"
           style={{
             width: `calc((100% - 4px) / ${options.length})`,
             transform: `translateX(calc(${selectedIndex} * 100%))`,

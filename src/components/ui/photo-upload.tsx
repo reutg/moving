@@ -3,6 +3,7 @@
 import { CameraIcon, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import IconTile from "@/components/ui/icon-tile";
 import type { ApiResponse } from "@/lib/api/response";
 import { cn } from "@/lib/utils";
 import type { BoxPhotoAnalysis } from "@/features/boxes/services/analyze-box-photo-service";
@@ -64,7 +65,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ onFinishedAnalyzing }) => {
       <label
         aria-busy={isAnalyzing}
         className={cn(
-          "border-border bg-card relative flex h-44 flex-col items-center justify-center gap-2 overflow-hidden rounded-md border p-4",
+          "border-border bg-card relative flex h-44 flex-col items-center justify-center gap-2 overflow-hidden rounded-xl border p-4",
           previewUrl ? "border-solid" : "border-dash",
           isAnalyzing ? "cursor-wait" : "cursor-pointer",
         )}
@@ -85,9 +86,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ onFinishedAnalyzing }) => {
           />
         ) : (
           <>
-            <div className="bg-accent flex size-16 items-center justify-center rounded-lg">
-              <CameraIcon className="text-primary size-8" />
-            </div>
+            <IconTile icon={CameraIcon} size="md" />
 
             <span className="text-muted-foreground text-center text-sm">Add a photo</span>
             <span className="text-muted-foreground text-center text-xs">(optional)</span>

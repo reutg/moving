@@ -26,7 +26,7 @@ const PageHeader = ({
       <Link
         href={backHref}
         aria-label={backAriaLabel}
-        className="bg-card border-border text-foreground flex size-10 items-center justify-center justify-self-start rounded-sm border"
+        className="bg-card border-border text-foreground flex size-10 items-center justify-center justify-self-start rounded-xl border"
       >
         <Icon className="size-5" aria-hidden />
       </Link>

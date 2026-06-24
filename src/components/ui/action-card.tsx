@@ -16,13 +16,13 @@ const ActionCard = ({ icon: Icon, title, description, linkTo, className }: Actio
     <Link
       href={linkTo}
       className={cn(
-        "flex items-center gap-[13px] rounded-lg p-[17px]",
+        "flex items-center gap-[13px] rounded-xl p-[17px]",
         "bg-[linear-gradient(120deg,var(--primary),var(--primary-light))]",
-        "text-white transition-opacity hover:opacity-95",
+        "transition-opacity text-white",
         className,
       )}
     >
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-white/18">
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/18">
         <Icon className="size-5" aria-hidden />
       </span>
 

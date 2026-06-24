@@ -28,6 +28,7 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
+  --color-subtle-foreground: var(--subtle-foreground);
   --color-muted: var(--muted);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-secondary: var(--secondary);
@@ -58,6 +59,7 @@
   --color-input-text: var(--input-text);
   --color-input-placeholder: var(--input-placeholder);
   --color-field-label: var(--field-label);
+  --color-switch-track-off: var(--switch-track-off);
 
   --spacing-13: 52px;
 }
@@ -75,6 +77,7 @@
   --card-foreground: #2d3748;
   --popover-foreground: #2d3748;
   --muted-foreground: #718096;
+  --subtle-foreground: #a1a1aa;
   --secondary-foreground: #2d3748;
   --accent-foreground: #2f6f62;
   --primary-foreground: #ffffff;
@@ -121,6 +124,8 @@
   --input-border: #e4e4e7;
   --input-text: #26262a;
   --input-placeholder: #a6a6ac;
+
+  --switch-track-off: #d6d6da;
 
   /* Errors (kept; no replacement provided) */
   --destructive: #c0584f;

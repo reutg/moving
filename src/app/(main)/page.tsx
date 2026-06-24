@@ -7,9 +7,10 @@ import { listRecentlyUpdatedBoxes } from "@/features/boxes/services/box-service"
 import { getCurrentMove } from "@/features/moves/services/move-service";
 import QuickActionsWrapper from "@/features/main/quick-actions-wrapper";
 import RecentlyUpdated from "@/features/main/recently-updated";
-import { CurrentUser } from "@/features/users/services/user-service";
 import { Sparkles } from "lucide-react";
+import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getUserInitials } from "@/lib/app-utils";
 
 export default async function HomePage() {
   const [recentlyUpdatedBoxes, currentMove] = await Promise.all([
@@ -22,10 +23,10 @@ export default async function HomePage() {
   if (!session?.user) {
     redirect("/sign-in");
   }
-
   const user = session?.user;
-  const { firstName, lastName } = user as CurrentUser;
-  const initials = `${firstName?.[0] ?? ""}${lastName?.[0] ?? ""}`;
+
+  const { firstName } = user;
+  const initials = getUserInitials(user);
 
   return (
     <main className="flex-container page-content">
@@ -36,7 +37,9 @@ export default async function HomePage() {
           </span>
           <h6 className="line-clamp-1 text-lg font-semibold">{currentMove.name}</h6>
         </div>
-        <Avatar src={user?.image ?? ""} alt={user?.name ?? ""} fallback={initials} />
+        <Link href="/settings">
+          <Avatar src={user?.image ?? ""} alt={user?.name ?? ""} fallback={initials} />
+        </Link>
       </div>
 
       <SearchBox />

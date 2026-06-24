@@ -13,7 +13,7 @@ const RoomFilter: React.FC<RoomFilterProps> = ({ selectedRoom, handleSelectRoom 
     selectedRoom === room ? "default" : "outline";
 
   return (
-    <div className="flex w-full gap-2 overflow-x-auto">
+    <div className="flex w-full gap-2 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       <Button
         className="w-auto shrink-0"
         onClick={() => handleSelectRoom(null)}

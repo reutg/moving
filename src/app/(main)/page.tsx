@@ -9,21 +9,16 @@ import QuickActionsWrapper from "@/features/main/quick-actions-wrapper";
 import RecentlyUpdated from "@/features/main/recently-updated";
 import { Sparkles } from "lucide-react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { getUserInitials } from "@/lib/app-utils";
 
 export default async function HomePage() {
+  const session = await auth();
+  const user = session!.user;
+
   const [recentlyUpdatedBoxes, currentMove] = await Promise.all([
     listRecentlyUpdatedBoxes(),
     getCurrentMove(),
   ]);
-
-  const session = await auth();
-
-  if (!session?.user) {
-    redirect("/sign-in");
-  }
-  const user = session?.user;
 
   const { firstName } = user;
   const initials = getUserInitials(user);

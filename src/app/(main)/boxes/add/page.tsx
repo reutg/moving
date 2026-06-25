@@ -10,7 +10,7 @@ interface AddBoxPageProps {}
 const AddBoxPage: React.FC<AddBoxPageProps> = ({}) => {
   return (
     <main className="flex-container page-content">
-      <PageHeader title="New box" backHref="/" icon={X} trailing={<Chip label="Box #54" />} />
+      <PageHeader title="New box" backHref="/" icon={X} />
       <BoxForm />
     </main>
   );

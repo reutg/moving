@@ -17,7 +17,7 @@ const buttonVariants = cva(
           "text-primary w-fit hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
         destructive: "bg-white border-destructive-border text-destructive p-[15px] text-base",
         link: "text-primary underline-offset-4 hover:underline",
-        selected: "bg-white text-foreground font-semibold shadow-sm",
+        selected: "text-primary font-semibold",
         unselected: "text-[#8A8A8F] font-normal",
       },
       size: {

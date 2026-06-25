@@ -1,10 +1,10 @@
 "use client";
 
-import { LucideIcon } from "lucide-react";
-import { ButtonGroup } from "../ui/button-group";
-import { FieldDescription, FieldLabel } from "../ui/field";
-import { Button } from "../ui/button";
-import { InputProps } from "../form/types";
+import type { LucideIcon } from "lucide-react";
+
+import type { InputProps } from "@/components/form/types";
+import { Button } from "@/components/ui/button";
+import { FieldDescription, FieldLabel } from "@/components/ui/field";
 
 export type SwitchOption = {
   label: string;
@@ -18,14 +18,14 @@ interface ButtonsSwitchProps {
   handleButtonClick: (value: string) => void;
 }
 
-const ButtonsSwitch: React.FC<ButtonsSwitchProps & InputProps> = ({
+const ButtonsSwitch = ({
   options,
   label,
   description,
   name,
   value,
   handleButtonClick,
-}) => {
+}: ButtonsSwitchProps & InputProps) => {
   const selectedIndex = Math.max(
     0,
     options.findIndex((option) => option.value === value),
@@ -35,27 +35,28 @@ const ButtonsSwitch: React.FC<ButtonsSwitchProps & InputProps> = ({
     <>
       {label && <FieldLabel htmlFor={name}>{label}</FieldLabel>}
 
-      <ButtonGroup className="bg-input-border relative flex w-full rounded-lg p-0.5">
+      <div className="bg-input-border relative flex w-full rounded-[13px] p-1">
         <div
           aria-hidden
-          className="absolute top-0.5 bottom-0.5 left-0.5 rounded-lg bg-white shadow-sm transition-transform duration-200 ease-in-out"
+          className="absolute top-1 bottom-1 left-1 rounded-[10px] bg-white shadow-sm transition-transform duration-200 ease-in-out"
           style={{
-            width: `calc((100% - 4px) / ${options.length})`,
+            width: `calc((100% - 8px) / ${options.length})`,
             transform: `translateX(calc(${selectedIndex} * 100%))`,
           }}
         />
         {options.map((option) => (
           <Button
             key={option.value}
+            type="button"
             value={option.value}
             variant={option.value === value ? "selected" : "unselected"}
             onClick={() => handleButtonClick(option.value)}
-            className="relative z-10 min-w-0 flex-1 bg-transparent shadow-none hover:bg-transparent"
+            className="relative z-10 h-auto min-w-0 flex-1 rounded-[10px] bg-transparent py-2.5 shadow-none hover:bg-transparent"
           >
             {option.label}
           </Button>
         ))}
-      </ButtonGroup>
+      </div>
       {description && <FieldDescription className="text-xs">{description}</FieldDescription>}
     </>
   );

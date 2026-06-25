@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 
 const SignInPage = async () => {
   const session = await auth();
-  // if (session?.user) redirect("/");
+  if (session?.user) redirect("/");
 
   return (
     <main className="bg-background flex min-h-svh flex-col px-6 py-12">

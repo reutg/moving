@@ -3,7 +3,7 @@ import Avatar from "@/components/avatar";
 import ActionCard from "@/components/ui/action-card";
 import ComingSoonBanner from "@/components/ui/coming-soon-banner";
 import SearchBox from "@/features/boxes/components/search-box";
-import { listRecentlyUpdatedBoxes } from "@/features/boxes/services/box-service";
+import { listBoxes, listRecentlyUpdatedBoxes } from "@/features/boxes/services/box-service";
 import { getCurrentMove } from "@/features/moves/services/move-service";
 import QuickActionsWrapper from "@/features/main/quick-actions-wrapper";
 import RecentlyUpdated from "@/features/main/recently-updated";
@@ -11,18 +11,21 @@ import { Sparkles } from "lucide-react";
 import Link from "next/link";
 import { getUserInitials } from "@/lib/app-utils";
 import { getGreeting } from "@/lib/date-utils";
+import EmptyMove from "@/features/main/empty-move";
 
 export default async function HomePage() {
   const session = await auth();
   const user = session!.user;
 
-  const [recentlyUpdatedBoxes, currentMove] = await Promise.all([
+  const [recentlyUpdatedBoxes, currentMove, boxes] = await Promise.all([
     listRecentlyUpdatedBoxes(),
     getCurrentMove(),
+    listBoxes(),
   ]);
 
   const { firstName } = user;
   const initials = getUserInitials(user);
+  const isEmptyMove = boxes.length === 0;
 
   return (
     <main className="flex-container page-content">
@@ -38,19 +41,25 @@ export default async function HomePage() {
         </Link>
       </div>
 
-      <SearchBox />
-      <QuickActionsWrapper />
+      {isEmptyMove ? (
+        <EmptyMove />
+      ) : (
+        <>
+          <SearchBox />
+          <QuickActionsWrapper />
 
-      <ComingSoonBanner>
-        <ActionCard
-          icon={Sparkles}
-          title="Search with AI"
-          description={`"Where did I pack the coffee machine?"`}
-          linkTo="/"
-        />
-      </ComingSoonBanner>
+          <ComingSoonBanner>
+            <ActionCard
+              icon={Sparkles}
+              title="Search with AI"
+              description={`"Where did I pack the coffee machine?"`}
+              linkTo="/"
+            />
+          </ComingSoonBanner>
 
-      <RecentlyUpdated boxes={recentlyUpdatedBoxes} />
+          <RecentlyUpdated boxes={recentlyUpdatedBoxes} />
+        </>
+      )}
     </main>
   );
 }

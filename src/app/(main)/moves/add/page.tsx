@@ -1,5 +1,3 @@
-"use client";
-
 import PageHeader from "@/components/ui/page-header";
 import MoveForm from "@/features/moves/components/move-form";
 import { X } from "lucide-react";

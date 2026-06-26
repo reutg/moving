@@ -39,7 +39,7 @@ const IconTile = ({
       <div
         aria-hidden
         className={cn(
-          "flex flex-none flex-col items-center justify-center rounded-3xl",
+          "flex flex-none flex-col items-center justify-center rounded-xl",
           iconOnly ? styles.container : "h-[50px] w-[50px]",
           className,
         )}
@@ -62,7 +62,7 @@ const IconTile = ({
   return (
     <div
       className={cn(
-        "bg-accent flex items-center justify-center rounded-xl",
+        "bg-accent flex items-center justify-center rounded-3xl",
         styles.container,
         className,
       )}

@@ -25,13 +25,13 @@ const Page: React.FC<PageProps> = ({}) => {
 
       <div className="flex w-full flex-col gap-3 pb-[max(0rem,env(safe-area-inset-bottom))]">
         <Link href="/moves/add">
-          <Button variant="outline" className="text-primary flex gap-2 text-base font-bold">
+          <Button variant="outline" className="text-primary flex gap-2 font-bold">
             <PlusIcon className="size-5" />
             Create your first move
           </Button>
         </Link>
 
-        <Button className="border-border flex gap-2 border text-base font-bold">
+        <Button className="border-border flex gap-2 border font-bold">
           <LinkIcon className="size-5" /> Join with an invite link
         </Button>
       </div>

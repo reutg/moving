@@ -35,7 +35,7 @@ const ButtonsSwitch = ({
     <>
       {label && <FieldLabel htmlFor={name}>{label}</FieldLabel>}
 
-      <div className="bg-input-border relative flex w-full rounded-[13px] p-1">
+      <div className="bg-input-border relative flex h-11 w-full rounded-[13px] p-1">
         <div
           aria-hidden
           className="absolute top-1 bottom-1 left-1 rounded-[10px] bg-white shadow-sm transition-transform duration-200 ease-in-out"
@@ -51,7 +51,7 @@ const ButtonsSwitch = ({
             value={option.value}
             variant={option.value === value ? "selected" : "unselected"}
             onClick={() => handleButtonClick(option.value)}
-            className="relative z-10 h-auto min-w-0 flex-1 rounded-[10px] bg-transparent py-2.5 shadow-none hover:bg-transparent"
+            className="relative z-10 h-auto min-w-0 flex-1 rounded-[10px] bg-transparent py-2.5 text-sm shadow-none"
           >
             {option.label}
           </Button>

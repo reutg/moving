@@ -8,11 +8,12 @@ import { cn } from "@/lib/utils";
 import { Input } from "./input";
 
 const dateInputClassName =
-  "pr-11 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-0 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:w-11 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0";
+  "pr-11 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-0 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:w-11 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-datetime-edit]:text-inherit";
 
 const DateInput = React.forwardRef<HTMLInputElement, React.ComponentProps<typeof Input>>(
-  ({ className, ...props }, ref) => {
+  ({ className, value, ...props }, ref) => {
     const inputRef = React.useRef<HTMLInputElement>(null);
+    const hasValue = value !== undefined && value !== "";
 
     const setRefs = (element: HTMLInputElement | null) => {
       inputRef.current = element;
@@ -37,7 +38,17 @@ const DateInput = React.forwardRef<HTMLInputElement, React.ComponentProps<typeof
 
     return (
       <div className="relative">
-        <Input ref={setRefs} type="date" className={cn(dateInputClassName, className)} {...props} />
+        <Input
+          ref={setRefs}
+          type="date"
+          value={value}
+          className={cn(
+            dateInputClassName,
+            hasValue ? "text-input-text" : "text-input-placeholder",
+            className,
+          )}
+          {...props}
+        />
         <button
           type="button"
           onClick={openPicker}

@@ -30,7 +30,7 @@ const BoxForm = ({ box }: BoxFormProps) => {
     <form onSubmit={submit} className="flex-content">
       {!isEdit && <PhotoUpload onFinishedAnalyzing={onFinishedAnalyzing} />}
 
-      <div className="flex-content">
+      <div className="flex flex-col gap-4">
         <FormInput
           name="name"
           label="Name"
@@ -68,7 +68,7 @@ const BoxForm = ({ box }: BoxFormProps) => {
         </p>
       )}
 
-      <Button type="submit" disabled={isSubmitting}>
+      <Button type="submit" disabled={isSubmitting} className="mt-auto">
         {isSubmitting ? "Saving..." : "Save"}
       </Button>
     </form>

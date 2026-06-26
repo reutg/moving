@@ -164,18 +164,18 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1.125rem;
-  height: 100%;
+  min-height: 100%;
 }
 
 .page-content {
-  padding: 1.5rem 16px;
+  padding: 1.5rem 16px max(1.5rem, env(safe-area-inset-bottom));
 }
 
 .flex-content {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  height: 100%;
+  flex: 1 1 auto;
 }
 
 .border-dash {

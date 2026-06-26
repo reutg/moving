@@ -24,9 +24,7 @@ const MoveForm = () => {
         control={control}
       />
 
-      <FormInput name="startDate" label="Start date" type="date" control={control} />
-
-      <FormInput name="endDate" label="End date" type="date" control={control} />
+      <FormInput name="moveDate" label="Move date" type="date" control={control} />
 
       {submitError && (
         <p role="alert" className="text-destructive text-sm">

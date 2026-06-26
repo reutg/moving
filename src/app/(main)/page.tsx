@@ -10,6 +10,7 @@ import RecentlyUpdated from "@/features/main/recently-updated";
 import { Sparkles } from "lucide-react";
 import Link from "next/link";
 import { getUserInitials } from "@/lib/app-utils";
+import { getGreeting } from "@/lib/date-utils";
 
 export default async function HomePage() {
   const session = await auth();
@@ -27,8 +28,8 @@ export default async function HomePage() {
     <main className="flex-container page-content">
       <div className="flex items-center justify-between">
         <div>
-          <span className="text-muted-foreground text-xs font-light">
-            Good morning, {firstName}!
+          <span className="text-muted-foreground text-sm font-light">
+            {getGreeting()}, {firstName}!
           </span>
           <h6 className="line-clamp-1 text-lg font-semibold">{currentMove.name}</h6>
         </div>

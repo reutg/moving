@@ -13,8 +13,7 @@ import { MoveFormValues, MoveFormValuesSchema } from "../schemas/move-form-schem
 const defaultValues: MoveFormValues = {
   name: "",
   address: "",
-  startDate: "",
-  endDate: "",
+  moveDate: "",
 };
 
 export const useAddMoveForm = () => {
@@ -53,9 +52,11 @@ export const useAddMoveForm = () => {
     }
   };
 
+  const submit = handleSubmit(onSubmit);
+
   return {
     control,
-    submit: handleSubmit(onSubmit),
+    submit,
     isSubmitting,
     submitError,
   };

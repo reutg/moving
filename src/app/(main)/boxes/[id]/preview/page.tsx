@@ -16,7 +16,7 @@ import {
 import { getBoxById } from "@/features/boxes/services/box-service";
 import DeleteBoxButton from "@/features/boxes/components/delete-box-button";
 import { appUrl } from "@/lib/app-url";
-import { formatDate } from "@/lib/format-date";
+import { formatDate } from "@/lib/date-utils";
 import { ChevronLeft, Pencil, Printer } from "lucide-react";
 import QrGenerator from "@/features/boxes/components/qr-generator";
 import { Button } from "@/components/ui/button";

@@ -4,7 +4,7 @@ import { and, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { auth } from "@/auth";
-import { CURRENT_MOVE_ID } from "@/constants/current-move";
+import { DEFAULT_MOVE_STATUS, DONE_MOVE_STATUS } from "@/constants";
 import { db } from "@/lib/db/client";
 import { type Move, moves } from "@/lib/db/schema";
 import { internal, notFound, unauthorized } from "@/lib/errors";
@@ -17,14 +17,9 @@ export const CreateMoveInputSchema = z
   .object({
     name: z.string().trim().min(1).max(200),
     address: z.string().trim().min(1).max(500),
-    startDate: moveDateSchema,
-    endDate: moveDateSchema,
+    moveDate: moveDateSchema,
   })
-  .strict()
-  .refine((values) => values.endDate >= values.startDate, {
-    message: "End date must be on or after start date",
-    path: ["endDate"],
-  });
+  .strict();
 
 export type CreateMoveInput = z.infer<typeof CreateMoveInputSchema>;
 
@@ -37,6 +32,18 @@ const getAuthenticatedUserId = async (): Promise<string> => {
   }
 
   return userId;
+};
+
+const getActiveMoveForUser = async (userId: string): Promise<Move | null> => {
+  const rows = await db
+    .select()
+    .from(moves)
+    .where(and(eq(moves.userId, userId), eq(moves.status, DEFAULT_MOVE_STATUS)))
+    .orderBy(desc(moves.createdAt))
+    .limit(1)
+    .all();
+
+  return rows[0] ?? null;
 };
 
 export const listMoves = async (): Promise<Move[]> => {
@@ -52,25 +59,34 @@ export const listMoves = async (): Promise<Move[]> => {
 
 export const createMove = async (input: CreateMoveInput): Promise<Move> => {
   const userId = await getAuthenticatedUserId();
+  const now = new Date();
 
-  const inserted = await db
-    .insert(moves)
-    .values({
-      userId,
-      name: input.name,
-      address: input.address,
-      startDate: input.startDate,
-      endDate: input.endDate,
-    })
-    .returning()
-    .all();
+  return db.transaction(async (tx) => {
+    await tx
+      .update(moves)
+      .set({ status: DONE_MOVE_STATUS, updatedAt: now })
+      .where(and(eq(moves.userId, userId), eq(moves.status, DEFAULT_MOVE_STATUS)));
 
-  const move = inserted[0];
-  if (!move) {
-    throw internal("Failed to create move");
-  }
+    const inserted = await tx
+      .insert(moves)
+      .values({
+        userId,
+        name: input.name,
+        address: input.address,
+        moveDate: input.moveDate,
+        status: DEFAULT_MOVE_STATUS,
+        updatedAt: now,
+      })
+      .returning()
+      .all();
 
-  return move;
+    const move = inserted[0];
+    if (!move) {
+      throw internal("Failed to create move");
+    }
+
+    return move;
+  });
 };
 
 export const getMoveById = async (id: number): Promise<Move> => {
@@ -92,27 +108,27 @@ export const getMoveById = async (id: number): Promise<Move> => {
 };
 
 export const getCurrentMove = async (): Promise<Move> => {
-  return getMoveById(CURRENT_MOVE_ID);
+  const userId = await getAuthenticatedUserId();
+  const activeMove = await getActiveMoveForUser(userId);
+
+  if (activeMove) {
+    return activeMove;
+  }
+
+  return getOrCreateCurrentMove();
 };
 
 export const getOrCreateCurrentMove = async (): Promise<Move> => {
   const userId = await getAuthenticatedUserId();
+  const activeMove = await getActiveMoveForUser(userId);
 
-  const existing = await db
-    .select()
-    .from(moves)
-    .where(eq(moves.userId, userId))
-    .orderBy(desc(moves.createdAt))
-    .limit(1);
-
-  const currentMove = existing[0];
-  if (currentMove) {
-    return currentMove;
+  if (activeMove) {
+    return activeMove;
   }
 
   const inserted = await db
     .insert(moves)
-    .values({ userId, name: DEFAULT_MOVE_NAME })
+    .values({ userId, name: DEFAULT_MOVE_NAME, status: DEFAULT_MOVE_STATUS })
     .returning()
     .all();
 
@@ -125,6 +141,6 @@ export const getOrCreateCurrentMove = async (): Promise<Move> => {
 };
 
 export const getCurrentMoveId = async (): Promise<number> => {
-  await getCurrentMove();
-  return CURRENT_MOVE_ID;
+  const move = await getCurrentMove();
+  return move.id;
 };

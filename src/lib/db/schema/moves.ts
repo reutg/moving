@@ -1,5 +1,7 @@
 import { sql } from "drizzle-orm";
-import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+
+import { DEFAULT_MOVE_STATUS, MOVE_STATUSES } from "@/constants";
 
 import { users } from "./auth";
 
@@ -10,8 +12,8 @@ export const moves = sqliteTable("moves", {
     .references(() => users.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   address: text("address").notNull().default(""),
-  startDate: integer("start_date", { mode: "timestamp_ms" }),
-  endDate: integer("end_date", { mode: "timestamp_ms" }),
+  moveDate: integer("move_date", { mode: "timestamp_ms" }),
+  status: text("status", { enum: MOVE_STATUSES }).notNull().default(DEFAULT_MOVE_STATUS),
   createdAt: integer("created_at", { mode: "timestamp_ms" })
     .notNull()
     .default(sql`(unixepoch() * 1000)`),

@@ -2,7 +2,6 @@
 
 import BoxForm from "@/features/boxes/components/box-form";
 import { X } from "lucide-react";
-import Chip from "@/components/ui/chip";
 import PageHeader from "@/components/ui/page-header";
 
 interface AddBoxPageProps {}

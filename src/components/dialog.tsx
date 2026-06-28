@@ -1,11 +1,11 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { type VariantProps } from "class-variance-authority";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Dialog as DialogPrimitive,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
@@ -13,7 +13,7 @@ import {
 interface DialogAction {
   label: string;
   icon?: React.ReactNode;
-  variant?: "default" | "soft" | "outline" | "secondary" | "ghost" | "destructive" | "link";
+  variant?: VariantProps<typeof buttonVariants>["variant"];
   onClick: () => void;
   disabled?: boolean;
 }

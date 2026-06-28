@@ -1,5 +1,6 @@
 import CircleNumber from "@/components/circle-number";
 import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button-link";
 import { Card, CardContent } from "@/components/ui/card";
 import IconTile from "@/components/ui/icon-tile";
 import { Separator } from "@/components/ui/separator";
@@ -35,11 +36,10 @@ const EmptyMove: React.FC<EmptyMoveProps> = ({}) => {
           <span className="text-muted-foreground text-center text-base font-thin">
             Create your first box and we'll start tracking your packing progress here.
           </span>
-          <Link href={"/boxes/add"} className="w-full">
-            <Button>
-              <Plus className="size-5" /> Add your first box
-            </Button>
-          </Link>
+
+          <ButtonLink href="/boxes/add" className="w-full">
+            <Plus className="size-5" /> Add your first box
+          </ButtonLink>
         </CardContent>
       </Card>
 

@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button-link";
 import IconTile from "@/components/ui/icon-tile";
 import { BoxIcon, Link as LinkIcon, PlusIcon } from "lucide-react";
 import Link from "next/link";
@@ -24,12 +25,14 @@ const Page: React.FC<PageProps> = ({}) => {
       </div>
 
       <div className="flex w-full flex-col gap-3 pb-[max(0rem,env(safe-area-inset-bottom))]">
-        <Link href="/moves/add">
-          <Button variant="outline" className="text-primary flex gap-2 font-bold">
-            <PlusIcon className="size-5" />
-            Create your first move
-          </Button>
-        </Link>
+        <ButtonLink
+          href="/moves/add"
+          variant="outline"
+          className="text-primary flex gap-2 font-bold"
+        >
+          <PlusIcon className="size-5" />
+          Create your first move
+        </ButtonLink>
 
         <Button className="border-border flex gap-2 border font-bold">
           <LinkIcon className="size-5" /> Join with an invite link

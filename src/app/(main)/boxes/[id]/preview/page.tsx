@@ -21,6 +21,7 @@ import { ChevronLeft, Pencil, Printer } from "lucide-react";
 import QrGenerator from "@/features/boxes/components/qr-generator";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { ButtonLink } from "@/components/ui/button-link";
 
 interface PreviewBoxPageProps {
   params: Promise<{ id: number }>;
@@ -104,11 +105,9 @@ const PreviewBoxPage: React.FC<PreviewBoxPageProps> = async ({ params }) => {
       </Button>
 
       <div className="flex gap-2">
-        <Link href={`/boxes/${box.id}/edit`} className="min-w-0 flex-1">
-          <Button variant="outline">
-            <Pencil /> Edit
-          </Button>
-        </Link>
+        <ButtonLink href={`/boxes/${box.id}/edit`} className="min-w-0 flex-1" variant="outline">
+          <Pencil /> Edit
+        </ButtonLink>
         <DeleteBoxButton box={box} label="Delete" className="flex-1" />
       </div>
     </main>

@@ -5,7 +5,7 @@ const SearchPage = () => {
   return (
     <main className="page-content flex flex-col gap-4">
       <ScreenHeader title="Search" />
-      <SearchBox withResults />
+      <SearchBox />
     </main>
   );
 };

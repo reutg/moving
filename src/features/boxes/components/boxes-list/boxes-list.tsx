@@ -1,18 +1,55 @@
 "use client";
 
-import { Box } from "@/lib/db/schema";
-import BoxCard from "./box-card";
-import EmptyList from "./empty-list";
+import ButtonsSwitch from "@/components/inputs/buttons-switch";
+import Spinner from "@/components/ui/spinner";
+import type { BoxStatusCounts } from "@/features/boxes/types/box-status-counts";
+import type { Box } from "@/lib/db/schema";
 
-interface BoxesListProps {
-  boxes: Box[];
-}
+import { useBoxesList } from "../../hooks/use-boxes-list";
+import RoomFilter from "./room-filter";
+import BoxCard from "../../box-card";
 
-const BoxesList: React.FC<BoxesListProps> = ({ boxes }) => {
+type BoxesListProps = {
+  initialBoxes?: Box[];
+  initialStatusCounts?: BoxStatusCounts;
+};
+
+const BoxesList = ({ initialBoxes, initialStatusCounts }: BoxesListProps) => {
+  const {
+    filteredBoxes,
+    statusOptions,
+    selectedStatus,
+    handleStatusChange,
+    selectedRoom,
+    handleSelectRoom,
+    isLoading,
+    error,
+  } = useBoxesList({ initialBoxes, initialStatusCounts });
+
+  if (isLoading) {
+    return <Spinner />;
+  }
+
+  if (error) {
+    return <p className="text-destructive text-sm">{error}</p>;
+  }
+
   return (
-    <div className="flex flex-col gap-4">
-      {boxes.length === 0 ? <EmptyList /> : boxes.map((box) => <BoxCard key={box.id} box={box} />)}
-    </div>
+    <>
+      <ButtonsSwitch
+        name="status"
+        value={selectedStatus}
+        options={statusOptions}
+        handleButtonClick={handleStatusChange}
+      />
+      <RoomFilter selectedRoom={selectedRoom} handleSelectRoom={handleSelectRoom} />
+
+      <div className="flex flex-col gap-2">
+        {filteredBoxes.map((box) => (
+          <BoxCard key={box.id} box={box} />
+        ))}
+      </div>
+    </>
   );
 };
 

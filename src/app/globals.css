@@ -169,6 +169,7 @@ body {
 
 .page-content {
   padding: 1.5rem 16px max(1.5rem, env(safe-area-inset-bottom));
+  height: 100%;
 }
 
 .flex-content {

@@ -15,10 +15,17 @@ import {
   isAbortError,
 } from "../utils/boxes-list-api";
 
-export const useBoxesList = () => {
-  const [boxes, setBoxes] = useState<Box[]>([]);
-  const [statusCounts, setStatusCounts] = useState<BoxStatusCounts | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+type UseBoxesListOptions = {
+  initialBoxes?: Box[];
+  initialStatusCounts?: BoxStatusCounts;
+};
+
+export const useBoxesList = ({ initialBoxes, initialStatusCounts }: UseBoxesListOptions = {}) => {
+  const [boxes, setBoxes] = useState<Box[]>(initialBoxes ?? []);
+  const [statusCounts, setStatusCounts] = useState<BoxStatusCounts | null>(
+    initialStatusCounts ?? null,
+  );
+  const [isLoading, setIsLoading] = useState(initialBoxes === undefined);
   const [selectedStatus, setSelectedStatus] = useState<BoxListStatusFilter>("all");
   const [selectedRoom, setSelectedRoom] = useState<CommonLocationKey | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -64,6 +71,10 @@ export const useBoxesList = () => {
   };
 
   useEffect(() => {
+    if (initialStatusCounts) {
+      return;
+    }
+
     const loadStatusCounts = async () => {
       try {
         const response = await fetch("/api/boxes/status-counts");
@@ -78,9 +89,13 @@ export const useBoxesList = () => {
     };
 
     void loadStatusCounts();
-  }, []);
+  }, [initialStatusCounts]);
 
   useEffect(() => {
+    if (initialBoxes) {
+      return;
+    }
+
     const controller = createAbortController(abortControllerRef);
 
     const loadBoxes = async () => {
@@ -107,7 +122,7 @@ export const useBoxesList = () => {
     return () => {
       controller.abort();
     };
-  }, []);
+  }, [initialBoxes]);
 
   return {
     filteredBoxes,

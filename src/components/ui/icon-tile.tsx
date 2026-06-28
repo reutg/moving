@@ -14,6 +14,7 @@ type IconTileSize = keyof typeof sizeStyles;
 type IconTileProps = {
   icon: LucideIcon;
   className?: string;
+  iconSize?: string;
   size?: IconTileSize;
   backgroundColor?: string;
   iconColor?: string;
@@ -23,6 +24,7 @@ type IconTileProps = {
 
 const IconTile = ({
   icon: Icon,
+  iconSize,
   size = "md",
   backgroundColor,
   iconColor,
@@ -34,19 +36,20 @@ const IconTile = ({
 
   if (backgroundColor !== undefined && iconColor !== undefined) {
     const iconOnly = !label;
+    const iconClassName = iconSize ?? (iconOnly ? styles.icon : "size-[13px]");
 
     return (
       <div
         aria-hidden
         className={cn(
-          "flex flex-none flex-col items-center justify-center rounded-xl",
+          "flex flex-none flex-col items-center justify-center rounded-3xl",
           iconOnly ? styles.container : "h-[50px] w-[50px]",
           className,
         )}
         style={{ backgroundColor }}
       >
         <Icon
-          className={cn(iconOnly ? styles.icon : "mb-0.5 size-[13px]")}
+          className={cn(iconOnly ? iconClassName : cn("mb-0.5", iconClassName))}
           color={iconColor}
           strokeWidth={2}
         />
@@ -59,6 +62,8 @@ const IconTile = ({
     );
   }
 
+  const iconClassName = iconSize ?? styles.icon;
+
   return (
     <div
       className={cn(
@@ -67,7 +72,7 @@ const IconTile = ({
         className,
       )}
     >
-      <Icon className={cn("text-primary", styles.icon)} />
+      <Icon className={cn("text-primary", iconClassName)} />
     </div>
   );
 };

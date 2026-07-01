@@ -16,11 +16,16 @@ import {
 } from "../utils/boxes-list-api";
 
 type UseBoxesListOptions = {
+  moveId: number;
   initialBoxes?: Box[];
   initialStatusCounts?: BoxStatusCounts;
 };
 
-export const useBoxesList = ({ initialBoxes, initialStatusCounts }: UseBoxesListOptions = {}) => {
+export const useBoxesList = ({
+  moveId,
+  initialBoxes,
+  initialStatusCounts,
+}: UseBoxesListOptions) => {
   const [boxes, setBoxes] = useState<Box[]>(initialBoxes ?? []);
   const [statusCounts, setStatusCounts] = useState<BoxStatusCounts | null>(
     initialStatusCounts ?? null,
@@ -77,7 +82,7 @@ export const useBoxesList = ({ initialBoxes, initialStatusCounts }: UseBoxesList
 
     const loadStatusCounts = async () => {
       try {
-        const response = await fetch("/api/boxes/status-counts");
+        const response = await fetch(`/api/boxes/status-counts?moveId=${moveId}`);
         const json: ApiResponse<BoxStatusCounts> = await response.json();
 
         if (json.ok) {
@@ -89,7 +94,7 @@ export const useBoxesList = ({ initialBoxes, initialStatusCounts }: UseBoxesList
     };
 
     void loadStatusCounts();
-  }, [initialStatusCounts]);
+  }, [initialStatusCounts, moveId]);
 
   useEffect(() => {
     if (initialBoxes) {
@@ -103,7 +108,7 @@ export const useBoxesList = ({ initialBoxes, initialStatusCounts }: UseBoxesList
       setError(null);
 
       try {
-        setBoxes(await fetchBoxes("all", controller.signal));
+        setBoxes(await fetchBoxes("all", moveId, controller.signal));
       } catch (cause) {
         if (isAbortError(cause)) {
           return;
@@ -122,7 +127,7 @@ export const useBoxesList = ({ initialBoxes, initialStatusCounts }: UseBoxesList
     return () => {
       controller.abort();
     };
-  }, [initialBoxes]);
+  }, [initialBoxes, moveId]);
 
   return {
     filteredBoxes,

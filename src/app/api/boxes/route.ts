@@ -1,13 +1,18 @@
-import { withApi } from "@/lib/api/handler";
-
 import {
   createBox,
   CreateBoxInputSchema,
   listBoxes,
+  ListBoxesQuerySchema,
 } from "@/features/boxes/services/box-service";
+import { withApi } from "@/lib/api/handler";
 
-export const GET = withApi(async () => {
-  return listBoxes();
+export const GET = withApi(async (request) => {
+  const { searchParams } = new URL(request.url);
+  const { moveId } = ListBoxesQuerySchema.parse({
+    moveId: searchParams.get("moveId") ?? undefined,
+  });
+
+  return listBoxes(moveId);
 });
 
 export const POST = withApi(

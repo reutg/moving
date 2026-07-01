@@ -10,11 +10,12 @@ import RoomFilter from "./room-filter";
 import BoxCard from "../../box-card";
 
 type BoxesListProps = {
+  moveId: number;
   initialBoxes?: Box[];
   initialStatusCounts?: BoxStatusCounts;
 };
 
-const BoxesList = ({ initialBoxes, initialStatusCounts }: BoxesListProps) => {
+const BoxesList = ({ moveId, initialBoxes, initialStatusCounts }: BoxesListProps) => {
   const {
     filteredBoxes,
     statusOptions,
@@ -24,7 +25,7 @@ const BoxesList = ({ initialBoxes, initialStatusCounts }: BoxesListProps) => {
     handleSelectRoom,
     isLoading,
     error,
-  } = useBoxesList({ initialBoxes, initialStatusCounts });
+  } = useBoxesList({ moveId, initialBoxes, initialStatusCounts });
 
   if (isLoading) {
     return <Spinner />;

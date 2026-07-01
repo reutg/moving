@@ -4,19 +4,26 @@ import type { BoxesListFilters } from "@/features/boxes/schemas/boxes-list-schem
 import type { ApiResponse } from "@/lib/api/response";
 import type { Box } from "@/lib/db/schema";
 
-export const buildBoxesUrl = (status: BoxesListFilters["status"]): string => {
-  if (status === "all") {
-    return "/api/boxes";
+export const buildBoxesUrl = (
+  status: BoxesListFilters["status"],
+  moveId: number,
+): string => {
+  const params = new URLSearchParams({ moveId: String(moveId) });
+
+  if (status !== "all") {
+    params.set("status", status);
+    return `/api/boxes/filter?${params.toString()}`;
   }
 
-  return `/api/boxes/filter?status=${encodeURIComponent(status)}`;
+  return `/api/boxes?${params.toString()}`;
 };
 
 export const fetchBoxes = async (
   status: BoxesListFilters["status"],
+  moveId: number,
   signal: AbortSignal,
 ): Promise<Box[]> => {
-  const response = await fetch(buildBoxesUrl(status), { signal });
+  const response = await fetch(buildBoxesUrl(status, moveId), { signal });
   const json: ApiResponse<Box[]> = await response.json();
 
   if (!json.ok) {

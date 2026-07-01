@@ -6,9 +6,11 @@ export const GET = withApi(async (request) => {
   const { searchParams } = new URL(request.url);
 
   const query = FilterBoxesQuerySchema.parse({
+    moveId: searchParams.get("moveId") ?? undefined,
     status: searchParams.get("status") ?? undefined,
     destinationRoom: searchParams.get("destinationRoom") ?? undefined,
   });
 
-  return filterBoxes(query);
+  const { moveId, ...filters } = query;
+  return filterBoxes(filters, moveId);
 });

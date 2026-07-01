@@ -9,7 +9,7 @@ import {
   type CommonLocationKey,
   getLocationKeyByName,
 } from "@/constants/common-locations";
-import { getCurrentMoveId } from "@/features/moves/services/move-service";
+import { getCurrentMoveId, getMoveById } from "@/features/moves/services/move-service";
 import type { BoxStatusCounts } from "@/features/boxes/types/box-status-counts";
 import { db } from "@/lib/db/client";
 import { type Box, boxes } from "@/lib/db/schema";
@@ -60,6 +60,7 @@ export const SearchBoxesQuerySchema = z.object({
 export type SearchBoxesQuery = z.infer<typeof SearchBoxesQuerySchema>;
 
 export const FilterBoxesQuerySchema = z.object({
+  moveId: z.coerce.number().int().positive().optional(),
   status: z
     .string()
     .optional()
@@ -74,6 +75,21 @@ export const FilterBoxesQuerySchema = z.object({
 
 export type FilterBoxesQuery = z.infer<typeof FilterBoxesQuerySchema>;
 
+export const ListBoxesQuerySchema = z.object({
+  moveId: z.coerce.number().int().positive().optional(),
+});
+
+export type ListBoxesQuery = z.infer<typeof ListBoxesQuerySchema>;
+
+const resolveMoveId = async (moveId?: number): Promise<number> => {
+  if (moveId !== undefined) {
+    const move = await getMoveById(moveId);
+    return move.id;
+  }
+
+  return getCurrentMoveId();
+};
+
 const matchesSearchTerm = (value: string, search: string) =>
   value.toLowerCase().includes(search.toLowerCase());
 
@@ -86,13 +102,13 @@ const getNextBoxNumber = async (moveId: number): Promise<number> => {
   return (row?.maxNumber ?? 0) + 1;
 };
 
-export async function listBoxes(): Promise<Box[]> {
-  const moveId = await getCurrentMoveId();
+export async function listBoxes(moveId?: number): Promise<Box[]> {
+  const resolvedMoveId = await resolveMoveId(moveId);
 
   return db
     .select()
     .from(boxes)
-    .where(eq(boxes.moveId, moveId))
+    .where(eq(boxes.moveId, resolvedMoveId))
     .orderBy(boxes.number);
 }
 
@@ -150,9 +166,12 @@ export async function searchBoxes({ query }: SearchBoxesQuery): Promise<Box[]> {
     .orderBy(boxes.number);
 }
 
-export async function filterBoxes({ status, destinationRoom }: FilterBoxesQuery): Promise<Box[]> {
-  const moveId = await getCurrentMoveId();
-  const conditions = [eq(boxes.moveId, moveId)];
+export async function filterBoxes(
+  { status, destinationRoom }: FilterBoxesQuery,
+  moveId?: number,
+): Promise<Box[]> {
+  const resolvedMoveId = await resolveMoveId(moveId);
+  const conditions = [eq(boxes.moveId, resolvedMoveId)];
 
   if (status.length > 0) {
     conditions.push(inArray(boxes.status, status));
@@ -230,9 +249,9 @@ const loadStatusCounts = async (moveId: number): Promise<Record<BoxStatus, numbe
   return byStatus;
 };
 
-export const getBoxStatusCounts = async (): Promise<BoxStatusCounts> => {
-  const moveId = await getCurrentMoveId();
-  const byStatus = await loadStatusCounts(moveId);
+export const getBoxStatusCounts = async (moveId?: number): Promise<BoxStatusCounts> => {
+  const resolvedMoveId = await resolveMoveId(moveId);
+  const byStatus = await loadStatusCounts(resolvedMoveId);
   const total = BOX_STATUSES.reduce((sum, status) => sum + byStatus[status], 0);
 
   return { ...byStatus, total };

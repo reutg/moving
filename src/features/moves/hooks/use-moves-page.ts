@@ -153,6 +153,7 @@ export const useMovesPage = ({
       }
 
       setSelectedMove(null);
+      setIsOpen(false);
       router.refresh();
     } finally {
       setIsDeleting(false);

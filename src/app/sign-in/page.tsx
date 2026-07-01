@@ -9,7 +9,10 @@ import { Button } from "@/components/ui/button";
 
 const SignInPage = async () => {
   const session = await auth();
-  if (session?.user) redirect("/");
+
+  if (session?.user) {
+    redirect(session.user.onboardingCompleted ? "/" : "/welcome");
+  }
 
   return (
     <main className="bg-background page-content my-8 flex flex-col gap-4">

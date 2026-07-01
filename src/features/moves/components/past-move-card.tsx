@@ -9,21 +9,28 @@ import { MOVE_STATUS_LABELS } from "@/constants";
 import { formatDate, isFutureDate } from "@/lib/date-utils";
 import { Move } from "@/lib/db/schema";
 import { cn } from "@/lib/utils";
-import { Box, EllipsisVertical } from "lucide-react";
+import { Box, EllipsisVertical, Loader2 } from "lucide-react";
 
 interface PastMoveCardProps {
   move: Move;
-  onClick: () => void;
+  isSettingCurrent: boolean;
+  onSelect: () => void;
+  onOpenActions: () => void;
 }
 
-const PastMoveCard: React.FC<PastMoveCardProps> = ({ move, onClick }) => {
+const PastMoveCard: React.FC<PastMoveCardProps> = ({
+  move,
+  isSettingCurrent,
+  onSelect,
+  onOpenActions,
+}) => {
   const moveDate = move.moveDate ? formatDate(move.moveDate, "MMM D, YYYY") : "";
   const chipBackgroundColor = move.status === "done" ? "bg-status-done-bg" : "bg-chip-background";
   const chipTextColor = move.status === "done" ? "text-status-done" : "text-chip-text";
   const isFutureMove = move.moveDate ? isFutureDate(move.moveDate) : false;
 
   return (
-    <Card onClick={onClick}>
+    <Card className="cursor-pointer" onClick={onSelect}>
       <CardContent className="space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -46,8 +53,20 @@ const PastMoveCard: React.FC<PastMoveCardProps> = ({ move, onClick }) => {
               </div>
             </div>
           </div>
-          <Button variant="ghost" size="icon">
-            <EllipsisVertical />
+          <Button
+            variant="ghost"
+            size="icon"
+            disabled={isSettingCurrent}
+            onClick={(event) => {
+              event.stopPropagation();
+              onOpenActions();
+            }}
+          >
+            {isSettingCurrent ? (
+              <Loader2 className="size-4 animate-spin" aria-hidden />
+            ) : (
+              <EllipsisVertical />
+            )}
           </Button>
         </div>
       </CardContent>

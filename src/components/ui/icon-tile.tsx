@@ -7,6 +7,7 @@ const sizeStyles = {
   md: { container: "size-16 rounded-2xl", icon: "size-8" },
   lg: { container: "size-20", icon: "size-10" },
   logo: { container: "size-[88px]", icon: "size-[44px]" },
+  xl: { container: "size-26 rounded-3xl", icon: "size-13" },
 } as const;
 
 const variantStyles = {

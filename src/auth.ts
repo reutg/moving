@@ -9,7 +9,7 @@ import { type GoogleProfile, mapGoogleProfileToUser, parseGoogleName } from "@/l
 import { db } from "@/lib/db/client";
 import { accounts, sessions, users, verificationTokens } from "@/lib/db/schema";
 
-import { getUserById, toCurrentUser } from "@/features/users/services/user-service";
+import { getUserById, hasCompletedOnboarding, toCurrentUser } from "@/features/users/services/user-service";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(db, {
@@ -39,6 +39,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         name: currentUser.name,
         firstName: currentUser.firstName,
         lastName: currentUser.lastName,
+        onboardingCompleted: hasCompletedOnboarding(currentUser),
       };
 
       return session;

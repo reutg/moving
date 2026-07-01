@@ -14,6 +14,8 @@ export const users = sqliteTable("users", {
   createdAt: integer("created_at", { mode: "timestamp_ms" })
     .notNull()
     .default(sql`(unixepoch() * 1000)`),
+  onboardingCompletedAt: integer("onboarding_completed_at", { mode: "timestamp_ms" }),
+  currentMoveId: integer("current_move_id"),
 });
 
 export const accounts = sqliteTable(

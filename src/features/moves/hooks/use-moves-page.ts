@@ -4,17 +4,20 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { DONE_MOVE_STATUS, DEFAULT_MOVE_STATUS } from "@/constants";
+import type { MoveWithBoxesCount } from "@/features/moves/services/move-service";
 import type { ApiResponse } from "@/lib/api/response";
 import type { Move } from "@/lib/db/schema";
 import { formatDate } from "@/lib/date-utils";
 
 type UseMovesPageOptions = {
-  initialPastMoves?: Move[];
+  currentMoveId?: number | null;
+  initialOtherMoves?: Move[];
 };
 
 type UseMovesPageResult = {
-  pastMoves: Move[];
+  otherMoves: Move[];
   selectedMove: Move | null;
+  settingMoveId: number | null;
   isReActivating: boolean;
   isMarkingComplete: boolean;
   isDeleting: boolean;
@@ -23,17 +26,20 @@ type UseMovesPageResult = {
   closeDelete: () => void;
   getMoveDate: (move?: Move | null) => string;
   selectMove: (move: Move | null) => void;
+  setCurrentMove: (move: Move) => Promise<void>;
   handleReActivateMove: () => Promise<void>;
   handleMarkComplete: (move: Move | null) => Promise<void>;
   handleDeleteMove: () => Promise<void>;
 };
 
 export const useMovesPage = ({
-  initialPastMoves,
+  currentMoveId = null,
+  initialOtherMoves,
 }: UseMovesPageOptions = {}): UseMovesPageResult => {
   const router = useRouter();
-  const pastMoves = initialPastMoves ?? [];
+  const otherMoves = initialOtherMoves ?? [];
   const [selectedMove, setSelectedMove] = useState<Move | null>(null);
+  const [settingMoveId, setSettingMoveId] = useState<number | null>(null);
   const [isReActivating, setIsReActivating] = useState(false);
   const [isMarkingComplete, setIsMarkingComplete] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -72,6 +78,31 @@ export const useMovesPage = ({
     }
 
     return json.data;
+  };
+
+  const setCurrentMove = async (move: Move) => {
+    if (move.id === currentMoveId || settingMoveId !== null) {
+      return;
+    }
+
+    setSettingMoveId(move.id);
+
+    try {
+      const response = await fetch("/api/user/current-move", {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ moveId: move.id }),
+      });
+      const json: ApiResponse<MoveWithBoxesCount> = await response.json();
+
+      if (!json.ok) {
+        throw new Error(json.error.message);
+      }
+
+      router.refresh();
+    } finally {
+      setSettingMoveId(null);
+    }
   };
 
   const handleReActivateMove = async () => {
@@ -129,14 +160,16 @@ export const useMovesPage = ({
   };
 
   return {
-    pastMoves,
+    otherMoves,
     selectedMove,
+    settingMoveId,
     isReActivating,
     isMarkingComplete,
     isDeleting,
     isOpen,
     getMoveDate,
     selectMove,
+    setCurrentMove,
     handleReActivateMove,
     handleMarkComplete,
     handleDeleteMove,

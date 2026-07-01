@@ -5,51 +5,65 @@ import type { Move } from "@/lib/db/schema";
 import { useMovesPage } from "../hooks/use-moves-page";
 import ActiveMove from "./active-move";
 import PastMoves from "./past-moves";
+import ActionsSheet from "./move-actions/actions-sheet";
+import DeletePrompt from "@/components/delete-prompt";
 
 type MovesOverviewProps = {
-  activeMove: Move | null;
-  initialPastMoves: Move[];
+  currentMove: Move | null;
+  initialOtherMoves: Move[];
 };
 
-const MovesOverview = ({ activeMove, initialPastMoves }: MovesOverviewProps) => {
+const MovesOverview = ({ currentMove, initialOtherMoves }: MovesOverviewProps) => {
   const {
-    pastMoves,
+    otherMoves,
     selectedMove,
+    settingMoveId,
     isReActivating,
     isMarkingComplete,
     isDeleting,
     isOpen,
     getMoveDate,
     selectMove,
+    setCurrentMove,
     handleReActivateMove,
     handleMarkComplete,
     handleDeleteMove,
     openDelete,
     closeDelete,
-  } = useMovesPage({ initialPastMoves });
+  } = useMovesPage({
+    currentMoveId: currentMove?.id ?? null,
+    initialOtherMoves,
+  });
 
   return (
     <>
-      <ActiveMove
-        move={activeMove}
-        getMoveDate={getMoveDate}
-        isMarkingComplete={isMarkingComplete}
-        handleMarkComplete={handleMarkComplete}
-      />
+      <ActiveMove move={currentMove} getMoveDate={getMoveDate} selectMove={selectMove} />
       <PastMoves
-        pastMoves={pastMoves}
+        otherMoves={otherMoves}
+        settingMoveId={settingMoveId}
+        onSelectMove={(move) => void setCurrentMove(move)}
+        onOpenActions={selectMove}
+      />
+
+      <ActionsSheet
         selectedMove={selectedMove}
+        selectMove={selectMove}
+        getMoveDate={getMoveDate}
         isReActivating={isReActivating}
         isMarkingComplete={isMarkingComplete}
         isDeleting={isDeleting}
-        getMoveDate={getMoveDate}
-        selectMove={selectMove}
         handleReActivateMove={handleReActivateMove}
         handleMarkComplete={handleMarkComplete}
-        handleDeleteMove={handleDeleteMove}
-        openDelete={openDelete}
-        closeDelete={closeDelete}
+        handleDeleteMove={openDelete}
+      />
+
+      <DeletePrompt
+        itemName={selectedMove?.name ?? ""}
+        onConfirm={handleDeleteMove}
+        onCancel={closeDelete}
+        isDeleting={isDeleting}
         isOpen={isOpen}
+        onOpenChange={closeDelete}
       />
     </>
   );

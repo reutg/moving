@@ -78,6 +78,20 @@
       "when": 1782200000001,
       "tag": "0010_move_status",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1782200000002,
+      "tag": "0011_onboarding_completed_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1782200000003,
+      "tag": "0012_user_current_move",
+      "breakpoints": true
     }
   ]
 }

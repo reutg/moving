@@ -10,6 +10,7 @@ interface ButtonProps {
   disabled?: boolean;
   loading?: boolean;
   onClick: () => void;
+  className?: string;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -20,6 +21,7 @@ const Button: React.FC<ButtonProps> = ({
   disabled,
   loading,
   onClick,
+  className,
 }) => {
   return (
     <BaseButton
@@ -28,6 +30,7 @@ const Button: React.FC<ButtonProps> = ({
       shape={shape}
       disabled={loading || disabled}
       onClick={onClick}
+      className={className}
     >
       <div className="flex items-center gap-2">
         {children}

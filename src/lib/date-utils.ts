@@ -22,3 +22,7 @@ export const getGreeting = () => {
 export const isFutureDate = (date: Date | string | number | null) => {
   return date ? dayjs(date).isAfter(dayjs(), "day") : false;
 };
+
+export const getDaysUntilDate = (date: Date | string | number | null) => {
+  return date ? dayjs(date).diff(dayjs(), "day") : 0;
+};

@@ -1,8 +1,10 @@
+import { redirect } from "next/navigation";
+
 import ScreenHeader from "@/components/ui/screen-header";
 import BoxesList from "@/features/boxes/components/boxes-list/boxes-list";
 import EmptyList from "@/features/boxes/components/boxes-list/empty-list";
 import { getBoxStatusCounts, listBoxes } from "@/features/boxes/services/box-service";
-import { getActiveMove, getCurrentMove, getMoveById } from "@/features/moves/services/move-service";
+import { getCurrentMove, getMoveById } from "@/features/moves/services/move-service";
 
 type BoxesPageProps = {
   searchParams: Promise<{ moveId?: string }>;
@@ -14,13 +16,12 @@ const resolvePageMoveId = async (moveIdParam?: string): Promise<number> => {
     return move.id;
   }
 
-  const activeMove = await getActiveMove();
-  if (activeMove) {
-    return activeMove.id;
+  const currentMove = await getCurrentMove();
+  if (currentMove) {
+    return currentMove.id;
   }
 
-  const currentMove = await getCurrentMove();
-  return currentMove.id;
+  redirect("/moves");
 };
 
 const BoxesPage = async ({ searchParams }: BoxesPageProps) => {

@@ -5,11 +5,10 @@ import { z } from "zod";
 
 import { auth } from "@/auth";
 import { DEFAULT_MOVE_STATUS, DONE_MOVE_STATUS, MOVE_STATUSES } from "@/constants";
+import { completeOnboarding, getUserById } from "@/features/users/services/user-service";
 import { db } from "@/lib/db/client";
-import { type Move, boxes, moves } from "@/lib/db/schema";
+import { type Move, boxes, moves, users } from "@/lib/db/schema";
 import { internal, notFound, unauthorized } from "@/lib/errors";
-
-const DEFAULT_MOVE_NAME = "My Move";
 
 const moveDateSchema = z.coerce.date();
 
@@ -31,6 +30,14 @@ export const UpdateMoveStatusInputSchema = z
 
 export type UpdateMoveStatusInput = z.infer<typeof UpdateMoveStatusInputSchema>;
 
+export const SetCurrentMoveInputSchema = z
+  .object({
+    moveId: z.number().int().positive(),
+  })
+  .strict();
+
+export type SetCurrentMoveInput = z.infer<typeof SetCurrentMoveInputSchema>;
+
 export type MoveWithBoxesCount = Move & {
   boxesCount: number;
 };
@@ -46,28 +53,70 @@ const getAuthenticatedUserId = async (): Promise<string> => {
   return userId;
 };
 
-const getActiveMoveForUser = async (userId: string): Promise<Move | null> => {
-  const rows = await db
+const setCurrentMoveForUser = async (userId: string, moveId: number): Promise<void> => {
+  await db.update(users).set({ currentMoveId: moveId }).where(eq(users.id, userId)).run();
+};
+
+const getCurrentMoveRowForUser = async (userId: string): Promise<Move | null> => {
+  const user = await getUserById(userId);
+
+  if (user.currentMoveId !== null) {
+    const rows = await db
+      .select()
+      .from(moves)
+      .where(and(eq(moves.id, user.currentMoveId), eq(moves.userId, userId)))
+      .limit(1)
+      .all();
+
+    if (rows[0]) {
+      return rows[0];
+    }
+  }
+
+  const [fallback] = await db
     .select()
     .from(moves)
-    .where(and(eq(moves.userId, userId), eq(moves.status, DEFAULT_MOVE_STATUS)))
+    .where(eq(moves.userId, userId))
     .orderBy(desc(moves.createdAt))
     .limit(1)
     .all();
 
-  return rows[0] ?? null;
+  if (!fallback) {
+    return null;
+  }
+
+  await setCurrentMoveForUser(userId, fallback.id);
+  return fallback;
 };
 
-export const getActiveMove = async (): Promise<Move | null> => {
-  const userId = await getAuthenticatedUserId();
-  return getActiveMoveForUser(userId);
+const attachBoxesCount = async (move: Move): Promise<MoveWithBoxesCount> => {
+  const [row] = await db
+    .select({ boxesCount: count() })
+    .from(boxes)
+    .where(eq(boxes.moveId, move.id));
+
+  return {
+    ...move,
+    boxesCount: row?.boxesCount ?? 0,
+  };
 };
 
-export const getPastMoves = async (): Promise<Move[]> => {
+export const getCurrentMove = async (): Promise<MoveWithBoxesCount | null> => {
   const userId = await getAuthenticatedUserId();
-  const activeMove = await getActiveMoveForUser(userId);
+  const move = await getCurrentMoveRowForUser(userId);
 
-  if (!activeMove) {
+  if (!move) {
+    return null;
+  }
+
+  return attachBoxesCount(move);
+};
+
+export const getOtherMoves = async (): Promise<Move[]> => {
+  const userId = await getAuthenticatedUserId();
+  const currentMove = await getCurrentMoveRowForUser(userId);
+
+  if (!currentMove) {
     return db
       .select()
       .from(moves)
@@ -79,7 +128,7 @@ export const getPastMoves = async (): Promise<Move[]> => {
   return db
     .select()
     .from(moves)
-    .where(and(eq(moves.userId, userId), ne(moves.id, activeMove.id)))
+    .where(and(eq(moves.userId, userId), ne(moves.id, currentMove.id)))
     .orderBy(desc(moves.createdAt))
     .all();
 };
@@ -95,16 +144,24 @@ export const listMoves = async (): Promise<Move[]> => {
     .all();
 };
 
+export const setCurrentMove = async (moveId: number): Promise<MoveWithBoxesCount> => {
+  const userId = await getAuthenticatedUserId();
+  const move = await getMoveById(moveId);
+
+  if (move.userId !== userId) {
+    throw notFound(`Move ${moveId} not found`);
+  }
+
+  await setCurrentMoveForUser(userId, moveId);
+
+  return move;
+};
+
 export const createMove = async (input: CreateMoveInput): Promise<Move> => {
   const userId = await getAuthenticatedUserId();
   const now = new Date();
 
   return db.transaction(async (tx) => {
-    await tx
-      .update(moves)
-      .set({ status: DONE_MOVE_STATUS, updatedAt: now })
-      .where(and(eq(moves.userId, userId), eq(moves.status, DEFAULT_MOVE_STATUS)));
-
     const inserted = await tx
       .insert(moves)
       .values({
@@ -122,6 +179,9 @@ export const createMove = async (input: CreateMoveInput): Promise<Move> => {
     if (!move) {
       throw internal("Failed to create move");
     }
+
+    await tx.update(users).set({ currentMoveId: move.id }).where(eq(users.id, userId)).run();
+    await completeOnboarding(userId);
 
     return move;
   });
@@ -142,16 +202,12 @@ export const getMoveById = async (id: number): Promise<MoveWithBoxesCount> => {
     throw notFound(`Move ${id} not found`);
   }
 
-  const [row] = await db.select({ boxesCount: count() }).from(boxes).where(eq(boxes.moveId, id));
-
-  return {
-    ...move,
-    boxesCount: row?.boxesCount ?? 0,
-  };
+  return attachBoxesCount(move);
 };
 
 export const deleteMove = async (id: number): Promise<void> => {
   const userId = await getAuthenticatedUserId();
+  const user = await getUserById(userId);
 
   const result = await db
     .delete(moves)
@@ -161,6 +217,24 @@ export const deleteMove = async (id: number): Promise<void> => {
   if (result.rowsAffected === 0) {
     throw notFound(`Move ${id} not found`);
   }
+
+  if (user.currentMoveId !== id) {
+    return;
+  }
+
+  const [nextMove] = await db
+    .select()
+    .from(moves)
+    .where(eq(moves.userId, userId))
+    .orderBy(desc(moves.createdAt))
+    .limit(1)
+    .all();
+
+  await db
+    .update(users)
+    .set({ currentMoveId: nextMove?.id ?? null })
+    .where(eq(users.id, userId))
+    .run();
 };
 
 export const updateMoveStatus = async (
@@ -186,42 +260,19 @@ export const updateMoveStatus = async (
     throw notFound(`Move ${id} not found`);
   }
 
+  if (status === DEFAULT_MOVE_STATUS) {
+    await completeOnboarding(userId);
+  }
+
   return result;
 };
 
-export const getCurrentMove = async (): Promise<Move> => {
-  const activeMove = await getActiveMove();
-
-  if (activeMove) {
-    return activeMove;
-  }
-
-  return getOrCreateCurrentMove();
-};
-
-export const getOrCreateCurrentMove = async (): Promise<Move> => {
-  const userId = await getAuthenticatedUserId();
-  const activeMove = await getActiveMoveForUser(userId);
-
-  if (activeMove) {
-    return activeMove;
-  }
-
-  const inserted = await db
-    .insert(moves)
-    .values({ userId, name: DEFAULT_MOVE_NAME, status: DEFAULT_MOVE_STATUS })
-    .returning()
-    .all();
-
-  const move = inserted[0];
-  if (!move) {
-    throw internal("Failed to create default move");
-  }
-
-  return move;
-};
-
 export const getCurrentMoveId = async (): Promise<number> => {
-  const move = await getCurrentMove();
-  return move.id;
+  const currentMove = await getCurrentMove();
+
+  if (!currentMove) {
+    throw notFound("No current move");
+  }
+
+  return currentMove.id;
 };

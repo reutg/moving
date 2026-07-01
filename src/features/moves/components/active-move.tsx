@@ -1,5 +1,6 @@
 "use client";
 
+import Button from "@/components/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Card, CardContent } from "@/components/ui/card";
 import Chip from "@/components/ui/chip";
@@ -7,17 +8,17 @@ import IconTile from "@/components/ui/icon-tile";
 import SeparatorDot from "@/components/ui/separator-dot";
 import { SectionSubheader } from "@/components/ui/text";
 import { COMMON_LOCATIONS, MOVE_STATUS_LABELS } from "@/constants";
+import { getDaysUntilDate } from "@/lib/date-utils";
 import type { Move } from "@/lib/db/schema";
-import { Box, Calendar, Pencil } from "lucide-react";
+import { Box, Calendar, EllipsisVertical, Pencil } from "lucide-react";
 
 type ActiveMoveProps = {
   move: Move | null;
   getMoveDate: (move?: Move | null) => string;
-  isMarkingComplete: boolean;
-  handleMarkComplete: (move: Move | null) => Promise<void>;
+  selectMove: (move: Move | null) => void;
 };
 
-const ActiveMove = ({ move, getMoveDate }: ActiveMoveProps) => {
+const ActiveMove = ({ move, getMoveDate, selectMove }: ActiveMoveProps) => {
   if (!move) {
     return null;
   }
@@ -38,7 +39,7 @@ const ActiveMove = ({ move, getMoveDate }: ActiveMoveProps) => {
                   <Calendar className="size-4" />
                   <span>{getMoveDate(move)}</span>
                   <SeparatorDot />
-                  <span>in 5 days</span>
+                  <span>in {getDaysUntilDate(move.moveDate)} days</span>
                 </div>
               </div>
             </div>
@@ -52,10 +53,16 @@ const ActiveMove = ({ move, getMoveDate }: ActiveMoveProps) => {
             <span className="text-subtle-foreground font-thin">{roomsCount} rooms</span>
           </div>
 
-          <ButtonLink href={`/moves/${move.id}`} variant="outline">
-            <Pencil className="size-4" />
-            Edit details
-          </ButtonLink>
+          <div className="flex items-center gap-2">
+            <ButtonLink href={`/moves/${move.id}`} variant="outline">
+              <Pencil className="size-4" />
+              Edit details
+            </ButtonLink>
+
+            <Button variant="outline" onClick={() => selectMove(move)} className="w-13">
+              <EllipsisVertical className="size-5" />
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>

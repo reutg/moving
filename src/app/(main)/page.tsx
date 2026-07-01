@@ -12,6 +12,7 @@ import Link from "next/link";
 import { getUserInitials } from "@/lib/app-utils";
 import { getGreeting } from "@/lib/date-utils";
 import EmptyMove from "@/features/main/empty-move";
+import NoMoves from "@/features/moves/components/no-moves";
 
 export default async function HomePage() {
   const session = await auth();
@@ -20,7 +21,7 @@ export default async function HomePage() {
   const currentMove = await getCurrentMove();
   const [recentlyUpdatedBoxes, boxes] = await Promise.all([
     listRecentlyUpdatedBoxes(),
-    listBoxes(currentMove.id),
+    listBoxes(currentMove?.id),
   ]);
 
   const { firstName } = user;
@@ -31,38 +32,46 @@ export default async function HomePage() {
     <main className="flex-container page-content">
       <div className="flex items-center justify-between">
         <div>
-          <span className="text-muted-foreground text-sm font-light">
+          <span className="text-muted-foreground text-md font-light">
             {getGreeting()}, {firstName}!
           </span>
 
-          <Link href="/moves" className="flex items-center gap-2">
-            <h6 className="line-clamp-1 text-xl font-semibold">{currentMove.name}</h6>
-            <ChevronDown className="text-subtle-foreground size-4" />
-          </Link>
+          {currentMove && (
+            <Link href="/moves" className="flex items-center gap-2">
+              <h6 className="line-clamp-1 text-xl font-semibold">{currentMove.name}</h6>
+              <ChevronDown className="text-subtle-foreground size-4" />
+            </Link>
+          )}
         </div>
         <Link href="/settings">
           <Avatar src={user?.image ?? ""} alt={user?.name ?? ""} fallback={initials} />
         </Link>
       </div>
 
-      {isEmptyMove ? (
-        <EmptyMove />
-      ) : (
+      {currentMove ? (
         <>
-          <SearchBox />
-          <QuickActionsWrapper />
+          {isEmptyMove ? (
+            <EmptyMove />
+          ) : (
+            <>
+              <SearchBox />
+              <QuickActionsWrapper />
 
-          <ComingSoonBanner>
-            <ActionCard
-              icon={Sparkles}
-              title="Search with AI"
-              description={`"Where did I pack the coffee machine?"`}
-              linkTo="/"
-            />
-          </ComingSoonBanner>
+              <ComingSoonBanner>
+                <ActionCard
+                  icon={Sparkles}
+                  title="Search with AI"
+                  description={`"Where did I pack the coffee machine?"`}
+                  linkTo="/"
+                />
+              </ComingSoonBanner>
 
-          <RecentlyUpdated boxes={recentlyUpdatedBoxes} />
+              <RecentlyUpdated boxes={recentlyUpdatedBoxes} />
+            </>
+          )}
         </>
+      ) : (
+        <NoMoves />
       )}
     </main>
   );

@@ -1,6 +1,6 @@
 import "server-only";
 
-import { eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { z } from "zod";
 
 import { parseGoogleName } from "@/lib/auth/google-profile";
@@ -29,6 +29,17 @@ export const toCurrentUser = (user: User): CurrentUser => ({
   image: user.image,
   email: user.email,
 });
+
+export const hasCompletedOnboarding = (user: User): boolean =>
+  user.onboardingCompletedAt !== null;
+
+export const completeOnboarding = async (userId: string): Promise<void> => {
+  await db
+    .update(users)
+    .set({ onboardingCompletedAt: new Date() })
+    .where(and(eq(users.id, userId), isNull(users.onboardingCompletedAt)))
+    .run();
+};
 
 export const getUserById = async (id: string): Promise<User> => {
   const rows = await db.select().from(users).where(eq(users.id, id)).all();

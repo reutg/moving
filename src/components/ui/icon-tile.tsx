@@ -3,19 +3,32 @@ import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const sizeStyles = {
-  sm: { container: "size-10", icon: "size-5" },
-  md: { container: "size-16", icon: "size-8" },
+  sm: { container: "size-11 rounded-xl", icon: "size-5" },
+  md: { container: "size-16 rounded-2xl", icon: "size-8" },
   lg: { container: "size-20", icon: "size-10" },
   logo: { container: "size-[88px]", icon: "size-[44px]" },
 } as const;
 
+const variantStyles = {
+  default: {
+    container: "bg-accent",
+    icon: "text-primary",
+  },
+  outline: {
+    container: "border-border bg-white border",
+    icon: "text-foreground",
+  },
+} as const;
+
 type IconTileSize = keyof typeof sizeStyles;
+type IconTileVariant = keyof typeof variantStyles;
 
 type IconTileProps = {
   icon: LucideIcon;
   className?: string;
   iconSize?: string;
   size?: IconTileSize;
+  variant?: IconTileVariant;
   backgroundColor?: string;
   iconColor?: string;
   label?: string;
@@ -26,6 +39,7 @@ const IconTile = ({
   icon: Icon,
   iconSize,
   size = "md",
+  variant = "default",
   backgroundColor,
   iconColor,
   label,
@@ -33,6 +47,7 @@ const IconTile = ({
   className,
 }: IconTileProps) => {
   const styles = sizeStyles[size];
+  const variantStyle = variantStyles[variant];
 
   if (backgroundColor !== undefined && iconColor !== undefined) {
     const iconOnly = !label;
@@ -43,6 +58,7 @@ const IconTile = ({
         aria-hidden
         className={cn(
           "flex flex-none flex-col items-center justify-center rounded-3xl",
+          variant === "outline" && variantStyle.container,
           iconOnly ? styles.container : "h-[50px] w-[50px]",
           className,
         )}
@@ -67,12 +83,13 @@ const IconTile = ({
   return (
     <div
       className={cn(
-        "bg-accent flex items-center justify-center rounded-3xl",
+        "flex items-center justify-center rounded-3xl",
+        variantStyle.container,
         styles.container,
         className,
       )}
     >
-      <Icon className={cn("text-primary", iconClassName)} />
+      <Icon className={cn(variantStyle.icon, iconClassName)} />
     </div>
   );
 };

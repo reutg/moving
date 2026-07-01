@@ -4,7 +4,7 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { Card, CardContent } from "@/components/ui/card";
 import IconTile from "@/components/ui/icon-tile";
 import { Separator } from "@/components/ui/separator";
-import { SectionHeader } from "@/components/ui/text";
+import { SectionDescription, SectionHeader } from "@/components/ui/text";
 import { Box, ChevronRight, Plus } from "lucide-react";
 import Link from "next/link";
 
@@ -33,9 +33,9 @@ const EmptyMove: React.FC<EmptyMoveProps> = ({}) => {
           <IconTile icon={Box} className="size-19" />
 
           <h3 className="text-lg font-semibold">Nothing packed yet</h3>
-          <span className="text-muted-foreground text-center text-base font-thin">
+          <SectionDescription>
             Create your first box and we'll start tracking your packing progress here.
-          </span>
+          </SectionDescription>
 
           <ButtonLink href="/boxes/add" className="w-full">
             <Plus className="size-5" /> Add your first box

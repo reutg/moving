@@ -48,6 +48,8 @@
   --color-status-packed-bg: var(--status-packed-bg);
   --color-status-packing: var(--status-packing);
   --color-status-packing-bg: var(--status-packing-bg);
+  --color-status-done: var(--status-done);
+  --color-status-done-bg: var(--status-done-bg);
   --color-ai: var(--ai);
   --color-ai-bg: var(--ai-bg);
   --color-blue: var(--blue);
@@ -107,6 +109,8 @@
   --status-packed-bg: #dceee8;
   --status-packing: #c9a23c;
   --status-packing-bg: #f7efd6;
+  --status-done: #4a6fb0;
+  --status-done-bg: #e7edfa;
 
   /* Chip */
   --chip-text: #2f6f62;

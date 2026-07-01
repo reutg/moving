@@ -2,11 +2,16 @@
 
 import FormInput from "@/components/form/form-input";
 import { Button } from "@/components/ui/button";
+import { useMoveForm } from "../hooks/use-move-form";
+import { Move } from "@/lib/db/schema";
 
-import { useAddMoveForm } from "../hooks/use-add-move-form";
+interface MoveFormProps {
+  move: Move;
+}
 
-const MoveForm = () => {
-  const { control, submit, isSubmitting, submitError } = useAddMoveForm();
+const MoveForm: React.FC<MoveFormProps> = ({ move }) => {
+  const { control, submit, isSubmitting, submitError } = useMoveForm(move);
+  const saveButtonText = move ? "Save move" : "Create move";
 
   return (
     <form onSubmit={submit} className="flex-content">
@@ -33,7 +38,7 @@ const MoveForm = () => {
       )}
 
       <Button type="submit" disabled={isSubmitting} className="mt-auto">
-        {isSubmitting ? "Creating..." : "Create move"}
+        {isSubmitting ? "Saving..." : saveButtonText}
       </Button>
     </form>
   );

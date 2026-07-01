@@ -7,7 +7,7 @@ import { listBoxes, listRecentlyUpdatedBoxes } from "@/features/boxes/services/b
 import { getCurrentMove } from "@/features/moves/services/move-service";
 import QuickActionsWrapper from "@/features/main/quick-actions-wrapper";
 import RecentlyUpdated from "@/features/main/recently-updated";
-import { Sparkles } from "lucide-react";
+import { ChevronDown, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { getUserInitials } from "@/lib/app-utils";
 import { getGreeting } from "@/lib/date-utils";
@@ -17,10 +17,10 @@ export default async function HomePage() {
   const session = await auth();
   const user = session!.user;
 
-  const [recentlyUpdatedBoxes, currentMove, boxes] = await Promise.all([
+  const currentMove = await getCurrentMove();
+  const [recentlyUpdatedBoxes, boxes] = await Promise.all([
     listRecentlyUpdatedBoxes(),
-    getCurrentMove(),
-    listBoxes(),
+    listBoxes(currentMove.id),
   ]);
 
   const { firstName } = user;
@@ -34,7 +34,11 @@ export default async function HomePage() {
           <span className="text-muted-foreground text-sm font-light">
             {getGreeting()}, {firstName}!
           </span>
-          <h6 className="line-clamp-1 text-lg font-semibold">{currentMove.name}</h6>
+
+          <Link href="/moves" className="flex items-center gap-2">
+            <h6 className="line-clamp-1 text-xl font-semibold">{currentMove.name}</h6>
+            <ChevronDown className="text-subtle-foreground size-4" />
+          </Link>
         </div>
         <Link href="/settings">
           <Avatar src={user?.image ?? ""} alt={user?.name ?? ""} fallback={initials} />

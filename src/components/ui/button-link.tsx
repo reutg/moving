@@ -17,6 +17,7 @@ const ButtonLink = ({
 }: ButtonLinkProps) => {
   return (
     <Button
+      nativeButton={false}
       variant={variant}
       size={size}
       shape={shape}

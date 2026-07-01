@@ -25,3 +25,11 @@ export const SectionSubheader: React.FC<TextProps> = ({ children, className }) =
     </div>
   );
 };
+
+export const SectionDescription: React.FC<TextProps> = ({ children, className }) => {
+  return (
+    <span className={cn("text-muted-foreground text-center text-base font-thin", className)}>
+      {children}
+    </span>
+  );
+};

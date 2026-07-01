@@ -22,5 +22,7 @@ export const moves = sqliteTable("moves", {
     .default(sql`(unixepoch() * 1000)`),
 });
 
-export type Move = typeof moves.$inferSelect;
+export type Move = typeof moves.$inferSelect & {
+  boxesCount?: number;
+};
 export type NewMove = typeof moves.$inferInsert;

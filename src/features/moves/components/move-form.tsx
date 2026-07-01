@@ -6,7 +6,7 @@ import { useMoveForm } from "../hooks/use-move-form";
 import { Move } from "@/lib/db/schema";
 
 interface MoveFormProps {
-  move: Move;
+  move?: Move;
 }
 
 const MoveForm: React.FC<MoveFormProps> = ({ move }) => {

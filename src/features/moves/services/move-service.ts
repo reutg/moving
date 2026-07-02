@@ -161,7 +161,7 @@ export const createMove = async (input: CreateMoveInput): Promise<Move> => {
   const userId = await getAuthenticatedUserId();
   const now = new Date();
 
-  return db.transaction(async (tx) => {
+  const move = await db.transaction(async (tx) => {
     const inserted = await tx
       .insert(moves)
       .values({
@@ -175,16 +175,19 @@ export const createMove = async (input: CreateMoveInput): Promise<Move> => {
       .returning()
       .all();
 
-    const move = inserted[0];
-    if (!move) {
+    const createdMove = inserted[0];
+    if (!createdMove) {
       throw internal("Failed to create move");
     }
 
-    await tx.update(users).set({ currentMoveId: move.id }).where(eq(users.id, userId)).run();
-    await completeOnboarding(userId);
+    await tx.update(users).set({ currentMoveId: createdMove.id }).where(eq(users.id, userId)).run();
 
-    return move;
+    return createdMove;
   });
+
+  await completeOnboarding(userId);
+
+  return move;
 };
 
 export const getMoveById = async (id: number): Promise<MoveWithBoxesCount> => {

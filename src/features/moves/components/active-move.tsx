@@ -15,10 +15,10 @@ import { Box, Calendar, EllipsisVertical, Pencil } from "lucide-react";
 type ActiveMoveProps = {
   move: Move | null;
   getMoveDate: (move?: Move | null) => string;
-  selectMove: (move: Move | null) => void;
+  onOpenActionsSheet: (move: Move) => void;
 };
 
-const ActiveMove = ({ move, getMoveDate, selectMove }: ActiveMoveProps) => {
+const ActiveMove = ({ move, getMoveDate, onOpenActionsSheet }: ActiveMoveProps) => {
   if (!move) {
     return null;
   }
@@ -59,7 +59,7 @@ const ActiveMove = ({ move, getMoveDate, selectMove }: ActiveMoveProps) => {
               Edit details
             </ButtonLink>
 
-            <Button variant="outline" onClick={() => selectMove(move)} className="w-13">
+            <Button variant="outline" onClick={() => onOpenActionsSheet(move)} className="w-13">
               <EllipsisVertical className="size-5" />
             </Button>
           </div>

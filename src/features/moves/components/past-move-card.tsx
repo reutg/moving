@@ -43,7 +43,9 @@ const PastMoveCard: React.FC<PastMoveCardProps> = ({
             <div className="flex flex-col gap-0.5">
               <p className="text-foreground text-lg font-bold">{move.name}</p>
               <div className="text-subtle-foreground flex items-center gap-2 text-sm font-thin">
-                {move.moveDate && <span>{isFutureMove ? "Moving on" : `Moved ${moveDate}`}</span>}
+                {move.moveDate && (
+                  <span>{isFutureMove ? `Moving on ${moveDate}` : `Moved ${moveDate}`}</span>
+                )}
                 <SeparatorDot />
                 <Chip
                   label={MOVE_STATUS_LABELS[move.status]}

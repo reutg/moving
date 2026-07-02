@@ -6,12 +6,12 @@ import { getMoveById } from "@/features/moves/services/move-service";
 import { ChevronLeft, Truck } from "lucide-react";
 
 interface EditMovePageProps {
-  params: Promise<{ id: number }>;
+  params: Promise<{ id: string }>;
 }
 
 const EditMovePage: React.FC<EditMovePageProps> = async ({ params }) => {
   const { id } = await params;
-  const move = await getMoveById(id);
+  const move = await getMoveById(Number(id));
   return (
     <main className="flex-container page-content">
       <PageHeader title="Edit move" backHref="/moves" icon={ChevronLeft} />

@@ -4,19 +4,19 @@ import { SectionSubheader } from "@/components/ui/text";
 import { Move } from "@/lib/db/schema";
 import PastMoveCard from "./past-move-card";
 
-interface PastMovesProps {
+type PastMovesProps = {
   otherMoves: Move[];
-  settingMoveId: number | null;
+  pendingCurrentMoveId: number | null;
   onSelectMove: (move: Move) => void;
-  onOpenActions: (move: Move) => void;
-}
+  onOpenActionsSheet: (move: Move) => void;
+};
 
-const PastMoves: React.FC<PastMovesProps> = ({
+const PastMoves = ({
   otherMoves,
-  settingMoveId,
+  pendingCurrentMoveId,
   onSelectMove,
-  onOpenActions,
-}) => {
+  onOpenActionsSheet,
+}: PastMovesProps) => {
   return (
     <>
       {otherMoves.length > 0 && (
@@ -26,9 +26,9 @@ const PastMoves: React.FC<PastMovesProps> = ({
             <PastMoveCard
               key={move.id}
               move={move}
-              isSettingCurrent={settingMoveId === move.id}
+              isSettingCurrent={pendingCurrentMoveId === move.id}
               onSelect={() => onSelectMove(move)}
-              onOpenActions={() => onOpenActions(move)}
+              onOpenActions={() => onOpenActionsSheet(move)}
             />
           ))}
         </div>

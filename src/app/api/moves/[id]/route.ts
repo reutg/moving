@@ -3,8 +3,9 @@ import { z } from "zod";
 import {
   deleteMove,
   getMoveById,
+  PatchMoveInputSchema,
+  updateMove,
   updateMoveStatus,
-  UpdateMoveStatusInputSchema,
 } from "@/features/moves/services/move-service";
 import { withApi } from "@/lib/api/handler";
 import { badRequest } from "@/lib/errors";
@@ -31,8 +32,13 @@ export const PATCH = withApi(async (request, ctx: RouteParams) => {
   const body = await request.json().catch(() => null);
   if (body === null) throw badRequest("Expected JSON body");
 
-  const input = UpdateMoveStatusInputSchema.parse(body);
-  return updateMoveStatus(numericId, input.status);
+  const input = PatchMoveInputSchema.parse(body);
+
+  if ("status" in input) {
+    return updateMoveStatus(numericId, input.status);
+  }
+
+  return updateMove(numericId, input);
 });
 
 export const DELETE = withApi(async (_request, ctx: RouteParams) => {

@@ -12,6 +12,8 @@ interface DeletePromptProps {
   isDeleting: boolean;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  children?: React.ReactNode;
+  deleteText?: string;
 }
 
 const DeletePrompt: React.FC<DeletePromptProps> = ({
@@ -21,6 +23,8 @@ const DeletePrompt: React.FC<DeletePromptProps> = ({
   isDeleting,
   isOpen,
   onOpenChange,
+  children,
+  deleteText,
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -31,15 +35,24 @@ const DeletePrompt: React.FC<DeletePromptProps> = ({
           backgroundColor="var(--destructive-border)"
           iconColor="var(--destructive)"
         />
-        <h6 className="text-foreground text-center text-xl leading-tight font-bold">
-          Are you sure you want to delete {itemName}?
-        </h6>
-        <span className="text-foreground text-lg">This action cannot be undone.</span>
-        <div className="flex w-full items-center gap-2">
-          <Button variant="destructive-filled" onClick={onConfirm} loading={isDeleting}>
-            Delete
+        {children ?? (
+          <>
+            <h6 className="text-foreground text-center text-xl leading-tight font-bold">
+              Are you sure you want to delete {itemName}?
+            </h6>
+            <span className="text-foreground text-lg">This action cannot be undone.</span>
+          </>
+        )}
+        <div className="flex w-full flex-col items-center gap-2">
+          <Button
+            variant="destructive-filled"
+            onClick={onConfirm}
+            loading={isDeleting}
+            className="w-full md:w-auto"
+          >
+            {deleteText ?? "Delete"}
           </Button>
-          <Button variant="outline" onClick={onCancel}>
+          <Button variant="outline" onClick={onCancel} className="w-full md:w-auto">
             Cancel
           </Button>
         </div>

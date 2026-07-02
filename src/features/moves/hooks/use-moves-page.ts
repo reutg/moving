@@ -17,19 +17,20 @@ type UseMovesPageOptions = {
 type UseMovesPageResult = {
   otherMoves: Move[];
   selectedMove: Move | null;
-  settingMoveId: number | null;
+  pendingCurrentMoveId: number | null;
   isReActivating: boolean;
   isMarkingComplete: boolean;
-  isDeleting: boolean;
-  isOpen: boolean;
-  openDelete: () => void;
-  closeDelete: () => void;
+  isDeletingMove: boolean;
+  isDeleteMovePromptOpen: boolean;
+  openDeleteMovePrompt: () => void;
+  closeDeleteMovePrompt: () => void;
   getMoveDate: (move?: Move | null) => string;
-  selectMove: (move: Move | null) => void;
+  openActionsSheet: (move: Move) => void;
+  closeActionsSheet: () => void;
   setCurrentMove: (move: Move) => Promise<void>;
   handleReActivateMove: () => Promise<void>;
   handleMarkComplete: (move: Move | null) => Promise<void>;
-  handleDeleteMove: () => Promise<void>;
+  confirmDeleteMove: () => Promise<void>;
 };
 
 export const useMovesPage = ({
@@ -39,23 +40,27 @@ export const useMovesPage = ({
   const router = useRouter();
   const otherMoves = initialOtherMoves ?? [];
   const [selectedMove, setSelectedMove] = useState<Move | null>(null);
-  const [settingMoveId, setSettingMoveId] = useState<number | null>(null);
+  const [pendingCurrentMoveId, setPendingCurrentMoveId] = useState<number | null>(null);
   const [isReActivating, setIsReActivating] = useState(false);
   const [isMarkingComplete, setIsMarkingComplete] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isDeletingMove, setIsDeletingMove] = useState(false);
+  const [isDeleteMovePromptOpen, setIsDeleteMovePromptOpen] = useState(false);
 
-  const openDelete = () => {
-    setIsOpen(true);
+  const openDeleteMovePrompt = () => {
+    setIsDeleteMovePromptOpen(true);
   };
 
-  const closeDelete = () => {
-    setIsOpen(false);
-    setIsDeleting(false);
+  const closeDeleteMovePrompt = () => {
+    setIsDeleteMovePromptOpen(false);
+    setIsDeletingMove(false);
   };
 
-  const selectMove = (move: Move | null) => {
+  const openActionsSheet = (move: Move) => {
     setSelectedMove(move);
+  };
+
+  const closeActionsSheet = () => {
+    setSelectedMove(null);
   };
 
   const getMoveDate = (move?: Move | null) => {
@@ -81,11 +86,11 @@ export const useMovesPage = ({
   };
 
   const setCurrentMove = async (move: Move) => {
-    if (move.id === currentMoveId || settingMoveId !== null) {
+    if (move.id === currentMoveId || pendingCurrentMoveId !== null) {
       return;
     }
 
-    setSettingMoveId(move.id);
+    setPendingCurrentMoveId(move.id);
 
     try {
       const response = await fetch("/api/user/current-move", {
@@ -101,7 +106,7 @@ export const useMovesPage = ({
 
       router.refresh();
     } finally {
-      setSettingMoveId(null);
+      setPendingCurrentMoveId(null);
     }
   };
 
@@ -114,7 +119,7 @@ export const useMovesPage = ({
 
     try {
       await updateMoveStatus(selectedMove, DEFAULT_MOVE_STATUS);
-      setSelectedMove(null);
+      closeActionsSheet();
       router.refresh();
     } finally {
       setIsReActivating(false);
@@ -130,51 +135,56 @@ export const useMovesPage = ({
 
     try {
       await updateMoveStatus(move, DONE_MOVE_STATUS);
-      setSelectedMove(null);
+      closeActionsSheet();
       router.refresh();
     } finally {
       setIsMarkingComplete(false);
     }
   };
 
-  const handleDeleteMove = async () => {
-    if (!selectedMove || isDeleting) {
+  const confirmDeleteMove = async () => {
+    if (!selectedMove || isDeletingMove) {
       return;
     }
 
-    setIsDeleting(true);
+    setIsDeletingMove(true);
 
     try {
-      const response = await fetch(`/api/moves/${selectedMove.id}`, { method: "DELETE" });
-      const json: ApiResponse<{ id: number }> = await response.json();
+      const response = await fetch(`/api/moves/${selectedMove.id}`, {
+        method: "DELETE",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ id: selectedMove.id }),
+      });
+      const json: ApiResponse<void> = await response.json();
 
       if (!json.ok) {
-        return;
+        throw new Error(json.error.message);
       }
 
-      setSelectedMove(null);
-      setIsOpen(false);
+      closeActionsSheet();
+      setIsDeleteMovePromptOpen(false);
       router.refresh();
     } finally {
-      setIsDeleting(false);
+      setIsDeletingMove(false);
     }
   };
 
   return {
     otherMoves,
     selectedMove,
-    settingMoveId,
+    pendingCurrentMoveId,
     isReActivating,
     isMarkingComplete,
-    isDeleting,
-    isOpen,
+    isDeletingMove,
+    isDeleteMovePromptOpen,
     getMoveDate,
-    selectMove,
+    openActionsSheet,
+    closeActionsSheet,
     setCurrentMove,
     handleReActivateMove,
     handleMarkComplete,
-    handleDeleteMove,
-    openDelete,
-    closeDelete,
+    confirmDeleteMove,
+    openDeleteMovePrompt,
+    closeDeleteMovePrompt,
   };
 };

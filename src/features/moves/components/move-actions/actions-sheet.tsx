@@ -12,62 +12,63 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-interface ActionsSheetProps {
-  selectedMove: Move | null;
-  selectMove: (move: Move | null) => void;
+type ActionsSheetProps = {
+  move: Move | null;
+  onClose: () => void;
   getMoveDate: (move?: Move | null) => string;
   isReActivating: boolean;
   isMarkingComplete: boolean;
-  isDeleting: boolean;
-  handleReActivateMove: () => Promise<void>;
-  handleMarkComplete: (move: Move | null) => Promise<void>;
-  handleDeleteMove: () => void;
-}
+  isDeletingMove: boolean;
+  onReActivateMove: () => Promise<void>;
+  onMarkComplete: (move: Move | null) => Promise<void>;
+  onDeleteMove: () => void;
+};
 
-const ActionsSheet: React.FC<ActionsSheetProps> = ({
-  selectedMove,
-  selectMove,
+const ActionsSheet = ({
+  move,
+  onClose,
   getMoveDate,
   isReActivating,
   isMarkingComplete,
-  isDeleting,
-  handleReActivateMove,
-  handleMarkComplete,
-  handleDeleteMove,
-}) => {
-  const statusText = selectedMove?.status === "done" ? "Completed" : "Active";
+  isDeletingMove,
+  onReActivateMove,
+  onMarkComplete,
+  onDeleteMove,
+}: ActionsSheetProps) => {
+  const statusText = move?.status === "done" ? "Completed" : "Active";
+
   return (
-    <Sheet open={!!selectedMove} onOpenChange={(open) => !open && selectMove(null)}>
+    <Sheet open={!!move} onOpenChange={(open) => !open && onClose()}>
       <SheetContent showCloseButton={false} className="space-y-4">
         <div className="flex items-center gap-3">
           <IconTile icon={Box} size="sm" />
           <div className="flex flex-col gap-0.5">
-            <p className="text-foreground text-lg font-bold">{selectedMove?.name}</p>
+            <p className="text-foreground text-lg font-bold">{move?.name}</p>
             <div className="text-subtle-foreground flex items-center gap-1 text-sm font-thin">
               <Calendar className="size-4" />
               <span>{statusText}</span>
               <SeparatorDot />
-              <span>{selectedMove ? getMoveDate(selectedMove) : ""}</span>
+              <span>{move ? getMoveDate(move) : ""}</span>
             </div>
           </div>
         </div>
 
         <Card>
           <CardContent className="flex flex-col gap-4 p-0">
-            {selectedMove?.status === "done" ? (
+            {move?.status === "done" ? (
               <MakeMoveActiveButton
                 isReActivating={isReActivating}
-                handleReActivateMove={handleReActivateMove}
+                handleReActivateMove={onReActivateMove}
               />
             ) : (
               <MarkMoveCompleteButton
                 isMarkingComplete={isMarkingComplete}
-                handleMarkComplete={() => handleMarkComplete(selectedMove)}
+                handleMarkComplete={() => onMarkComplete(move)}
               />
             )}
             <Separator className="bg-border-light" />
 
-            <Link href={selectedMove ? `/boxes?moveId=${selectedMove.id}` : "/boxes"}>
+            <Link href={move ? `/boxes?moveId=${move.id}` : "/boxes"}>
               <div className="flex items-center justify-between px-4">
                 <div className="flex items-center gap-3">
                   <Box />
@@ -79,7 +80,7 @@ const ActionsSheet: React.FC<ActionsSheetProps> = ({
 
             <Separator className="bg-border-light" />
 
-            <Link href={`/moves/${selectedMove?.id}`}>
+            <Link href={`/moves/${move?.id}`}>
               <div className="flex items-center justify-between px-4">
                 <div className="flex items-center gap-3">
                   <Pencil />
@@ -94,8 +95,8 @@ const ActionsSheet: React.FC<ActionsSheetProps> = ({
         <Button
           variant="destructive"
           className="w-full"
-          onClick={() => void handleDeleteMove()}
-          disabled={isDeleting}
+          onClick={onDeleteMove}
+          disabled={isDeletingMove}
         >
           <Trash />
           Delete move

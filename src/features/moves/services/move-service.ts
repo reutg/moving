@@ -22,6 +22,10 @@ export const CreateMoveInputSchema = z
 
 export type CreateMoveInput = z.infer<typeof CreateMoveInputSchema>;
 
+export const UpdateMoveInputSchema = CreateMoveInputSchema;
+
+export type UpdateMoveInput = z.infer<typeof UpdateMoveInputSchema>;
+
 export const UpdateMoveStatusInputSchema = z
   .object({
     status: z.enum(MOVE_STATUSES),
@@ -29,6 +33,8 @@ export const UpdateMoveStatusInputSchema = z
   .strict();
 
 export type UpdateMoveStatusInput = z.infer<typeof UpdateMoveStatusInputSchema>;
+
+export const PatchMoveInputSchema = z.union([UpdateMoveStatusInputSchema, UpdateMoveInputSchema]);
 
 export const SetCurrentMoveInputSchema = z
   .object({
@@ -208,24 +214,34 @@ export const getMoveById = async (id: number): Promise<MoveWithBoxesCount> => {
   return attachBoxesCount(move);
 };
 
-export const deleteMove = async (id: number): Promise<void> => {
+export const updateMove = async (
+  id: number,
+  input: UpdateMoveInput,
+): Promise<MoveWithBoxesCount> => {
   const userId = await getAuthenticatedUserId();
-  const user = await getUserById(userId);
 
-  const result = await db
-    .delete(moves)
+  const updated = await db
+    .update(moves)
+    .set({
+      name: input.name,
+      address: input.address,
+      moveDate: input.moveDate,
+      updatedAt: new Date(),
+    })
     .where(and(eq(moves.id, id), eq(moves.userId, userId)))
-    .run();
+    .returning()
+    .all();
 
-  if (result.rowsAffected === 0) {
+  const result = updated[0];
+  if (!result) {
     throw notFound(`Move ${id} not found`);
   }
 
-  if (user.currentMoveId !== id) {
-    return;
-  }
+  return attachBoxesCount(result);
+};
 
-  const [nextMove] = await db
+const findNextCurrentMove = async (userId: string) => {
+  const [move] = await db
     .select()
     .from(moves)
     .where(eq(moves.userId, userId))
@@ -233,11 +249,41 @@ export const deleteMove = async (id: number): Promise<void> => {
     .limit(1)
     .all();
 
+  return move;
+};
+
+const updateCurrentMove = async (userId: string): Promise<void> => {
+  const nextMove = await findNextCurrentMove(userId);
+
   await db
     .update(users)
     .set({ currentMoveId: nextMove?.id ?? null })
     .where(eq(users.id, userId))
     .run();
+};
+
+export const deleteMove = async (id: number): Promise<void> => {
+  const userId = await getAuthenticatedUserId();
+  const user = await getUserById(userId);
+
+  await getMoveById(id);
+
+  await db.transaction(async (tx) => {
+    await tx.delete(boxes).where(eq(boxes.moveId, id)).run();
+
+    const result = await tx
+      .delete(moves)
+      .where(and(eq(moves.id, id), eq(moves.userId, userId)))
+      .run();
+
+    if (result.rowsAffected === 0) {
+      throw notFound(`Move ${id} not found`);
+    }
+  });
+
+  if (user.currentMoveId === id) {
+    await updateCurrentMove(userId);
+  }
 };
 
 export const updateMoveStatus = async (

@@ -17,19 +17,20 @@ const MovesOverview = ({ currentMove, initialOtherMoves }: MovesOverviewProps) =
   const {
     otherMoves,
     selectedMove,
-    settingMoveId,
+    pendingCurrentMoveId,
     isReActivating,
     isMarkingComplete,
-    isDeleting,
-    isOpen,
+    isDeletingMove,
+    isDeleteMovePromptOpen,
     getMoveDate,
-    selectMove,
+    openActionsSheet,
+    closeActionsSheet,
     setCurrentMove,
     handleReActivateMove,
     handleMarkComplete,
-    handleDeleteMove,
-    openDelete,
-    closeDelete,
+    confirmDeleteMove,
+    openDeleteMovePrompt,
+    closeDeleteMovePrompt,
   } = useMovesPage({
     currentMoveId: currentMove?.id ?? null,
     initialOtherMoves,
@@ -37,34 +38,52 @@ const MovesOverview = ({ currentMove, initialOtherMoves }: MovesOverviewProps) =
 
   return (
     <>
-      <ActiveMove move={currentMove} getMoveDate={getMoveDate} selectMove={selectMove} />
+      <ActiveMove
+        move={currentMove}
+        getMoveDate={getMoveDate}
+        onOpenActionsSheet={openActionsSheet}
+      />
       <PastMoves
         otherMoves={otherMoves}
-        settingMoveId={settingMoveId}
+        pendingCurrentMoveId={pendingCurrentMoveId}
         onSelectMove={(move) => void setCurrentMove(move)}
-        onOpenActions={selectMove}
+        onOpenActionsSheet={openActionsSheet}
       />
 
       <ActionsSheet
-        selectedMove={selectedMove}
-        selectMove={selectMove}
+        move={selectedMove}
+        onClose={closeActionsSheet}
         getMoveDate={getMoveDate}
         isReActivating={isReActivating}
         isMarkingComplete={isMarkingComplete}
-        isDeleting={isDeleting}
-        handleReActivateMove={handleReActivateMove}
-        handleMarkComplete={handleMarkComplete}
-        handleDeleteMove={openDelete}
+        isDeletingMove={isDeletingMove}
+        onReActivateMove={handleReActivateMove}
+        onMarkComplete={handleMarkComplete}
+        onDeleteMove={openDeleteMovePrompt}
       />
 
       <DeletePrompt
         itemName={selectedMove?.name ?? ""}
-        onConfirm={handleDeleteMove}
-        onCancel={closeDelete}
-        isDeleting={isDeleting}
-        isOpen={isOpen}
-        onOpenChange={closeDelete}
-      />
+        onConfirm={confirmDeleteMove}
+        onCancel={closeDeleteMovePrompt}
+        isDeleting={isDeletingMove}
+        isOpen={isDeleteMovePromptOpen}
+        onOpenChange={closeDeleteMovePrompt}
+        deleteText={selectedMove?.boxesCount ? "Delete Move & boxes" : "Delete move"}
+      >
+        {selectedMove?.boxesCount && (
+          <>
+            <h6 className="text-foreground text-center text-xl leading-tight font-bold">
+              Delete {selectedMove?.name}?
+            </h6>
+            <span className="text-muted-foreground text-center text-lg">
+              This move has {selectedMove?.boxesCount ?? 0} boxes packed. <br />
+              Deleting the move will also delete all of its boxes and QR labels - this can't be
+              undone.
+            </span>
+          </>
+        )}
+      </DeletePrompt>
     </>
   );
 };

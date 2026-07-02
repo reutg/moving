@@ -43,8 +43,8 @@ export const useMoveForm = (move?: Move) => {
     setSubmitError(null);
 
     try {
-      const response = await fetch("/api/moves", {
-        method: "POST",
+      const response = await fetch(move ? `/api/moves/${move.id}` : "/api/moves", {
+        method: move ? "PATCH" : "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(values),
       });
@@ -55,8 +55,7 @@ export const useMoveForm = (move?: Move) => {
         return;
       }
 
-      router.push("/");
-      router.refresh();
+      router.push(move ? "/moves" : "/");
     } catch (cause) {
       setSubmitError(cause instanceof Error ? cause.message : "Failed to save move.");
     }

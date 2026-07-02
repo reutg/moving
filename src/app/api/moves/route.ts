@@ -3,6 +3,7 @@ import { withApi } from "@/lib/api/handler";
 import {
   createMove,
   CreateMoveInputSchema,
+  deleteMove,
   listMoves,
 } from "@/features/moves/services/move-service";
 
@@ -18,3 +19,8 @@ export const POST = withApi(
   },
   { status: 201 },
 );
+
+export const DELETE = withApi(async (request) => {
+  const { id } = await request.json();
+  return deleteMove(id);
+});

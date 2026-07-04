@@ -8,6 +8,7 @@ import type { Box } from "@/lib/db/schema";
 import { useBoxesList } from "../../hooks/use-boxes-list";
 import RoomFilter from "./room-filter";
 import BoxCard from "../../box-card";
+import { Card, CardContent } from "@/components/ui/card";
 
 type BoxesListProps = {
   moveId: number;
@@ -45,11 +46,15 @@ const BoxesList = ({ moveId, initialBoxes, initialStatusCounts }: BoxesListProps
       />
       <RoomFilter selectedRoom={selectedRoom} handleSelectRoom={handleSelectRoom} />
 
-      <div className="flex flex-col gap-2">
-        {filteredBoxes.map((box) => (
-          <BoxCard key={box.id} box={box} />
-        ))}
-      </div>
+      <Card className="p-0">
+        <CardContent>
+          <div className="divide-border divide-y">
+            {filteredBoxes.map((box) => (
+              <BoxCard key={box.id} box={box} />
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </>
   );
 };

@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import IconTile from "@/components/ui/icon-tile";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   BOX_STATUS_LABELS,
   COMMON_LOCATIONS,
@@ -34,43 +33,34 @@ const BoxCard = ({ box }: BoxCardProps) => {
   const destinationRoom = COMMON_LOCATIONS[roomKey] ?? box.destinationRoom;
 
   return (
-    <Card className="rounded-xl transition-colors">
-      <CardContent className="flex items-center gap-3.5">
-        <Link
-          href={`/boxes/${box.id}/preview`}
-          className="flex min-w-0 flex-1 items-center gap-3.5"
-        >
-          <IconTile
-            icon={RoomIcon}
-            backgroundColor={tileColors.backgroundColor}
-            iconColor={tileColors.iconColor}
+    <Link
+      href={`/boxes/${box.id}/preview`}
+      className="flex min-w-0 flex-1 items-center gap-3.5 py-3.5"
+    >
+      <IconTile
+        icon={RoomIcon}
+        backgroundColor={tileColors.backgroundColor}
+        iconColor={tileColors.iconColor}
+      />
+
+      <div className="min-w-0 flex-1">
+        <div className="mb-1 flex items-center justify-between gap-2">
+          <Chip
+            label={`Box ${box.number}`}
+            size="sm"
+            className="bg-muted text-muted-foreground px-1.5 py-0.5 font-mono font-bold tracking-wide uppercase"
           />
+          <span
+            className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_CHIP_CLASS[status]}`}
+          >
+            {BOX_STATUS_LABELS[status]}
+          </span>
+        </div>
 
-          <div className="min-w-0 flex-1">
-            <div className="mb-1 flex items-center justify-between gap-2">
-              <Chip
-                label={`Box ${box.number}`}
-                size="sm"
-                className="bg-muted text-muted-foreground px-1.5 py-0.5 font-mono font-bold tracking-wide uppercase"
-              />
-              <span
-                className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_CHIP_CLASS[status]}`}
-              >
-                {BOX_STATUS_LABELS[status]}
-              </span>
-            </div>
-
-            <div className="truncate text-[15px] font-semibold">{box.name}</div>
-            <div className="text-muted-foreground truncate text-[13px]">{destinationRoom}</div>
-            {box.description ? (
-              <div className="text-muted-foreground/70 truncate text-[13px]">{box.description}</div>
-            ) : null}
-          </div>
-        </Link>
-
-        <BoxCardPrintButton box={box} />
-      </CardContent>
-    </Card>
+        <div className="truncate text-[15px] font-semibold">{box.name}</div>
+        <div className="text-muted-foreground truncate text-sm">{destinationRoom}</div>
+      </div>
+    </Link>
   );
 };
 

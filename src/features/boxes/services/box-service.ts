@@ -9,7 +9,11 @@ import {
   type CommonLocationKey,
   getLocationKeyByName,
 } from "@/constants/common-locations";
-import { getCurrentMoveId, getMoveById } from "@/features/moves/services/move-service";
+import {
+  getCurrentMove,
+  getCurrentMoveId,
+  getMoveById,
+} from "@/features/moves/services/move-service";
 import type { BoxStatusCounts } from "@/features/boxes/types/box-status-counts";
 import { db } from "@/lib/db/client";
 import { type Box, boxes } from "@/lib/db/schema";
@@ -81,13 +85,23 @@ export const ListBoxesQuerySchema = z.object({
 
 export type ListBoxesQuery = z.infer<typeof ListBoxesQuerySchema>;
 
-const resolveMoveId = async (moveId?: number): Promise<number> => {
+const resolveMoveId = async (moveId?: number): Promise<number | null> => {
   if (moveId !== undefined) {
     const move = await getMoveById(moveId);
     return move.id;
   }
 
-  return getCurrentMoveId();
+  const currentMove = await getCurrentMove();
+  return currentMove?.id ?? null;
+};
+
+const emptyStatusCounts = (): BoxStatusCounts => {
+  const byStatus = Object.fromEntries(BOX_STATUSES.map((status) => [status, 0])) as Record<
+    BoxStatus,
+    number
+  >;
+
+  return { ...byStatus, total: 0 };
 };
 
 const matchesSearchTerm = (value: string, search: string) =>
@@ -104,6 +118,9 @@ const getNextBoxNumber = async (moveId: number): Promise<number> => {
 
 export async function listBoxes(moveId?: number): Promise<Box[]> {
   const resolvedMoveId = await resolveMoveId(moveId);
+  if (resolvedMoveId === null) {
+    return [];
+  }
 
   return db
     .select()
@@ -113,7 +130,10 @@ export async function listBoxes(moveId?: number): Promise<Box[]> {
 }
 
 export async function listRecentlyUpdatedBoxes(limit = 3): Promise<Box[]> {
-  const moveId = await getCurrentMoveId();
+  const moveId = await resolveMoveId();
+  if (moveId === null) {
+    return [];
+  }
 
   return db
     .select()
@@ -124,7 +144,11 @@ export async function listRecentlyUpdatedBoxes(limit = 3): Promise<Box[]> {
 }
 
 export async function searchBoxes({ query }: SearchBoxesQuery): Promise<Box[]> {
-  const moveId = await getCurrentMoveId();
+  const moveId = await resolveMoveId();
+  if (moveId === null) {
+    return [];
+  }
+
   const term = `%${query}%`;
 
   const matchingRoomKeys = (Object.entries(COMMON_LOCATIONS) as [CommonLocationKey, string][])
@@ -171,6 +195,10 @@ export async function filterBoxes(
   moveId?: number,
 ): Promise<Box[]> {
   const resolvedMoveId = await resolveMoveId(moveId);
+  if (resolvedMoveId === null) {
+    return [];
+  }
+
   const conditions = [eq(boxes.moveId, resolvedMoveId)];
 
   if (status.length > 0) {
@@ -251,6 +279,10 @@ const loadStatusCounts = async (moveId: number): Promise<Record<BoxStatus, numbe
 
 export const getBoxStatusCounts = async (moveId?: number): Promise<BoxStatusCounts> => {
   const resolvedMoveId = await resolveMoveId(moveId);
+  if (resolvedMoveId === null) {
+    return emptyStatusCounts();
+  }
+
   const byStatus = await loadStatusCounts(resolvedMoveId);
   const total = BOX_STATUSES.reduce((sum, status) => sum + byStatus[status], 0);
 
@@ -258,7 +290,11 @@ export const getBoxStatusCounts = async (moveId?: number): Promise<BoxStatusCoun
 };
 
 export async function getBoxesSummary(): Promise<BoxesSummary> {
-  const moveId = await getCurrentMoveId();
+  const moveId = await resolveMoveId();
+  if (moveId === null) {
+    const { total: _total, ...byStatus } = emptyStatusCounts();
+    return { byStatus, byDestinationRoom: {} };
+  }
 
   const [byStatus, roomRows] = await Promise.all([
     loadStatusCounts(moveId),

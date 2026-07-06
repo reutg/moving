@@ -13,7 +13,7 @@ const RoomFilter: React.FC<RoomFilterProps> = ({ selectedRoom, handleSelectRoom 
     selectedRoom === room ? "default" : "outline";
 
   return (
-    <div className="flex w-full gap-2 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+    <div className="flex w-full [scrollbar-width:none] gap-2 overflow-x-auto [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       <Button
         className="w-auto shrink-0"
         onClick={() => handleSelectRoom(null)}
@@ -22,17 +22,19 @@ const RoomFilter: React.FC<RoomFilterProps> = ({ selectedRoom, handleSelectRoom 
       >
         All rooms
       </Button>
-      {(Object.entries(COMMON_LOCATIONS) as [CommonLocationKey, string][]).map(([roomKey, roomLabel]) => (
-        <Button
-          key={roomKey}
-          className="w-auto shrink-0"
-          onClick={() => handleSelectRoom(roomKey)}
-          variant={buttonVariant(roomKey)}
-          shape="pill"
-        >
-          {roomLabel}
-        </Button>
-      ))}
+      {(Object.entries(COMMON_LOCATIONS) as [CommonLocationKey, string][]).map(
+        ([roomKey, roomLabel]) => (
+          <Button
+            key={roomKey}
+            className="w-auto shrink-0"
+            onClick={() => handleSelectRoom(roomKey)}
+            variant={buttonVariant(roomKey)}
+            shape="pill"
+          >
+            {roomLabel}
+          </Button>
+        ),
+      )}
     </div>
   );
 };

@@ -40,7 +40,7 @@ const buttonVariants = cva(
       },
       shape: {
         default: "",
-        pill: "rounded-full px-3.5 py-2",
+        pill: "rounded-full px-3 py-2 text-sm h-fit",
       },
     },
     defaultVariants: {

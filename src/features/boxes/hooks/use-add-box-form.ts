@@ -37,7 +37,6 @@ export const useAddBoxForm = (box?: Box) => {
     setValue,
     handleSubmit,
     formState: { isSubmitting, isDirty },
-    watch,
   } = useForm<BoxFormValues>({
     resolver: zodResolver(BoxFormValuesSchema),
     defaultValues: box ? { ...defaultValues, ...box } : defaultValues,

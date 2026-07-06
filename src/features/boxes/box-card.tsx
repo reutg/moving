@@ -13,8 +13,8 @@ import {
 } from "@/constants";
 import type { Box } from "@/lib/db/schema";
 
-import BoxCardPrintButton from "./box-card-print-button";
 import Chip from "@/components/ui/chip";
+import SeparatorDot from "@/components/ui/separator-dot";
 
 type BoxCardProps = {
   box: Box;
@@ -41,25 +41,22 @@ const BoxCard = ({ box }: BoxCardProps) => {
         icon={RoomIcon}
         backgroundColor={tileColors.backgroundColor}
         iconColor={tileColors.iconColor}
+        size="sm"
       />
 
       <div className="min-w-0 flex-1">
-        <div className="mb-1 flex items-center justify-between gap-2">
-          <Chip
-            label={`Box ${box.number}`}
-            size="sm"
-            className="bg-muted text-muted-foreground px-1.5 py-0.5 font-mono font-bold tracking-wide uppercase"
-          />
-          <span
-            className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_CHIP_CLASS[status]}`}
-          >
-            {BOX_STATUS_LABELS[status]}
-          </span>
-        </div>
-
         <div className="truncate text-[15px] font-semibold">{box.name}</div>
-        <div className="text-muted-foreground truncate text-sm">{destinationRoom}</div>
+        <div className="flex items-center gap-2 text-sm">
+          <span className="text-muted-foreground font-thin">Box {box.number}</span>
+          <SeparatorDot />
+          <span className="text-muted-foreground truncate">{destinationRoom}</span>
+        </div>
       </div>
+      <Chip
+        size="sm"
+        label={BOX_STATUS_LABELS[status]}
+        className={`${STATUS_CHIP_CLASS[status]}`}
+      />
     </Link>
   );
 };

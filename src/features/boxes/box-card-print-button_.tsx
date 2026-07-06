@@ -33,7 +33,7 @@ const BoxCardPrintButton = ({ box, className }: BoxCardPrintButtonProps) => {
         aria-label={`Print label for box ${box.number}`}
         onClick={openDialog}
         className={cn(
-          "flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground transition-colors hover:bg-border",
+          "bg-muted text-muted-foreground hover:bg-border flex size-9 shrink-0 items-center justify-center rounded-lg transition-colors",
           className,
         )}
       >

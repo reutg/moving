@@ -61,14 +61,16 @@ const PreviewBoxPage: React.FC<PreviewBoxPageProps> = async ({ params }) => {
             </span>
 
             <SeparatorDot />
-            <span className="text-muted-foreground text-sm leading-tight font-medium tracking-tight">
-              {`Created ${formatDate(box.createdAt, "MMM DD")}`}
-            </span>
 
-            <SeparatorDot />
-
-            <Chip label={BOX_STATUS_LABELS[box.status]} className={STATUS_CLASS[box.status]} />
+            <Chip
+              label={BOX_STATUS_LABELS[box.status]}
+              className={STATUS_CLASS[box.status]}
+              size="sm"
+            />
           </div>
+          <span className="text-muted-foreground text-xs leading-tight font-light tracking-tight">
+            {`Created ${formatDate(box.createdAt, "MMM DD")}`}
+          </span>
         </div>
       </div>
 
@@ -100,9 +102,9 @@ const PreviewBoxPage: React.FC<PreviewBoxPageProps> = async ({ params }) => {
         </CardContent>
       </Card>
 
-      <Button>
+      <ButtonLink href={`/boxes/${box.id}/print-label`}>
         <Printer /> Print label
-      </Button>
+      </ButtonLink>
 
       <div className="flex gap-2">
         <ButtonLink href={`/boxes/${box.id}/edit`} className="min-w-0 flex-1" variant="outline">

@@ -1,49 +1,56 @@
 import { toPng } from "html-to-image";
-import { useRef, useState } from "react";
+import { useRef } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import type { Box } from "@/lib/db/schema";
 import { appUrl } from "@/lib/app-url";
 
-export type LabelPart = "boxNumber" | "name" | "qrCode";
+import { DEFAULT_LABEL_SIZE, getLabelPixelSize } from "../constants/label-sizes";
+import { BoxLabelSchema, type BoxLabelValues } from "../schemas/box-label-schema";
 
-type LabelContent = Record<LabelPart, boolean>;
-
-const INITIAL_LABEL_CONTENT: LabelContent = {
+const INITIAL_LABEL_CONTENT: BoxLabelValues["content"] = {
   boxNumber: true,
   name: true,
   qrCode: true,
 };
 
+const hasVisibleLabelContent = (content: BoxLabelValues["content"]) =>
+  Object.values(content).some(Boolean);
+
 const useBoxLabelActions = (box: Box) => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [labelContent, setLabelContent] = useState<LabelContent>(INITIAL_LABEL_CONTENT);
-  const [linkCopied, setLinkCopied] = useState(false);
+  const form = useForm<BoxLabelValues>({
+    resolver: zodResolver(BoxLabelSchema),
+    defaultValues: {
+      size: DEFAULT_LABEL_SIZE,
+      copies: 1,
+      content: INITIAL_LABEL_CONTENT,
+    },
+  });
+
   const labelRef = useRef<HTMLDivElement>(null);
 
-  const showError = Object.values(labelContent).every((value) => !value);
-
-  const openDialog = () => {
-    setIsDialogOpen(true);
-  };
-
-  const closeDialog = () => {
-    setIsDialogOpen(false);
-  };
-
-  const toggleLabelContent = (part: LabelPart) => {
-    setLabelContent((prev) => ({ ...prev, [part]: !prev[part] }));
-  };
-
   const handlePrintLabel = () => {
-    if (showError) return;
+    const values = form.getValues();
+    if (!hasVisibleLabelContent(values.content)) {
+      return;
+    }
+
     window.print();
   };
 
   const handleSaveLabel = async () => {
-    if (showError) return;
-    if (!labelRef.current) return;
+    const values = form.getValues();
+    if (!hasVisibleLabelContent(values.content)) {
+      return;
+    }
 
-    const dataUrl = await toPng(labelRef.current, { pixelRatio: 2 });
+    if (!labelRef.current) {
+      return;
+    }
+
+    const { width, height } = getLabelPixelSize(values.size);
+    const dataUrl = await toPng(labelRef.current, { width, height, pixelRatio: 1 });
     const link = document.createElement("a");
     link.href = dataUrl;
     link.download = `box-${box.number}-label.png`;
@@ -58,24 +65,22 @@ const useBoxLabelActions = (box: Box) => {
         await navigator.share({ title: box.name, url });
         return;
       } catch (cause) {
-        if (cause instanceof Error && cause.name === "AbortError") return;
+        if (cause instanceof Error && cause.name === "AbortError") {
+          return;
+        }
       }
     }
 
     await navigator.clipboard.writeText(url);
-    setLinkCopied(true);
-    window.setTimeout(() => setLinkCopied(false), 2000);
   };
 
+  const content = form.watch("content");
+  const showError = !hasVisibleLabelContent(content);
+
   return {
-    isDialogOpen,
-    labelContent,
+    form,
     labelRef,
     showError,
-    linkCopied,
-    openDialog,
-    closeDialog,
-    toggleLabelContent,
     handlePrintLabel,
     handleSaveLabel,
     handleShareLink,

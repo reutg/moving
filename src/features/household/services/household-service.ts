@@ -336,10 +336,12 @@ const insertPendingHouseholdInvite = async ({
   householdId,
   email,
   invitedByUserId,
+  token,
 }: {
   householdId: number;
   email: string;
   invitedByUserId: string;
+  token: string;
 }): Promise<HouseholdInvite> => {
   const expiresAt = new Date(Date.now() + HOUSEHOLD_INVITE_TTL_MS);
 
@@ -349,6 +351,7 @@ const insertPendingHouseholdInvite = async ({
       householdId,
       email,
       invitedByUserId,
+      token,
       expiresAt,
     })
     .returning()
@@ -363,12 +366,12 @@ const insertPendingHouseholdInvite = async ({
 };
 
 const sendInviteEmailForHousehold = async ({
-  invite,
+  inviteToken,
   household,
   inviterName,
   to,
 }: {
-  invite: HouseholdInvite;
+  inviteToken: string;
   household: Household;
   inviterName: string | null;
   to: string;
@@ -376,7 +379,7 @@ const sendInviteEmailForHousehold = async ({
   await sendHouseholdInviteEmail({
     to,
     householdName: household.name,
-    inviteUrl: buildInviteUrl(invite.token),
+    inviteUrl: buildInviteUrl(inviteToken),
     inviterName,
   });
 };
@@ -431,17 +434,20 @@ export const createHouseholdInvite = async (
   await assertEmailIsNotExistingMember(householdId, input.email);
   await assertNoActiveInviteExistsForEmail(householdId, input.email);
 
+  const inviteToken = crypto.randomUUID();
+
+  await sendInviteEmailForHousehold({
+    inviteToken,
+    household,
+    inviterName: inviter.name,
+    to: input.email,
+  });
+
   const invite = await insertPendingHouseholdInvite({
     householdId,
     email: input.email,
     invitedByUserId: userId,
-  });
-
-  await sendInviteEmailForHousehold({
-    invite,
-    household,
-    inviterName: inviter.name,
-    to: input.email,
+    token: inviteToken,
   });
 
   return toInviteSummary(invite);

@@ -4,8 +4,8 @@ import { badRequest } from "@/lib/errors";
 import {
   createHouseholdInvite,
   CreateHouseholdInviteInputSchema,
-  ListHouseholdInvitesQuerySchema,
   listHouseholdInvites,
+  ListHouseholdInvitesQuerySchema,
 } from "@/features/household/services/household-service";
 
 export const GET = withApi(async (request) => {

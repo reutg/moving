@@ -2,9 +2,10 @@
 
 import { type FieldValues, useController } from "react-hook-form";
 
-import { Field, FieldDescription, FieldError, FieldLabel } from "../ui/field";
 import { DateInput } from "../ui/date-input";
-import { Input } from "../ui/input";
+import { Field, FieldDescription, FieldError, FieldLabel } from "../ui/field";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "../ui/input-group";
+
 import type { FormFieldProps } from "./types";
 
 const FormInput = <T extends FieldValues>({
@@ -14,6 +15,7 @@ const FormInput = <T extends FieldValues>({
   placeholder,
   type = "text",
   control,
+  icon,
 }: FormFieldProps<T>) => {
   const {
     field,
@@ -30,9 +32,20 @@ const FormInput = <T extends FieldValues>({
 
   return (
     <Field data-invalid={!!errors[name]}>
-      <FieldLabel htmlFor={name}>{label}</FieldLabel>
-      {type === "date" ? <DateInput {...inputProps} /> : <Input {...inputProps} type={type} />}
-      {description && <FieldDescription>{description}</FieldDescription>}
+      {label && <FieldLabel htmlFor={name}>{label}</FieldLabel>}
+      {type === "date" ? (
+        <DateInput {...inputProps} />
+      ) : (
+        <InputGroup>
+          <InputGroupAddon>{icon}</InputGroupAddon>
+          <InputGroupInput {...inputProps} type={type} />
+        </InputGroup>
+      )}
+      {description && (
+        <FieldDescription className="text-input-placeholder text-sm font-light">
+          {description}
+        </FieldDescription>
+      )}
       {errors[name] && <FieldError>{errors[name]?.message as string}</FieldError>}
     </Field>
   );

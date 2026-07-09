@@ -1,8 +1,11 @@
-import Link from "next/link";
 import type { ComponentProps } from "react";
+
+import Link from "next/link";
+
 import type { VariantProps } from "class-variance-authority";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import type { buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 
 type ButtonLinkProps = ComponentProps<typeof Link> & VariantProps<typeof buttonVariants>;
 

@@ -1,6 +1,18 @@
-import { User } from "next-auth";
+import type { User } from "next-auth";
+
+const getFirstLetter = (name?: string | null) => {
+  return name?.[0]?.toUpperCase() ?? "";
+};
 
 export const getUserInitials = (user: User) => {
-  const { firstName, lastName } = user;
-  return `${firstName?.[0] ?? ""}${lastName?.[0] ?? ""}`;
+  const { firstName, lastName, name } = user;
+  if (name) {
+    return name
+      .split(" ")
+      .map((name) => name[0])
+      .join("")
+      .toUpperCase();
+  }
+
+  return `${getFirstLetter(firstName)}${getFirstLetter(lastName)}`;
 };

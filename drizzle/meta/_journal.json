@@ -92,6 +92,13 @@
       "when": 1782200000003,
       "tag": "0012_user_current_move",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "6",
+      "when": 1782200000004,
+      "tag": "0013_households",
+      "breakpoints": true
     }
   ]
 }

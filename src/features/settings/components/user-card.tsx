@@ -1,72 +1,45 @@
-"use client";
+import type { ReactNode } from "react";
 
-import Avatar from "@/components/avatar";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 import type { User } from "next-auth";
 
-import { useUserCard } from "../hooks/use-user-card";
-import { SectionSubheader } from "@/components/ui/text";
+import { getUserInitials } from "@/lib/app-utils";
 
-interface UserCardProps {
+import Avatar from "@/components/avatar";
+import { Card, CardContent } from "@/components/ui/card";
+import SeparatorDot from "@/components/ui/separator-dot";
+
+type UserCardProps = {
   user: User;
-}
+  trailing?: ReactNode;
+  currentUser?: boolean;
+};
 
-const UserCard: React.FC<UserCardProps> = ({ user }) => {
-  const {
-    isEditing,
-    isSaving,
-    nameValue,
-    setNameValue,
-    handleEdit,
-    cancelEdit,
-    handleSave,
-    initials,
-    name,
-    image,
-  } = useUserCard(user);
+const UserCard = ({ user, trailing, currentUser }: UserCardProps) => {
+  const initials = getUserInitials(user);
 
   return (
     <Card>
       <CardContent className="flex items-center justify-between">
-        {isEditing ? (
-          <div className="flex w-full flex-col gap-2">
-            <SectionSubheader>Your name</SectionSubheader>
-            <Input
-              type="text"
-              value={nameValue || ""}
-              onChange={(event) => setNameValue(event.target.value)}
-            />
-            <div className="flex items-center gap-2.5">
-              <Button variant="default" onClick={handleSave} disabled={isSaving}>
-                Save
-              </Button>
-              <Button variant="outline" onClick={cancelEdit}>
-                Cancel
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <>
-            <div className="flex items-center gap-4">
-              <Avatar src={image || ""} alt={name || ""} fallback={initials} size="xl" />
-              <div>
-                <h3 className="text-foreground text-lg font-semibold">{user.name}</h3>
-                <p className="text-subtle-foreground text-sm">{user.email}</p>
-              </div>
-            </div>
+        <div className="flex items-center gap-4">
+          <Avatar src={user.image ?? ""} alt={user.name || ""} fallback={initials} size="xl" />
+          <div>
+            <div className="flex items-center gap-1">
+              <h3 className="text-foreground text-lg leading-none font-semibold">{user.name}</h3>
 
-            <Button
-              className="h-fit w-fit px-[13px] py-[7px]"
-              variant="secondary"
-              onClick={handleEdit}
-            >
-              Edit
-            </Button>
-          </>
-        )}
+              {currentUser && (
+                <div className="flex items-center gap-1 pt-0.5">
+                  <SeparatorDot />
+                  <span className="text-subtle-foreground text-sm leading-none font-light">
+                    You
+                  </span>
+                </div>
+              )}
+            </div>
+            <p className="text-subtle-foreground text-sm">{user.email}</p>
+          </div>
+        </div>
+
+        {trailing}
       </CardContent>
     </Card>
   );

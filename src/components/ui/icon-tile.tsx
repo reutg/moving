@@ -25,7 +25,7 @@ type IconTileSize = keyof typeof sizeStyles;
 type IconTileVariant = keyof typeof variantStyles;
 
 type IconTileProps = {
-  icon: LucideIcon;
+  icon?: LucideIcon;
   className?: string;
   iconSize?: string;
   size?: IconTileSize;
@@ -65,11 +65,13 @@ const IconTile = ({
         )}
         style={{ backgroundColor }}
       >
-        <Icon
-          className={cn(iconOnly ? iconClassName : cn("mb-0.5", iconClassName))}
-          color={iconColor}
-          strokeWidth={2}
-        />
+        {Icon && (
+          <Icon
+            className={cn(iconOnly ? iconClassName : cn("mb-0.5", iconClassName))}
+            color={iconColor}
+            strokeWidth={2}
+          />
+        )}
         {label ? (
           <span className="text-[17px] leading-none font-bold" style={{ color: labelColor }}>
             {label}
@@ -90,7 +92,7 @@ const IconTile = ({
         className,
       )}
     >
-      <Icon className={cn(variantStyle.icon, iconClassName)} />
+      {Icon && <Icon className={cn(variantStyle.icon, iconClassName)} />}
     </div>
   );
 };

@@ -57,6 +57,10 @@
   --color-progress-background: var(--progress-background);
   --color-chip-text: var(--chip-text);
   --color-chip-background: var(--chip-background);
+  --color-chip-background-invited: var(--chip-background-invited);
+  --color-chip-text-invited: var(--chip-text-invited);
+  --color-chip-background-member: var(--chip-background-member);
+  --color-chip-text-member: var(--chip-text-member);
   --color-input-border: var(--input-border);
   --color-input-text: var(--input-text);
   --color-input-placeholder: var(--input-placeholder);
@@ -115,6 +119,10 @@
   /* Chip */
   --chip-text: #2f6f62;
   --chip-background: #dceee8;
+  --chip-background-invited: #f6ebcf;
+  --chip-text-invited: #9a7a1e;
+  --chip-background-member: #f0f0f2;
+  --chip-text-member: #71717a;
 
   /* AI accent */
   --ai: #c08457;

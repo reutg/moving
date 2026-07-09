@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import type { Metadata, Viewport } from "next";
 
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
+import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
 
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="flex h-dvh flex-col">
         {children}
         <ServiceWorkerRegistration />
+        <Toaster />
       </body>
     </html>
   );

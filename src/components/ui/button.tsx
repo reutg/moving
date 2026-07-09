@@ -25,6 +25,7 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         selected: "text-primary font-semibold h-9.5",
         unselected: "text-[#8A8A8F] font-normal h-9.5",
+        icon: "size-10 bg-background text-[#9A9AA0] rounded-full border border-border",
       },
       size: {
         default:
@@ -34,8 +35,9 @@ const buttonVariants = cva(
         lg: "h-9 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
         icon: "size-10 [&_svg:not([class*='size-'])]:size-5",
         "icon-xs":
-          "size-6 rounded-lg in-data-[slot=button-group]:rounded-lg [&_svg:not([class*='size-'])]:size-3",
-        "icon-sm": "size-7 rounded-lg in-data-[slot=button-group]:rounded-lg",
+          "size-6 rounded-full in-data-[slot=button-group]:rounded-full [&_svg:not([class*='size-'])]:size-3",
+        "icon-sm":
+          "size-8 rounded-full in-data-[slot=button-group]:rounded-full [&_svg:not([class*='size-'])]:size-4",
         "icon-lg": "size-9",
       },
       shape: {

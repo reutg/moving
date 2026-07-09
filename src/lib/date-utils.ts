@@ -14,9 +14,8 @@ export const getGreeting = () => {
     return "Good morning";
   } else if (hour < 18) {
     return "Good afternoon";
-  } else {
-    return "Good evening";
   }
+  return "Good evening";
 };
 
 export const isFutureDate = (date: Date | string | number | null) => {
@@ -25,4 +24,8 @@ export const isFutureDate = (date: Date | string | number | null) => {
 
 export const getDaysUntilDate = (date: Date | string | number | null) => {
   return date ? dayjs(date).diff(dayjs(), "day") : 0;
+};
+
+export const formatDistanceToNow = (date: Date | string | number | null) => {
+  return dayjs.duration(dayjs(date).diff(dayjs())).humanize(true);
 };

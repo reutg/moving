@@ -1,14 +1,15 @@
 "use client";
 
-import PhotoUpload from "@/components/ui/photo-upload";
 import type { Box } from "@/lib/db/schema";
 
-import { useAddBoxForm } from "../hooks/use-add-box-form";
-import FormInput from "@/components/form/form-input";
-import FormTextarea from "@/components/form/form-textarea";
-import FormSelect from "@/components/form/form-select";
 import FormButtonsSwitch from "@/components/form/form-buttons-switch";
+import FormInput from "@/components/form/form-input";
+import FormSelect from "@/components/form/form-select";
+import FormTextarea from "@/components/form/form-textarea";
 import { Button } from "@/components/ui/button";
+import PhotoUpload from "@/components/ui/photo-upload";
+
+import { useAddBoxForm } from "../hooks/use-add-box-form";
 
 interface BoxFormProps {
   box?: Box;

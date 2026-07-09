@@ -1,4 +1,5 @@
 import type { ComponentProps } from "react";
+
 import type { Control, FieldPath, FieldValues } from "react-hook-form";
 
 export type InputProps = {
@@ -8,6 +9,7 @@ export type InputProps = {
   placeholder?: string;
   disabled?: boolean;
   type?: ComponentProps<"input">["type"];
+  icon?: React.ReactNode;
 };
 
 export type FormFieldProps<TFieldValues extends FieldValues> = {
@@ -18,4 +20,5 @@ export type FormFieldProps<TFieldValues extends FieldValues> = {
   placeholder?: string;
   disabled?: boolean;
   type?: ComponentProps<"input">["type"];
+  icon?: React.ReactNode;
 };

@@ -23,7 +23,7 @@ const SearchBox = ({ initialBoxes }: SearchBoxProps) => {
             onChange={handleChange}
             placeholder="Search boxes, items, rooms..."
           />
-          <InputGroupAddon>
+          <InputGroupAddon align="inline-end">
             {isSearching ? <Loader2 className="animate-spin" /> : <Search />}
           </InputGroupAddon>
         </InputGroup>

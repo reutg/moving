@@ -1,5 +1,6 @@
 "use client";
-import { Button as BaseButton, ButtonShape, ButtonSize, ButtonVariant } from "./ui/button";
+import type { ButtonShape, ButtonSize, ButtonVariant } from "./ui/button";
+import { Button as BaseButton } from "./ui/button";
 import Spinner from "./ui/spinner";
 
 interface ButtonProps {
@@ -33,8 +34,8 @@ const Button: React.FC<ButtonProps> = ({
       className={className}
     >
       <div className="flex items-center gap-2">
-        {children}
-        {loading && <Spinner data-icon="inline-start" />}
+        {loading && variant === "icon" ? <Spinner /> : children}
+        {loading && variant !== "icon" && <Spinner data-icon="inline-start" />}
       </div>
     </BaseButton>
   );

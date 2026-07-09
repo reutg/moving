@@ -1,12 +1,13 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
+
+import { useRouter } from "next/navigation";
+
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 import {
-  BOX_STATUS_ICONS,
   BOX_STATUS_LABELS,
   BOX_STATUSES,
   COMMON_LOCATIONS,
@@ -16,10 +17,11 @@ import {
 } from "@/constants";
 import type { CommonLocationKey } from "@/constants/common-locations";
 import type { ApiResponse } from "@/lib/api/response";
+import type { Box } from "@/lib/db/schema";
 
+import type { BoxFormValues } from "../schemas/box-form-schema";
+import { BoxFormValuesSchema } from "../schemas/box-form-schema";
 import type { BoxPhotoAnalysis } from "../services/analyze-box-photo-service";
-import { Box } from "@/lib/db/schema";
-import { BoxFormValues, BoxFormValuesSchema } from "../schemas/box-form-schema";
 
 export const useAddBoxForm = (box?: Box) => {
   const router = useRouter();

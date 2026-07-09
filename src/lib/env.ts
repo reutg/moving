@@ -29,6 +29,9 @@ const EnvSchema = z.object({
   AUTH_GOOGLE_SECRET: z.string().min(1, "AUTH_GOOGLE_SECRET is required"),
 
   NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
+
+  SENDGRID_API_KEY: z.string().min(1).optional(),
+  MAIL_FROM_EMAIL: z.string().min(1).optional(),
 });
 
 const parsed = EnvSchema.safeParse(process.env);

@@ -1,5 +1,6 @@
+import type { LucideIcon } from "lucide-react";
+
 import { cn } from "@/lib/utils";
-import { LucideIcon } from "lucide-react";
 
 interface ChipProps {
   label: string;
@@ -13,7 +14,7 @@ const Chip: React.FC<ChipProps> = ({ label, size = "md", className, icon: Icon }
     <div
       className={cn(
         "bg-chip-background text-chip-text flex w-fit items-center gap-1 rounded-full font-semibold",
-        size === "sm" ? "px-[8px] py-[1px] text-xs" : "px-3 py-1.5 text-sm",
+        size === "sm" ? "px-[10px] py-[3px] text-xs" : "px-3 py-1.5 text-sm",
         className,
       )}
     >

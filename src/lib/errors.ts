@@ -42,6 +42,10 @@ export function unauthorized(message = "Unauthorized"): AppError {
   return new AppError({ code: "unauthorized", httpStatus: 401, message });
 }
 
+export function forbidden(message = "Forbidden"): AppError {
+  return new AppError({ code: "forbidden", httpStatus: 403, message });
+}
+
 export function internal(message: string, cause?: unknown): AppError {
   return new AppError({ code: "internal", httpStatus: 500, message, cause });
 }

@@ -1,35 +1,37 @@
-"use client";
+import { UsersRound } from "lucide-react";
+
+import { getCurrentHousehold } from "@/features/household/services/household-service";
 
 import AvatarGroup from "@/components/inputs/avatar-group";
-import { Card, CardContent } from "@/components/ui/card";
-import IconTile from "@/components/ui/icon-tile";
+import SummaryCard from "@/components/ui/summary-card";
 import { SectionSubheader } from "@/components/ui/text";
-import { ChevronRight, UsersRound } from "lucide-react";
 
-interface HouseholdCardProps {}
+import EmptyHousehold from "./empty-household";
 
-const HouseholdCard: React.FC<HouseholdCardProps> = ({}) => {
+const HouseholdCard = async () => {
+  const household = await getCurrentHousehold();
+
+  if (!household) {
+    return <EmptyHousehold />;
+  }
+
+  const memberCount = household.members.length;
+  const members = household.members.map((member) => ({
+    name: member.name ?? member.email,
+    image: member.image ?? undefined,
+  }));
+  const membersLabel = memberCount === 1 ? "member" : "members";
+
   return (
     <div className="flex flex-col gap-[10px]">
       <SectionSubheader>Household</SectionSubheader>
-      <Card>
-        <CardContent className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <IconTile icon={UsersRound} size="sm" />
-
-            <div>
-              <h3 className="text-foreground text-md font-semibold">Household Name</h3>
-              <p className="text-subtle-foreground text-sm">X members</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <AvatarGroup />
-
-            <ChevronRight className="text-subtle-foreground size-4" />
-          </div>
-        </CardContent>
-      </Card>
+      <SummaryCard
+        icon={UsersRound}
+        title={household.name}
+        subtitle={`${memberCount} ${membersLabel}`}
+        href="/household"
+        trailing={<AvatarGroup items={members} />}
+      />
     </div>
   );
 };

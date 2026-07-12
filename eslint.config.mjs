@@ -32,7 +32,6 @@ export default [
       "no-nested-ternary": "error",
       complexity: ["warn", 8],
       "max-depth": ["warn", 3],
-      "max-lines-per-function": ["warn", { max: 60, skipBlankLines: true, skipComments: true }],
       "no-var": "error",
       "prefer-const": "error",
       "no-console": ["warn", { allow: ["warn", "error"] }],
@@ -110,7 +109,6 @@ export default [
   {
     files: ["**/*.{test,spec}.{ts,tsx}", "**/__tests__/**/*"],
     rules: {
-      "max-lines-per-function": "off",
       complexity: "off",
     },
   },

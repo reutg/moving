@@ -5,22 +5,22 @@ import { getHouseholdInviteByToken } from "@/features/household/services/househo
 
 import PageHeader from "@/components/ui/page-header";
 
-interface HouseholdPageProps {
+interface JoinHouseholdPageProps {
   params: Promise<{
     token: string;
   }>;
 }
 
-const HouseholdPage: React.FC<HouseholdPageProps> = async ({ params }) => {
+const JoinHouseholdPage: React.FC<JoinHouseholdPageProps> = async ({ params }) => {
   const { token } = await params;
   const invite = await getHouseholdInviteByToken(token);
 
   return (
     <main className="flex-container page-content">
-      <PageHeader title="Join Household" backHref="/settings" icon={ChevronLeft} />
+      <PageHeader title="Join Household" backHref="/" icon={ChevronLeft} />
       <JoinHousehold token={token} invite={invite} />
     </main>
   );
 };
 
-export default HouseholdPage;
+export default JoinHouseholdPage;

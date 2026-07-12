@@ -2,16 +2,34 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { auth, signIn } from "@/auth";
-
 import GoogleIcon from "@/components/icons/google-icon";
 import { Button } from "@/components/ui/button";
 
-const SignInPage = async () => {
+import { auth, signIn } from "@/auth";
+
+type SignInPageProps = {
+  searchParams: Promise<{ callbackUrl?: string }>;
+};
+
+const getSafeCallbackUrl = (callbackUrl: string | undefined): string => {
+  if (!callbackUrl || !callbackUrl.startsWith("/") || callbackUrl.startsWith("//")) {
+    return "/";
+  }
+
+  return callbackUrl;
+};
+
+const SignInPage = async ({ searchParams }: SignInPageProps) => {
   const session = await auth();
+  const { callbackUrl: rawCallbackUrl } = await searchParams;
+  const callbackUrl = getSafeCallbackUrl(rawCallbackUrl);
 
   if (session?.user) {
-    redirect(session.user.onboardingCompleted ? "/" : "/welcome");
+    if (!session.user.onboardingCompleted && callbackUrl.startsWith("/household/join/")) {
+      redirect(callbackUrl);
+    }
+
+    redirect(session.user.onboardingCompleted ? callbackUrl || "/" : "/welcome");
   }
 
   return (
@@ -38,11 +56,13 @@ const SignInPage = async () => {
 
       <div className="sticky bottom-0 pb-[max(0rem,env(safe-area-inset-bottom))]">
         <form
-          action={async () => {
+          action={async (formData) => {
             "use server";
-            await signIn("google", { redirectTo: "/" });
+            const redirectTo = getSafeCallbackUrl(formData.get("callbackUrl")?.toString());
+            await signIn("google", { redirectTo });
           }}
         >
+          <input type="hidden" name="callbackUrl" value={callbackUrl} />
           <Button variant="outline" type="submit" className="text-base font-bold">
             <GoogleIcon className="size-5" />
             Continue with Google

@@ -26,7 +26,7 @@ import { sendHouseholdInviteEmail } from "@/lib/email/mail-service";
 import { badRequest, forbidden, internal, notFound, unauthorized } from "@/lib/errors";
 
 import { buildInviteUrl } from "@/features/household/utils/build-invite-url";
-import { getUserById } from "@/features/users/services/user-service";
+import { completeOnboarding,getUserById } from "@/features/users/services/user-service";
 
 import { auth } from "@/auth";
 
@@ -653,6 +653,7 @@ export const acceptHouseholdInvite = async (
   assertInviteEmailMatchesUser(invite, user.email);
 
   const household = await acceptInviteAndJoinHousehold(userId, invite.id);
+  await completeOnboarding(userId);
 
   return toHouseholdWithMembers(household);
 };

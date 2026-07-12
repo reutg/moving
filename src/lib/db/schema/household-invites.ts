@@ -15,7 +15,7 @@ export const householdInvites = sqliteTable(
     householdId: integer("household_id")
       .notNull()
       .references(() => households.id, { onDelete: "cascade" }),
-    email: text("email").notNull(),
+    email: text("email"),
     token: text("token")
       .notNull()
       .unique()

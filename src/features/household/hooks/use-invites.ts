@@ -9,7 +9,10 @@ import { toast } from "sonner";
 import type { ApiResponse } from "@/lib/api/response";
 
 import { type InviteFormValues, InviteFormValuesSchema } from "../schemas/invite-schema";
-import type { HouseholdInviteSummary } from "../services/household-service";
+import type {
+  HouseholdInviteLink,
+  HouseholdInviteSummary,
+} from "../services/household-service";
 
 const toastSuccessStyle = {
   backgroundColor: "var(--accent)",
@@ -21,10 +24,53 @@ const toastErrorStyle = {
   color: "var(--destructive)",
 };
 
+const showInviteErrorToast = (message: string) => {
+  toast.error(message, {
+    position: "top-center",
+    style: toastErrorStyle,
+  });
+};
+
+const showInviteSuccessToast = (message: string) => {
+  toast.success(message, {
+    position: "top-center",
+    style: toastSuccessStyle,
+  });
+};
+
+const sendHouseholdInvite = async (email: string): Promise<ApiResponse<HouseholdInviteSummary>> => {
+  const response = await fetch("/api/household/invites", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+
+  return response.json();
+};
+
+const deleteHouseholdInvite = async (
+  inviteId: string,
+): Promise<ApiResponse<HouseholdInviteSummary>> => {
+  const response = await fetch(`/api/household/invites/${inviteId}`, {
+    method: "DELETE",
+  });
+
+  return response.json();
+};
+
+const createHouseholdInviteLink = async (): Promise<ApiResponse<HouseholdInviteLink>> => {
+  const response = await fetch("/api/household/invites/link", {
+    method: "POST",
+  });
+
+  return response.json();
+};
+
 const useInvites = () => {
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [deletingInviteId, setDeletingInviteId] = useState<string | null>(null);
+  const [isCopyingLink, setIsCopyingLink] = useState(false);
   const {
     control,
     handleSubmit,
@@ -39,26 +85,15 @@ const useInvites = () => {
     setSubmitError(null);
 
     try {
-      const response = await fetch("/api/household/invites", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: values.email }),
-      });
-      const json: ApiResponse<HouseholdInviteSummary> = await response.json();
+      const json = await sendHouseholdInvite(values.email);
 
       if (!json.ok) {
-        toast.error(json.error.message, {
-          position: "top-center",
-          style: toastErrorStyle,
-        });
+        showInviteErrorToast(json.error.message);
         return;
       }
 
       reset();
-      toast.success(`Invite sent to ${values.email}`, {
-        position: "top-center",
-        style: toastSuccessStyle,
-      });
+      showInviteSuccessToast(`Invite sent to ${values.email}`);
       router.refresh();
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -71,32 +106,57 @@ const useInvites = () => {
     setDeletingInviteId(inviteId);
 
     try {
-      const response = await fetch(`/api/household/invites/${inviteId}`, {
-        method: "DELETE",
-      });
-      const json: ApiResponse<HouseholdInviteSummary> = await response.json();
+      const json = await deleteHouseholdInvite(inviteId);
 
       if (!json.ok) {
-        toast.error(json.error.message, {
-          position: "top-center",
-          style: toastErrorStyle,
-        });
+        showInviteErrorToast(json.error.message);
         return;
       }
 
-      toast.success("Invite deleted", {
-        position: "top-center",
-        style: toastSuccessStyle,
-      });
+      showInviteSuccessToast("Invite deleted");
       router.refresh();
     } finally {
       setDeletingInviteId(null);
     }
   };
 
-  const submit = handleSubmit(onSubmit);
+  const isExpired = (invite: HouseholdInviteSummary) => {
+    return invite.expiresAt < new Date();
+  };
 
-  return { control, submit, isSubmitting, submitError, deleteInvite, deletingInviteId };
+  const copyInviteLink = async () => {
+    setIsCopyingLink(true);
+
+    try {
+      const json = await createHouseholdInviteLink();
+
+      if (!json.ok) {
+        showInviteErrorToast(json.error.message);
+        return;
+      }
+
+      await navigator.clipboard.writeText(json.data.inviteUrl);
+      showInviteSuccessToast("Invite link copied to clipboard");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        showInviteErrorToast(error.message);
+      }
+    } finally {
+      setIsCopyingLink(false);
+    }
+  };
+
+  return {
+    control,
+    submit: handleSubmit(onSubmit),
+    isSubmitting,
+    submitError,
+    deleteInvite,
+    deletingInviteId,
+    isExpired,
+    copyInviteLink,
+    isCopyingLink,
+  };
 };
 
 export default useInvites;

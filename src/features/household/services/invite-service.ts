@@ -1,14 +1,28 @@
-import { eq } from "drizzle-orm";
+import { and, eq, isNotNull } from "drizzle-orm";
 
 import { DEFAULT_HOUSEHOLD_INVITE_STATUS } from "@/constants/household";
 import { db } from "@/lib/db/client";
 import { householdInvites } from "@/lib/db/schema";
 
-export const getPendingInvites = async () => {
+import type { HouseholdInviteSummary } from "./household-service";
+
+export const getPendingInvites = async (): Promise<HouseholdInviteSummary[]> => {
   const invites = await db
     .select()
     .from(householdInvites)
-    .where(eq(householdInvites.status, DEFAULT_HOUSEHOLD_INVITE_STATUS));
+    .where(
+      and(
+        eq(householdInvites.status, DEFAULT_HOUSEHOLD_INVITE_STATUS),
+        isNotNull(householdInvites.email),
+      ),
+    )
+    .all();
 
-  return invites;
+  return invites.map((invite) => ({
+    id: invite.id,
+    email: invite.email,
+    status: invite.status,
+    createdAt: invite.createdAt,
+    expiresAt: invite.expiresAt,
+  }));
 };

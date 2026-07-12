@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, eq } from "drizzle-orm";
+import { and, count, eq, inArray, isNull } from "drizzle-orm";
 import { z } from "zod";
 
 import {
@@ -13,11 +13,13 @@ import {
 } from "@/constants";
 import { db } from "@/lib/db/client";
 import {
+  boxes,
   type Household,
   type HouseholdInvite,
   householdInvites,
   householdMembers,
   households,
+  moves,
   users,
 } from "@/lib/db/schema";
 import { sendHouseholdInviteEmail } from "@/lib/email/mail-service";
@@ -75,10 +77,26 @@ export type HouseholdMemberSummary = {
 
 export type HouseholdInviteSummary = {
   id: string;
-  email: string;
+  email: string | null;
   status: HouseholdInviteStatus;
   createdAt: Date;
   expiresAt: Date;
+};
+
+export type HouseholdInviteLink = HouseholdInviteSummary & {
+  inviteUrl: string;
+};
+
+export type HouseholdInvitePreview = HouseholdInviteSummary & {
+  invitedBy: {
+    name: string | null;
+    image: string | null;
+  };
+  household: {
+    name: string;
+    memberNames: string[];
+    boxesCount: number;
+  };
 };
 
 export type HouseholdWithMembers = Household & {
@@ -339,7 +357,7 @@ const insertPendingHouseholdInvite = async ({
   token,
 }: {
   householdId: number;
-  email: string;
+  email: string | null;
   invitedByUserId: string;
   token: string;
 }): Promise<HouseholdInvite> => {
@@ -453,6 +471,44 @@ export const createHouseholdInvite = async (
   return toInviteSummary(invite);
 };
 
+export const createOrGetHouseholdInviteLink = async (): Promise<HouseholdInviteLink> => {
+  const { userId, householdId } = await requireAuthenticatedOwnerHousehold();
+
+  const openInvites = await db
+    .select()
+    .from(householdInvites)
+    .where(
+      and(
+        eq(householdInvites.householdId, householdId),
+        eq(householdInvites.status, DEFAULT_HOUSEHOLD_INVITE_STATUS),
+        isNull(householdInvites.email),
+      ),
+    )
+    .all();
+
+  const activeOpenInvite = openInvites.find((invite) => isInviteActive(invite));
+
+  if (activeOpenInvite) {
+    return {
+      ...toInviteSummary(activeOpenInvite),
+      inviteUrl: buildInviteUrl(activeOpenInvite.token),
+    };
+  }
+
+  const inviteToken = crypto.randomUUID();
+  const invite = await insertPendingHouseholdInvite({
+    householdId,
+    email: null,
+    invitedByUserId: userId,
+    token: inviteToken,
+  });
+
+  return {
+    ...toInviteSummary(invite),
+    inviteUrl: buildInviteUrl(inviteToken),
+  };
+};
+
 export const revokeHouseholdInvite = async (inviteId: string): Promise<HouseholdInviteSummary> => {
   const { householdId } = await requireAuthenticatedOwnerHousehold();
   const invite = await getHouseholdInviteById(householdId, inviteId);
@@ -460,6 +516,22 @@ export const revokeHouseholdInvite = async (inviteId: string): Promise<Household
   assertInviteIsPending(invite);
 
   const revokedInvite = await revokePendingHouseholdInvite(inviteId);
+
+  return toInviteSummary(revokedInvite);
+};
+
+export const declineHouseholdInvite = async (
+  input: AcceptHouseholdInviteInput,
+): Promise<HouseholdInviteSummary> => {
+  const userId = await getAuthenticatedUserId();
+  const user = await getUserById(userId);
+
+  const invite = await findHouseholdInviteByToken(input.token);
+
+  assertInviteIsPending(invite);
+  assertInviteEmailMatchesUser(invite, user.email);
+
+  const revokedInvite = await revokePendingHouseholdInvite(invite.id);
 
   return toInviteSummary(revokedInvite);
 };
@@ -494,6 +566,10 @@ const assertInviteIsActive = (invite: HouseholdInvite) => {
 };
 
 const assertInviteEmailMatchesUser = (invite: HouseholdInvite, email: string) => {
+  if (!invite.email) {
+    return;
+  }
+
   if (invite.email !== email.toLowerCase()) {
     throw forbidden("This invite was sent to a different email address");
   }
@@ -581,18 +657,44 @@ export const acceptHouseholdInvite = async (
   return toHouseholdWithMembers(household);
 };
 
+const countBoxesForHousehold = async (householdId: number): Promise<number> => {
+  const members = await db
+    .select({ userId: householdMembers.userId })
+    .from(householdMembers)
+    .where(eq(householdMembers.householdId, householdId))
+    .all();
+
+  const memberUserIds = members.map((member) => member.userId);
+
+  if (memberUserIds.length === 0) {
+    return 0;
+  }
+
+  const [row] = await db
+    .select({ boxesCount: count() })
+    .from(boxes)
+    .innerJoin(moves, eq(boxes.moveId, moves.id))
+    .where(inArray(moves.userId, memberUserIds))
+    .all();
+
+  return row?.boxesCount ?? 0;
+};
+
 export const getHouseholdInviteByToken = async (
   token: string,
-): Promise<HouseholdInviteSummary & { householdName: string }> => {
+): Promise<HouseholdInvitePreview> => {
   await getAuthenticatedUserId();
 
   const [row] = await db
     .select({
       invite: householdInvites,
       householdName: households.name,
+      inviterName: users.name,
+      inviterImage: users.image,
     })
     .from(householdInvites)
     .innerJoin(households, eq(householdInvites.householdId, households.id))
+    .innerJoin(users, eq(householdInvites.invitedByUserId, users.id))
     .where(eq(householdInvites.token, token))
     .limit(1)
     .all();
@@ -601,8 +703,21 @@ export const getHouseholdInviteByToken = async (
     throw notFound("Invite not found");
   }
 
+  const members = await listMembersForHousehold(row.invite.householdId);
+  const boxesCount = await countBoxesForHousehold(row.invite.householdId);
+
   return {
     ...toInviteSummary(row.invite),
-    householdName: row.householdName,
+    invitedBy: {
+      name: row.inviterName,
+      image: row.inviterImage,
+    },
+    household: {
+      name: row.householdName,
+      memberNames: members
+        .map((member) => member.name)
+        .filter((name): name is string => Boolean(name)),
+      boxesCount,
+    },
   };
 };

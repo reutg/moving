@@ -19,7 +19,16 @@ interface InvitesProps {
 }
 
 const Invites: React.FC<InvitesProps> = ({ invites }) => {
-  const { control, submit, isSubmitting, deleteInvite, deletingInviteId } = useInvites();
+  const {
+    control,
+    submit,
+    isSubmitting,
+    deleteInvite,
+    deletingInviteId,
+    isExpired,
+    copyInviteLink,
+    isCopyingLink,
+  } = useInvites();
 
   return (
     <>
@@ -31,13 +40,13 @@ const Invites: React.FC<InvitesProps> = ({ invites }) => {
             <SummaryCard
               key={invite.id}
               leading={<BlankAvatar />}
-              title={invite.email}
+              title={invite.email ?? "Invite link"}
               subtitle={`Invite sent ${formatDistanceToNow(invite.createdAt)}`}
               trailing={
                 <div className="flex items-center gap-2">
                   <Chip
-                    label="Invited"
-                    className="bg-chip-background-invited text-chip-text-invited"
+                    label={isExpired(invite) ? "Expired" : "Invited"}
+                    variant={isExpired(invite) ? "destructive" : "amber"}
                   />
 
                   <Button
@@ -70,9 +79,9 @@ const Invites: React.FC<InvitesProps> = ({ invites }) => {
         <SummaryCard
           icon={Link}
           title="Share invite link"
-          subtitle="initelink/url"
+          subtitle="The link will expire in 5 days"
           trailing={
-            <Button variant="secondary" size="sm" onClick={() => {}}>
+            <Button variant="secondary" size="sm" onClick={copyInviteLink} loading={isCopyingLink}>
               Copy
             </Button>
           }

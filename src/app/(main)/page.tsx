@@ -1,18 +1,23 @@
-import { auth } from "@/auth";
+import Link from "next/link";
+
+import { ChevronDown, Sparkles } from "lucide-react";
+
+import { getUserInitials } from "@/lib/app-utils";
+import { getGreeting } from "@/lib/date-utils";
+
+import SearchBox from "@/features/boxes/components/search-box";
+import { listBoxes, listRecentlyUpdatedBoxes } from "@/features/boxes/services/box-service";
+import EmptyMove from "@/features/main/empty-move";
+import QuickActionsWrapper from "@/features/main/quick-actions-wrapper";
+import RecentlyUpdated from "@/features/main/recently-updated";
+import NoMoves from "@/features/moves/components/no-moves";
+import { getCurrentMove } from "@/features/moves/services/move-service";
+
 import Avatar from "@/components/avatar";
 import ActionCard from "@/components/ui/action-card";
 import ComingSoonBanner from "@/components/ui/coming-soon-banner";
-import SearchBox from "@/features/boxes/components/search-box";
-import { listBoxes, listRecentlyUpdatedBoxes } from "@/features/boxes/services/box-service";
-import { getCurrentMove } from "@/features/moves/services/move-service";
-import QuickActionsWrapper from "@/features/main/quick-actions-wrapper";
-import RecentlyUpdated from "@/features/main/recently-updated";
-import { ChevronDown, Sparkles } from "lucide-react";
-import Link from "next/link";
-import { getUserInitials } from "@/lib/app-utils";
-import { getGreeting } from "@/lib/date-utils";
-import EmptyMove from "@/features/main/empty-move";
-import NoMoves from "@/features/moves/components/no-moves";
+
+import { auth } from "@/auth";
 
 export default async function HomePage() {
   const session = await auth();

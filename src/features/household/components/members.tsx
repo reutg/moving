@@ -28,9 +28,6 @@ const Members: React.FC<MembersProps> = ({ household, user, invites }) => {
 
   const isCurrentUser = (member: HouseholdMemberSummary) => member.userId === user.id;
 
-  const getChipStyle = (member: HouseholdMemberSummary) =>
-    !isCurrentUser(member) ? "bg-chip-background-member text-chip-text-member" : undefined;
-
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-col gap-2">
@@ -43,7 +40,12 @@ const Members: React.FC<MembersProps> = ({ household, user, invites }) => {
           <UserCard
             key={member.userId}
             user={member}
-            trailing={<Chip label={capitalize(member.role)} className={getChipStyle(member)} />}
+            trailing={
+              <Chip
+                label={capitalize(member.role)}
+                variant={isCurrentUser(member) ? "default" : "neutral"}
+              />
+            }
             currentUser={isCurrentUser(member)}
           />
         ))}

@@ -57,10 +57,10 @@
   --color-progress-background: var(--progress-background);
   --color-chip-text: var(--chip-text);
   --color-chip-background: var(--chip-background);
-  --color-chip-background-invited: var(--chip-background-invited);
-  --color-chip-text-invited: var(--chip-text-invited);
-  --color-chip-background-member: var(--chip-background-member);
-  --color-chip-text-member: var(--chip-text-member);
+  --color-chip-amber-bg: var(--chip-amber-bg);
+  --color-chip-amber-text: var(--chip-amber-text);
+  --color-chip-neutral-bg: var(--chip-neutral-bg);
+  --color-chip-neutral-text: var(--chip-neutral-text);
   --color-input-border: var(--input-border);
   --color-input-text: var(--input-text);
   --color-input-placeholder: var(--input-placeholder);
@@ -119,10 +119,10 @@
   /* Chip */
   --chip-text: #2f6f62;
   --chip-background: #dceee8;
-  --chip-background-invited: #f6ebcf;
-  --chip-text-invited: #9a7a1e;
-  --chip-background-member: #f0f0f2;
-  --chip-text-member: #71717a;
+  --chip-amber-bg: #f6ebcf;
+  --chip-amber-text: #9a7a1e;
+  --chip-neutral-bg: #f0f0f2;
+  --chip-neutral-text: #71717a;
 
   /* AI accent */
   --ai: #c08457;
@@ -181,7 +181,7 @@ body {
 
 .page-content {
   padding: 1.5rem 16px max(1.5rem, env(safe-area-inset-bottom));
-  height: 100%;
+  min-height: 100%;
 }
 
 .flex-content {

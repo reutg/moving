@@ -20,7 +20,7 @@ const UserCard = ({ user, trailing, currentUser }: UserCardProps) => {
   return (
     <Card>
       <CardContent className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <Avatar src={user.image ?? ""} alt={user.name || ""} fallback={initials} size="xl" />
           <div>
             <div className="flex items-center gap-1">

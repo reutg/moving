@@ -21,7 +21,7 @@ const SummaryCard = ({ icon, leading, title, subtitle, href, trailing }: Summary
   const card = (
     <Card>
       <CardContent className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           {leading ?? <IconTile icon={icon} size="sm" />}
 
           <div>
@@ -31,7 +31,7 @@ const SummaryCard = ({ icon, leading, title, subtitle, href, trailing }: Summary
         </div>
 
         {(trailing || href) && (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             {trailing}
             {href ? <ChevronRight className="text-subtle-foreground size-4" /> : null}
           </div>

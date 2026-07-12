@@ -1,19 +1,19 @@
 import Link from "next/link";
 
-import IconTile from "@/components/ui/icon-tile";
 import {
   BOX_STATUS_LABELS,
+  type BoxStatus,
   COMMON_LOCATIONS,
+  type CommonLocationKey,
   FALLBACK_LOCATION_ICON,
   FALLBACK_LOCATION_ICON_TILE,
   LOCATION_ICON_TILE,
   LOCATION_ICONS,
-  type BoxStatus,
-  type CommonLocationKey,
 } from "@/constants";
 import type { Box } from "@/lib/db/schema";
 
 import Chip from "@/components/ui/chip";
+import ListItemContent from "@/components/ui/list-item-content";
 import SeparatorDot from "@/components/ui/separator-dot";
 
 type BoxCardProps = {
@@ -37,21 +37,19 @@ const BoxCard = ({ box }: BoxCardProps) => {
       href={`/boxes/${box.id}/preview`}
       className="flex min-w-0 flex-1 items-center gap-3.5 py-3.5"
     >
-      <IconTile
+      <ListItemContent
         icon={RoomIcon}
         backgroundColor={tileColors.backgroundColor}
         iconColor={tileColors.iconColor}
-        size="sm"
+        title={box.name}
+        description={
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground font-thin">Box {box.number}</span>
+            <SeparatorDot />
+            <span className="text-muted-foreground truncate">{destinationRoom}</span>
+          </div>
+        }
       />
-
-      <div className="min-w-0 flex-1">
-        <div className="truncate text-[15px] font-semibold">{box.name}</div>
-        <div className="flex items-center gap-2 text-sm">
-          <span className="text-muted-foreground font-thin">Box {box.number}</span>
-          <SeparatorDot />
-          <span className="text-muted-foreground truncate">{destinationRoom}</span>
-        </div>
-      </div>
       <Chip
         size="sm"
         label={BOX_STATUS_LABELS[status]}

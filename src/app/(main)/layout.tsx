@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 
-import BottomNavigation from "@/components/bottom-navigation";
 import { requireOnboarding } from "@/lib/auth/guards";
+
+import BottomNavigation from "@/components/bottom-navigation";
 
 const MainLayout = async ({ children }: { children: ReactNode }) => {
   await requireOnboarding();

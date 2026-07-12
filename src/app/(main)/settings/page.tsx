@@ -23,7 +23,6 @@ const SettingsPage: React.FC<SettingsPageProps> = async ({}) => {
         <SettingsUserCard user={user} />
         <AccountCard email={user.email} />
         <HouseholdCard />
-        {/* <PreferencesCard /> */}
       </div>
 
       <form action={signOutAction}>

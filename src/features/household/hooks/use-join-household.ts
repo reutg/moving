@@ -62,7 +62,7 @@ const useJoinHousehold = (token: string) => {
       }
 
       showSuccessToast(`You joined ${json.data.name}`);
-      router.push("/household");
+      router.push("/");
       router.refresh();
     } catch (error: unknown) {
       if (error instanceof Error) {

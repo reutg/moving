@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, count, eq, inArray, isNull } from "drizzle-orm";
+import { and, count, desc, eq, inArray, isNull } from "drizzle-orm";
 import { z } from "zod";
 
 import {
@@ -26,7 +26,7 @@ import { sendHouseholdInviteEmail } from "@/lib/email/mail-service";
 import { badRequest, forbidden, internal, notFound, unauthorized } from "@/lib/errors";
 
 import { buildInviteUrl } from "@/features/household/utils/build-invite-url";
-import { completeOnboarding,getUserById } from "@/features/users/services/user-service";
+import { completeOnboarding, getUserById } from "@/features/users/services/user-service";
 
 import { auth } from "@/auth";
 
@@ -639,6 +639,66 @@ const acceptInviteAndJoinHousehold = async (
   });
 };
 
+const assignCurrentMoveFromHousehold = async (
+  userId: string,
+  householdId: number,
+): Promise<void> => {
+  const members = await db
+    .select({
+      userId: householdMembers.userId,
+      role: householdMembers.role,
+    })
+    .from(householdMembers)
+    .where(eq(householdMembers.householdId, householdId))
+    .all();
+
+  const memberUserIds = members.map((member) => member.userId);
+  if (memberUserIds.length === 0) {
+    return;
+  }
+
+  const owner = members.find((member) => member.role === OWNER_HOUSEHOLD_ROLE);
+
+  if (owner) {
+    const ownerUser = await getUserById(owner.userId);
+    if (ownerUser.currentMoveId !== null) {
+      const [ownerCurrentMove] = await db
+        .select()
+        .from(moves)
+        .where(and(eq(moves.id, ownerUser.currentMoveId), inArray(moves.userId, memberUserIds)))
+        .limit(1)
+        .all();
+
+      if (ownerCurrentMove) {
+        await db
+          .update(users)
+          .set({ currentMoveId: ownerCurrentMove.id })
+          .where(eq(users.id, userId))
+          .run();
+        return;
+      }
+    }
+  }
+
+  const [fallbackMove] = await db
+    .select()
+    .from(moves)
+    .where(inArray(moves.userId, memberUserIds))
+    .orderBy(desc(moves.createdAt))
+    .limit(1)
+    .all();
+
+  if (!fallbackMove) {
+    return;
+  }
+
+  await db
+    .update(users)
+    .set({ currentMoveId: fallbackMove.id })
+    .where(eq(users.id, userId))
+    .run();
+};
+
 export const acceptHouseholdInvite = async (
   input: AcceptHouseholdInviteInput,
 ): Promise<HouseholdWithMembers> => {
@@ -653,6 +713,7 @@ export const acceptHouseholdInvite = async (
   assertInviteEmailMatchesUser(invite, user.email);
 
   const household = await acceptInviteAndJoinHousehold(userId, invite.id);
+  await assignCurrentMoveFromHousehold(userId, household.id);
   await completeOnboarding(userId);
 
   return toHouseholdWithMembers(household);

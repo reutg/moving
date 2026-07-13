@@ -1,14 +1,16 @@
 import "server-only";
 
-import { and, count, desc, eq, ne } from "drizzle-orm";
+import { and, count, desc, eq, inArray, ne } from "drizzle-orm";
 import { z } from "zod";
 
-import { auth } from "@/auth";
-import { DEFAULT_MOVE_STATUS, DONE_MOVE_STATUS, MOVE_STATUSES } from "@/constants";
-import { completeOnboarding, getUserById } from "@/features/users/services/user-service";
+import { DEFAULT_MOVE_STATUS, MOVE_STATUSES } from "@/constants";
 import { db } from "@/lib/db/client";
-import { type Move, boxes, moves, users } from "@/lib/db/schema";
+import { boxes, householdMembers, type Move, moves, users } from "@/lib/db/schema";
 import { internal, notFound, unauthorized } from "@/lib/errors";
+
+import { completeOnboarding, getUserById } from "@/features/users/services/user-service";
+
+import { auth } from "@/auth";
 
 const moveDateSchema = z.coerce.date();
 
@@ -59,18 +61,41 @@ const getAuthenticatedUserId = async (): Promise<string> => {
   return userId;
 };
 
+const getAccessibleMoveOwnerIds = async (userId: string): Promise<string[]> => {
+  const [membership] = await db
+    .select({ householdId: householdMembers.householdId })
+    .from(householdMembers)
+    .where(eq(householdMembers.userId, userId))
+    .limit(1)
+    .all();
+
+  if (!membership) {
+    return [userId];
+  }
+
+  const members = await db
+    .select({ userId: householdMembers.userId })
+    .from(householdMembers)
+    .where(eq(householdMembers.householdId, membership.householdId))
+    .all();
+
+  const memberIds = members.map((member) => member.userId);
+  return memberIds.length > 0 ? memberIds : [userId];
+};
+
 const setCurrentMoveForUser = async (userId: string, moveId: number): Promise<void> => {
   await db.update(users).set({ currentMoveId: moveId }).where(eq(users.id, userId)).run();
 };
 
 const getCurrentMoveRowForUser = async (userId: string): Promise<Move | null> => {
   const user = await getUserById(userId);
+  const ownerIds = await getAccessibleMoveOwnerIds(userId);
 
   if (user.currentMoveId !== null) {
     const rows = await db
       .select()
       .from(moves)
-      .where(and(eq(moves.id, user.currentMoveId), eq(moves.userId, userId)))
+      .where(and(eq(moves.id, user.currentMoveId), inArray(moves.userId, ownerIds)))
       .limit(1)
       .all();
 
@@ -82,7 +107,7 @@ const getCurrentMoveRowForUser = async (userId: string): Promise<Move | null> =>
   const [fallback] = await db
     .select()
     .from(moves)
-    .where(eq(moves.userId, userId))
+    .where(inArray(moves.userId, ownerIds))
     .orderBy(desc(moves.createdAt))
     .limit(1)
     .all();
@@ -120,13 +145,14 @@ export const getCurrentMove = async (): Promise<MoveWithBoxesCount | null> => {
 
 export const getOtherMoves = async (): Promise<Move[]> => {
   const userId = await getAuthenticatedUserId();
+  const ownerIds = await getAccessibleMoveOwnerIds(userId);
   const currentMove = await getCurrentMoveRowForUser(userId);
 
   if (!currentMove) {
     return db
       .select()
       .from(moves)
-      .where(eq(moves.userId, userId))
+      .where(inArray(moves.userId, ownerIds))
       .orderBy(desc(moves.createdAt))
       .all();
   }
@@ -134,18 +160,19 @@ export const getOtherMoves = async (): Promise<Move[]> => {
   return db
     .select()
     .from(moves)
-    .where(and(eq(moves.userId, userId), ne(moves.id, currentMove.id)))
+    .where(and(inArray(moves.userId, ownerIds), ne(moves.id, currentMove.id)))
     .orderBy(desc(moves.createdAt))
     .all();
 };
 
 export const listMoves = async (): Promise<Move[]> => {
   const userId = await getAuthenticatedUserId();
+  const ownerIds = await getAccessibleMoveOwnerIds(userId);
 
   return db
     .select()
     .from(moves)
-    .where(eq(moves.userId, userId))
+    .where(inArray(moves.userId, ownerIds))
     .orderBy(desc(moves.createdAt))
     .all();
 };
@@ -153,10 +180,6 @@ export const listMoves = async (): Promise<Move[]> => {
 export const setCurrentMove = async (moveId: number): Promise<MoveWithBoxesCount> => {
   const userId = await getAuthenticatedUserId();
   const move = await getMoveById(moveId);
-
-  if (move.userId !== userId) {
-    throw notFound(`Move ${moveId} not found`);
-  }
 
   await setCurrentMoveForUser(userId, moveId);
 
@@ -198,11 +221,12 @@ export const createMove = async (input: CreateMoveInput): Promise<Move> => {
 
 export const getMoveById = async (id: number): Promise<MoveWithBoxesCount> => {
   const userId = await getAuthenticatedUserId();
+  const ownerIds = await getAccessibleMoveOwnerIds(userId);
 
   const rows = await db
     .select()
     .from(moves)
-    .where(and(eq(moves.id, id), eq(moves.userId, userId)))
+    .where(and(eq(moves.id, id), inArray(moves.userId, ownerIds)))
     .limit(1)
     .all();
 
@@ -218,7 +242,7 @@ export const updateMove = async (
   id: number,
   input: UpdateMoveInput,
 ): Promise<MoveWithBoxesCount> => {
-  const userId = await getAuthenticatedUserId();
+  await getMoveById(id);
 
   const updated = await db
     .update(moves)
@@ -228,7 +252,7 @@ export const updateMove = async (
       moveDate: input.moveDate,
       updatedAt: new Date(),
     })
-    .where(and(eq(moves.id, id), eq(moves.userId, userId)))
+    .where(eq(moves.id, id))
     .returning()
     .all();
 
@@ -241,10 +265,12 @@ export const updateMove = async (
 };
 
 const findNextCurrentMove = async (userId: string) => {
+  const ownerIds = await getAccessibleMoveOwnerIds(userId);
+
   const [move] = await db
     .select()
     .from(moves)
-    .where(eq(moves.userId, userId))
+    .where(inArray(moves.userId, ownerIds))
     .orderBy(desc(moves.createdAt))
     .limit(1)
     .all();
@@ -271,10 +297,7 @@ export const deleteMove = async (id: number): Promise<void> => {
   await db.transaction(async (tx) => {
     await tx.delete(boxes).where(eq(boxes.moveId, id)).run();
 
-    const result = await tx
-      .delete(moves)
-      .where(and(eq(moves.id, id), eq(moves.userId, userId)))
-      .run();
+    const result = await tx.delete(moves).where(eq(moves.id, id)).run();
 
     if (result.rowsAffected === 0) {
       throw notFound(`Move ${id} not found`);
@@ -300,7 +323,7 @@ export const updateMoveStatus = async (
   const updated = await db
     .update(moves)
     .set({ status, updatedAt: new Date() })
-    .where(and(eq(moves.id, id), eq(moves.userId, userId)))
+    .where(eq(moves.id, id))
     .returning()
     .all();
 

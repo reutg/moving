@@ -15,4 +15,4 @@ export const DEFAULT_HOUSEHOLD_INVITE_STATUS: HouseholdInviteStatus = "pending";
 /** Invite links expire 5 days after creation. */
 export const HOUSEHOLD_INVITE_TTL_MS = 5 * 24 * 60 * 60 * 1000;
 
-export const HOUSEHOLD_INVITE_PATH = "/household/join";
+export const HOUSEHOLD_INVITE_PATH = "/join";

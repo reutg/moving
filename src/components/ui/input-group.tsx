@@ -8,16 +8,26 @@ import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { inputGroupClassName, inputGroupControlClassName } from "@/components/ui/input-field";
+import {
+  type InputFieldSize,
+  inputFieldSizeClassName,
+  inputGroupClassName,
+  inputGroupControlClassName,
+} from "@/components/ui/input-field";
 import { Textarea } from "@/components/ui/textarea";
 
-function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
+function InputGroup({
+  className,
+  size = "default",
+  ...props
+}: React.ComponentProps<"div"> & { size?: InputFieldSize }) {
   return (
     <div
       data-slot="input-group"
       role="group"
       className={cn(
         inputGroupClassName,
+        inputFieldSizeClassName[size],
         "has-[>[data-align=block-end]]:h-auto has-[>[data-align=block-end]]:flex-col has-[>[data-align=block-end]]:items-stretch has-[>[data-align=block-start]]:h-auto has-[>[data-align=block-start]]:flex-col has-[>[data-align=block-start]]:items-stretch has-[>textarea]:h-auto",
         className,
       )}
@@ -114,10 +124,15 @@ function InputGroupText({ className, ...props }: React.ComponentProps<"span">) {
   );
 }
 
-function InputGroupInput({ className, ...props }: React.ComponentProps<"input">) {
+function InputGroupInput({
+  className,
+  size = "default",
+  ...props
+}: Omit<React.ComponentProps<"input">, "size"> & { size?: InputFieldSize }) {
   return (
     <Input
       data-slot="input-group-control"
+      size={size}
       className={cn(inputGroupControlClassName, className)}
       {...props}
     />

@@ -2,6 +2,8 @@ import type { ComponentProps } from "react";
 
 import type { Control, FieldPath, FieldValues } from "react-hook-form";
 
+import type { InputFieldSize } from "@/components/ui/input-field";
+
 export type InputProps = {
   value: string;
   label?: string;
@@ -21,4 +23,6 @@ export type FormFieldProps<TFieldValues extends FieldValues> = {
   disabled?: boolean;
   type?: ComponentProps<"input">["type"];
   icon?: React.ReactNode;
+  trailing?: React.ReactNode;
+  size?: InputFieldSize;
 };

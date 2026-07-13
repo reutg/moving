@@ -1,12 +1,13 @@
 "use client";
 
 import * as React from "react";
+
 import { Select as SelectPrimitive } from "@base-ui/react/select";
+import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from "lucide-react";
 
-import { inputFieldClassName } from "./input-field";
+import { inputFieldClassName, inputFieldSizeClassName } from "./input-field";
 
 const Select = SelectPrimitive.Root;
 
@@ -44,7 +45,8 @@ function SelectTrigger({
       data-size={size}
       className={cn(
         inputFieldClassName,
-        "flex items-center justify-between gap-1.5 whitespace-nowrap select-none aria-expanded:border-primary aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-placeholder:text-input-placeholder disabled:cursor-not-allowed data-[size=sm]:py-2 data-[size=sm]:text-sm *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        inputFieldSizeClassName.default,
+        "flex items-center justify-between gap-1.5 whitespace-nowrap select-none aria-expanded:border-primary aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-placeholder:text-input-placeholder disabled:cursor-not-allowed data-[size=sm]:h-10 data-[size=sm]:py-2 data-[size=sm]:text-sm *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}

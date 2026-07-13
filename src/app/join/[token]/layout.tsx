@@ -14,7 +14,7 @@ const JoinLayout = async ({ children, params }: JoinLayoutProps) => {
   const session = await auth();
 
   if (!session?.user) {
-    const callbackUrl = `/household/join/${encodeURIComponent(token)}`;
+    const callbackUrl = `/join/${encodeURIComponent(token)}`;
     redirect(`/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}`);
   }
 

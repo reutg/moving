@@ -25,7 +25,7 @@ const SignInPage = async ({ searchParams }: SignInPageProps) => {
   const callbackUrl = getSafeCallbackUrl(rawCallbackUrl);
 
   if (session?.user) {
-    if (!session.user.onboardingCompleted && callbackUrl.startsWith("/household/join/")) {
+    if (!session.user.onboardingCompleted && callbackUrl.startsWith("/join/")) {
       redirect(callbackUrl);
     }
 

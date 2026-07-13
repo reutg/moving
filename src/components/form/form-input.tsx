@@ -16,6 +16,8 @@ const FormInput = <T extends FieldValues>({
   type = "text",
   control,
   icon,
+  trailing,
+  size = "default",
 }: FormFieldProps<T>) => {
   const {
     field,
@@ -28,6 +30,7 @@ const FormInput = <T extends FieldValues>({
     placeholder,
     onChange: field.onChange,
     value: field.value ?? "",
+    size,
   };
 
   return (
@@ -36,9 +39,10 @@ const FormInput = <T extends FieldValues>({
       {type === "date" ? (
         <DateInput {...inputProps} />
       ) : (
-        <InputGroup>
+        <InputGroup size={size}>
           <InputGroupAddon>{icon}</InputGroupAddon>
           <InputGroupInput {...inputProps} type={type} />
+          <InputGroupAddon>{trailing}</InputGroupAddon>
         </InputGroup>
       )}
       {description && (

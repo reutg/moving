@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button";
+import { LinkIcon, MapPin, PlusIcon } from "lucide-react";
+
 import { ButtonLink } from "@/components/ui/button-link";
 import IconTile from "@/components/ui/icon-tile";
-import { LinkIcon, MapPin, PlusIcon } from "lucide-react";
 
 const NoMoves = () => {
   return (
@@ -18,9 +18,12 @@ const NoMoves = () => {
           Start a move
         </ButtonLink>
 
-        <Button variant="outline" className="border-border flex gap-2 border">
+        <ButtonLink
+          href="/welcome/join-with-link"
+          className="border-border flex gap-2 border font-bold"
+        >
           <LinkIcon className="size-5" /> Join with an invite link
-        </Button>
+        </ButtonLink>
       </div>
     </div>
   );

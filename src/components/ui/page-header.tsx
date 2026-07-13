@@ -1,11 +1,13 @@
-import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
-import { IconLink } from "@/components/ui/icon-link";
+import type { LucideIcon } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 
+import { IconLink } from "@/components/ui/icon-link";
+
 type PageHeaderProps = {
-  title: string;
+  title?: string;
   backHref: string;
   icon: LucideIcon;
   backAriaLabel?: string;
@@ -30,7 +32,7 @@ const PageHeader = ({
         className="justify-self-start"
       />
 
-      <h6 className="text-foreground justify-self-center text-lg font-bold">{title}</h6>
+      {title && <h6 className="text-foreground justify-self-center text-lg font-bold">{title}</h6>}
 
       <div className="justify-self-end">{trailing}</div>
     </header>

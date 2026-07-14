@@ -9,15 +9,16 @@ import {
   type CommonLocationKey,
   getLocationKeyByName,
 } from "@/constants/common-locations";
+import { db } from "@/lib/db/client";
+import { type Box, boxes } from "@/lib/db/schema";
+import { internal, notFound } from "@/lib/errors";
+
+import type { BoxStatusCounts } from "@/features/boxes/types/box-status-counts";
 import {
   getCurrentMove,
   getCurrentMoveId,
   getMoveById,
 } from "@/features/moves/services/move-service";
-import type { BoxStatusCounts } from "@/features/boxes/types/box-status-counts";
-import { db } from "@/lib/db/client";
-import { type Box, boxes } from "@/lib/db/schema";
-import { internal, notFound } from "@/lib/errors";
 
 const DestinationRoomSchema = z
   .string()
@@ -122,11 +123,7 @@ export async function listBoxes(moveId?: number): Promise<Box[]> {
     return [];
   }
 
-  return db
-    .select()
-    .from(boxes)
-    .where(eq(boxes.moveId, resolvedMoveId))
-    .orderBy(boxes.number);
+  return db.select().from(boxes).where(eq(boxes.moveId, resolvedMoveId)).orderBy(boxes.number);
 }
 
 export async function listRecentlyUpdatedBoxes(limit = 3): Promise<Box[]> {
@@ -266,9 +263,10 @@ const loadStatusCounts = async (moveId: number): Promise<Record<BoxStatus, numbe
     .groupBy(boxes.status)
     .all();
 
-  const byStatus = Object.fromEntries(
-    BOX_STATUSES.map((status) => [status, 0]),
-  ) as Record<BoxStatus, number>;
+  const byStatus = Object.fromEntries(BOX_STATUSES.map((status) => [status, 0])) as Record<
+    BoxStatus,
+    number
+  >;
 
   for (const row of statusRows) {
     byStatus[row.status as BoxStatus] = row.count;

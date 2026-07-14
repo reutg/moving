@@ -16,6 +16,7 @@ type ListItemContentProps = {
   backgroundColor?: string;
   iconColor?: string;
   className?: string;
+  trailingContent?: ReactNode;
 };
 
 const Description = ({ description }: { description: ReactNode }) => {
@@ -33,6 +34,7 @@ const ListItemContent = ({
   backgroundColor = DEFAULT_BACKGROUND_COLOR,
   iconColor = DEFAULT_ICON_COLOR,
   className,
+  trailingContent,
 }: ListItemContentProps) => {
   return (
     <div className={cn("flex min-w-0 flex-1 items-center gap-3.5 py-3.5", className)}>
@@ -42,6 +44,8 @@ const ListItemContent = ({
         <div className="truncate text-base font-semibold">{title}</div>
         {description ? <Description description={description} /> : null}
       </div>
+
+      {trailingContent ? trailingContent : null}
     </div>
   );
 };

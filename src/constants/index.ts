@@ -5,3 +5,4 @@ export * from "./household";
 export * from "./location-colors";
 export * from "./location-icons";
 export * from "./move-status";
+export * from "./room-type";

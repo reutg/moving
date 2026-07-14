@@ -9,6 +9,7 @@ export const LOCATION_COLORS: Record<CommonLocationKey, string> = {
   bathroom: "#4FA3A0",
   kidsRoom: "#D97A8C",
   laundryRoom: "#5B8FC7",
+  other: "#8B8F97",
 };
 
 export const LOCATION_ICON_TILE: Record<
@@ -46,6 +47,10 @@ export const LOCATION_ICON_TILE: Record<
   laundryRoom: {
     backgroundColor: "#E3EEF8",
     iconColor: "#5B8FC7",
+  },
+  other: {
+    backgroundColor: "#ECEDEF",
+    iconColor: "#8B8F97",
   },
 };
 

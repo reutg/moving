@@ -3,9 +3,9 @@ import "server-only";
 import { and, count, desc, eq, inArray, ne } from "drizzle-orm";
 import { z } from "zod";
 
-import { DEFAULT_MOVE_STATUS, MOVE_STATUSES } from "@/constants";
+import { BASE_ROOM_TYPES, DEFAULT_MOVE_STATUS, MOVE_STATUSES, ROOM_TYPE_LABELS } from "@/constants";
 import { db } from "@/lib/db/client";
-import { boxes, householdMembers, type Move, moves, users } from "@/lib/db/schema";
+import { boxes, householdMembers, type Move, moves, rooms, users } from "@/lib/db/schema";
 import { internal, notFound, unauthorized } from "@/lib/errors";
 
 import { completeOnboarding, getUserById } from "@/features/users/services/user-service";
@@ -208,6 +208,19 @@ export const createMove = async (input: CreateMoveInput): Promise<Move> => {
     if (!createdMove) {
       throw internal("Failed to create move");
     }
+
+    await tx
+      .insert(rooms)
+      .values(
+        BASE_ROOM_TYPES.map((type) => ({
+          moveId: createdMove.id,
+          userId,
+          type,
+          name: ROOM_TYPE_LABELS[type],
+          updatedAt: now,
+        })),
+      )
+      .run();
 
     await tx.update(users).set({ currentMoveId: createdMove.id }).where(eq(users.id, userId)).run();
 

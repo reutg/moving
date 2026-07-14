@@ -7,6 +7,7 @@ export const COMMON_LOCATIONS = {
   kidsRoom: "Kids' Room",
   laundryRoom: "Laundry Room",
   garage: "Garage",
+  other: "Custom",
 } as const;
 
 export type CommonLocationKey = keyof typeof COMMON_LOCATIONS;

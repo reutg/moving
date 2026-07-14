@@ -1,53 +1,31 @@
-import Link from "next/link";
+import { Suspense } from "react";
 
-import IconTile from "@/components/ui/icon-tile";
+import { PlusIcon } from "lucide-react";
+
+import RoomsList from "@/features/rooms/components/rooms-list";
+import { ADD_ROOM_HREF } from "@/features/rooms/constants/add-room-query";
+import { listRooms } from "@/features/rooms/services/room-service";
+
+import { ButtonLink } from "@/components/ui/button-link";
 import ScreenHeader from "@/components/ui/screen-header";
-import {
-  COMMON_LOCATIONS,
-  FALLBACK_LOCATION_ICON,
-  FALLBACK_LOCATION_ICON_TILE,
-  LOCATION_ICON_TILE,
-  LOCATION_ICONS,
-  type CommonLocationKey,
-} from "@/constants";
-import { getBoxesSummary } from "@/features/boxes/services/box-service";
 
 const RoomsPage = async () => {
-  const { byDestinationRoom } = await getBoxesSummary();
+  const rooms = await listRooms();
 
   return (
     <main className="page-content flex flex-col gap-4">
-      <ScreenHeader title="Rooms" />
+      <ScreenHeader
+        title="Rooms"
+        actions={
+          <ButtonLink href={ADD_ROOM_HREF} size="sm">
+            <PlusIcon /> Add room
+          </ButtonLink>
+        }
+      />
 
-      <div className="flex flex-col gap-2">
-        {(Object.entries(COMMON_LOCATIONS) as [CommonLocationKey, string][]).map(
-          ([roomKey, roomLabel]) => {
-            const boxCount = byDestinationRoom[roomKey] ?? 0;
-            const RoomIcon = LOCATION_ICONS[roomKey] ?? FALLBACK_LOCATION_ICON;
-            const tileColors = LOCATION_ICON_TILE[roomKey] ?? FALLBACK_LOCATION_ICON_TILE;
-
-            return (
-              <Link
-                key={roomKey}
-                href="/boxes"
-                className="bg-card border-border flex items-center gap-3.5 rounded-md border p-3.5 transition-colors"
-              >
-                <IconTile
-                  icon={RoomIcon}
-                  backgroundColor={tileColors.backgroundColor}
-                  iconColor={tileColors.iconColor}
-                />
-                <div className="min-w-0 flex-1">
-                  <div className="text-[15px] font-semibold">{roomLabel}</div>
-                  <div className="text-muted-foreground text-[13px]">
-                    {boxCount} {boxCount === 1 ? "box" : "boxes"}
-                  </div>
-                </div>
-              </Link>
-            );
-          },
-        )}
-      </div>
+      <Suspense fallback={null}>
+        <RoomsList rooms={rooms} />
+      </Suspense>
     </main>
   );
 };

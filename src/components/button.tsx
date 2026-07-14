@@ -10,7 +10,7 @@ interface ButtonProps {
   shape?: ButtonShape;
   disabled?: boolean;
   loading?: boolean;
-  onClick: () => void;
+  onClick?: () => void;
   className?: string;
 }
 

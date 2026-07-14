@@ -1,11 +1,13 @@
 "use client";
 
 import * as React from "react";
+
 import { Dialog as SheetPrimitive } from "@base-ui/react/dialog";
+import { XIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+
 import { Button } from "@/components/ui/button";
-import { XIcon } from "lucide-react";
 
 function Sheet({ ...props }: SheetPrimitive.Root.Props) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />;
@@ -58,7 +60,7 @@ function SheetContent({
         )}
         {...props}
       >
-        <div className="bg-input-border mx-auto mb-3.5 h-[5px] w-[38px] rounded-3xl" />
+        <div className="bg-input-border mx-auto mb-1 h-[5px] w-[38px] rounded-3xl" />
         {children}
         {showCloseButton && (
           <SheetPrimitive.Close
@@ -79,7 +81,10 @@ function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="sheet-header"
-      className={cn("flex flex-col gap-0.5 p-4", className)}
+      className={cn(
+        "text-foreground flex items-center justify-between gap-0.5 pb-4 text-xl",
+        className,
+      )}
       {...props}
     />
   );
@@ -117,11 +122,11 @@ function SheetDescription({ className, ...props }: SheetPrimitive.Description.Pr
 
 export {
   Sheet,
-  SheetTrigger,
   SheetClose,
   SheetContent,
-  SheetHeader,
-  SheetFooter,
-  SheetTitle,
   SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
 };

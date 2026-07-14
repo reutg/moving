@@ -316,6 +316,46 @@ const requireAuthenticatedOwnerHousehold = async () => {
   return { userId, householdId: membership.householdId };
 };
 
+export const removeHouseholdMember = async (
+  memberUserId: string,
+): Promise<{ userId: string }> => {
+  const { userId, householdId } = await requireAuthenticatedOwnerHousehold();
+
+  if (memberUserId === userId) {
+    throw badRequest("You cannot remove yourself from the household");
+  }
+
+  const [targetMember] = await db
+    .select()
+    .from(householdMembers)
+    .where(
+      and(eq(householdMembers.userId, memberUserId), eq(householdMembers.householdId, householdId)),
+    )
+    .limit(1)
+    .all();
+
+  if (!targetMember) {
+    throw notFound("Member not found");
+  }
+
+  if (targetMember.role === OWNER_HOUSEHOLD_ROLE) {
+    throw badRequest("Cannot remove the household owner");
+  }
+
+  const result = await db
+    .delete(householdMembers)
+    .where(
+      and(eq(householdMembers.userId, memberUserId), eq(householdMembers.householdId, householdId)),
+    )
+    .run();
+
+  if (result.rowsAffected === 0) {
+    throw notFound("Member not found");
+  }
+
+  return { userId: memberUserId };
+};
+
 const assertEmailIsNotExistingMember = async (householdId: number, email: string) => {
   const [existingMember] = await db
     .select({ userId: users.id })

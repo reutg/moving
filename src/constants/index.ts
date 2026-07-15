@@ -1,5 +1,6 @@
 export * from "./box-priority";
 export * from "./box-status";
+export * from "./checklist";
 export * from "./common-locations";
 export * from "./household";
 export * from "./location-colors";

@@ -1,7 +1,8 @@
 "use client";
 
-import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
+
+import type { LucideIcon } from "lucide-react";
 
 import ComingSoonBanner from "@/components/ui/coming-soon-banner";
 import IconTile from "@/components/ui/icon-tile";

@@ -1,6 +1,7 @@
 export * from "./auth";
 export * from "./box-tags";
 export * from "./boxes";
+export * from "./checklist-tasks";
 export * from "./household-invites";
 export * from "./households";
 export * from "./items";

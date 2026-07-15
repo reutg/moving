@@ -3,9 +3,24 @@ import "server-only";
 import { and, count, desc, eq, inArray, ne } from "drizzle-orm";
 import { z } from "zod";
 
-import { BASE_ROOM_TYPES, DEFAULT_MOVE_STATUS, MOVE_STATUSES, ROOM_TYPE_LABELS } from "@/constants";
+import {
+  BASE_ROOM_TYPES,
+  type ChecklistSectionKey,
+  DEFAULT_CHECKLIST_TASKS,
+  DEFAULT_MOVE_STATUS,
+  MOVE_STATUSES,
+  ROOM_TYPE_LABELS,
+} from "@/constants";
 import { db } from "@/lib/db/client";
-import { boxes, householdMembers, type Move, moves, rooms, users } from "@/lib/db/schema";
+import {
+  boxes,
+  checklistTasks,
+  householdMembers,
+  type Move,
+  moves,
+  rooms,
+  users,
+} from "@/lib/db/schema";
 import { internal, notFound, unauthorized } from "@/lib/errors";
 
 import { completeOnboarding, getUserById } from "@/features/users/services/user-service";
@@ -219,6 +234,31 @@ export const createMove = async (input: CreateMoveInput): Promise<Move> => {
           name: ROOM_TYPE_LABELS[type],
           updatedAt: now,
         })),
+      )
+      .run();
+
+    const checklistPositionBySection: Record<ChecklistSectionKey, number> = {
+      beforeMoving: 0,
+      movingDay: 0,
+      afterMoving: 0,
+    };
+
+    await tx
+      .insert(checklistTasks)
+      .values(
+        DEFAULT_CHECKLIST_TASKS.map((task) => {
+          const position = checklistPositionBySection[task.section];
+          checklistPositionBySection[task.section] += 1;
+
+          return {
+            moveId: createdMove.id,
+            title: task.title,
+            section: task.section,
+            position,
+            isCompleted: false,
+            updatedAt: now,
+          };
+        }),
       )
       .run();
 

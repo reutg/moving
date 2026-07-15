@@ -41,6 +41,12 @@
   --color-foreground: var(--foreground);
   --color-background: var(--background);
   --color-icon: var(--icon);
+  --color-checkbox-border: var(--checkbox-border);
+  --color-divider: var(--divider);
+  --color-checklist-completed-bg: var(--checklist-completed-bg);
+  --color-checklist-completed-text: var(--checklist-completed-text);
+  --color-checklist-options-bg: var(--checklist-options-bg);
+  --color-checklist-options-border: var(--checklist-options-border);
 
   /* Brand-specific tokens */
   --color-primary-hover: var(--primary-hover);
@@ -119,6 +125,14 @@
   --border-light: #eaeaed;
   --input: #ffffff;
   --ring: #2f6f62;
+  --checkbox-border: #d4d4d8;
+  --divider: #f3f3f5;
+
+  /* Checklist */
+  --checklist-completed-bg: #f7f7f9;
+  --checklist-completed-text: #b4b4b9;
+  --checklist-options-bg: #f9f9f9;
+  --checklist-options-border: #efefef;
 
   /* Status colors */
   --status-packed: #2f6f62;

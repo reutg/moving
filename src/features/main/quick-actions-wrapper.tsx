@@ -1,8 +1,11 @@
 "use client";
 
-import { ListTodo, LucideIcon, PlusIcon, Printer, QrCode } from "lucide-react";
-import QuickAction from "./quick-action";
+import type { LucideIcon } from "lucide-react";
+import { ListTodo, PlusIcon, Printer, QrCode } from "lucide-react";
+
 import { SectionHeader } from "@/components/ui/text";
+
+import QuickAction from "./quick-action";
 
 type QuickAction = {
   id: number;
@@ -25,9 +28,8 @@ const QuickActionsWrapper: React.FC<QuickActionsWrapperProps> = ({}) => {
     {
       id: 2,
       icon: ListTodo,
-      title: "Todo list",
-      linkTo: "/boxes/add",
-      comingSoon: true,
+      title: "Checklist",
+      linkTo: "/checklist",
     },
     {
       id: 3,

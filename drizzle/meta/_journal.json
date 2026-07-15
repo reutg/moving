@@ -113,6 +113,13 @@
       "when": 1782200000006,
       "tag": "0015_rooms",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "6",
+      "when": 1782200000007,
+      "tag": "0016_checklist_tasks",
+      "breakpoints": true
     }
   ]
 }

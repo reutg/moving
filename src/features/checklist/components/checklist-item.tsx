@@ -39,13 +39,7 @@ const ChecklistItem: React.FC<ChecklistItemProps> = ({
         <div className="flex items-center gap-3">
           <Checkbox
             checked={item.isCompleted}
-            onCheckedChange={(checked) => {
-              if (checked === "indeterminate") {
-                return;
-              }
-
-              onToggleCompletion(item.id, checked);
-            }}
+            onCheckedChange={(checked) => onToggleCompletion(item.id, checked === true)}
           />
           <span
             className={cn(

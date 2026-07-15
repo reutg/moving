@@ -33,10 +33,7 @@ const BoxCard = ({ box }: BoxCardProps) => {
   const destinationRoom = COMMON_LOCATIONS[roomKey] ?? box.destinationRoom;
 
   return (
-    <Link
-      href={`/boxes/${box.id}/preview`}
-      className="flex min-w-0 flex-1 items-center gap-3.5 py-3.5"
-    >
+    <Link href={`/boxes/${box.id}/preview`} className="flex min-w-0 flex-1 items-center">
       <ListItemContent
         icon={RoomIcon}
         backgroundColor={tileColors.backgroundColor}

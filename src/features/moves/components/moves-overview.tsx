@@ -2,11 +2,13 @@
 
 import type { Move } from "@/lib/db/schema";
 
-import { useMovesPage } from "../hooks/use-moves-page";
-import ActiveMove from "./active-move";
-import PastMoves from "./past-moves";
-import ActionsSheet from "./move-actions/actions-sheet";
 import DeletePrompt from "@/components/delete-prompt";
+
+import { useMovesPage } from "../hooks/use-moves-page";
+
+import ActiveMove from "./active-move";
+import ActionsSheet from "./move-actions/actions-sheet";
+import PastMoves from "./past-moves";
 
 type MovesOverviewProps = {
   currentMove: Move | null;
@@ -43,6 +45,7 @@ const MovesOverview = ({ currentMove, initialOtherMoves }: MovesOverviewProps) =
         getMoveDate={getMoveDate}
         onOpenActionsSheet={openActionsSheet}
       />
+
       <PastMoves
         otherMoves={otherMoves}
         pendingCurrentMoveId={pendingCurrentMoveId}
@@ -71,18 +74,20 @@ const MovesOverview = ({ currentMove, initialOtherMoves }: MovesOverviewProps) =
         onOpenChange={closeDeleteMovePrompt}
         deleteText={selectedMove?.boxesCount ? "Delete Move & boxes" : "Delete move"}
       >
-        {selectedMove?.boxesCount && (
-          <>
-            <h6 className="text-foreground text-center text-xl leading-tight font-bold">
-              Delete {selectedMove?.name}?
-            </h6>
+        <>
+          <h6 className="text-foreground text-center text-xl leading-tight font-bold">
+            Delete {selectedMove?.name}?
+          </h6>
+          {selectedMove?.boxesCount ? (
             <span className="text-muted-foreground text-center text-lg">
               This move has {selectedMove?.boxesCount ?? 0} boxes packed. <br />
-              Deleting the move will also delete all of its boxes and QR labels - this can't be
+              Deleting the move will also delete all of its boxes and QR labels - this can&apos;t be
               undone.
             </span>
-          </>
-        )}
+          ) : (
+            <span>This action cannot be undone.</span>
+          )}
+        </>
       </DeletePrompt>
     </>
   );

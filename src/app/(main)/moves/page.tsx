@@ -1,8 +1,10 @@
-import { IconLink } from "@/components/ui/icon-link";
-import PageHeader from "@/components/ui/page-header";
+import { ChevronLeft, Plus } from "lucide-react";
+
 import MovesOverview from "@/features/moves/components/moves-overview";
 import { getCurrentMove, getOtherMoves } from "@/features/moves/services/move-service";
-import { ChevronLeft, Plus } from "lucide-react";
+
+import { IconLink } from "@/components/ui/icon-link";
+import PageHeader from "@/components/ui/page-header";
 
 const MovesPage = async () => {
   const [currentMove, otherMoves] = await Promise.all([getCurrentMove(), getOtherMoves()]);

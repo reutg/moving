@@ -48,7 +48,7 @@ const QuickActionsWrapper: React.FC<QuickActionsWrapperProps> = ({}) => {
   ];
 
   return (
-    <>
+    <div className="space-y-2">
       <SectionHeader>Quick actions</SectionHeader>
 
       <div className="grid grid-cols-4 gap-2.5">
@@ -62,7 +62,7 @@ const QuickActionsWrapper: React.FC<QuickActionsWrapperProps> = ({}) => {
           />
         ))}
       </div>
-    </>
+    </div>
   );
 };
 

@@ -10,13 +10,17 @@ import NoMoves from "@/features/moves/components/no-moves";
 import ActionCard from "@/components/ui/action-card";
 import ComingSoonBanner from "@/components/ui/coming-soon-banner";
 
+import type { ChecklistListResult } from "../checklist/services/checklist-service";
+
 import MovingInfo from "./moving-info";
+import UpNext from "./up-next";
 
 type HomeContentProps = {
   hasCurrentMove: boolean;
   isEmptyMove: boolean;
   recentlyUpdatedBoxes: Box[];
   moveDate: Date | null;
+  checklistTasks: ChecklistListResult;
 };
 
 const HomeContent = ({
@@ -24,6 +28,7 @@ const HomeContent = ({
   isEmptyMove,
   recentlyUpdatedBoxes,
   moveDate,
+  checklistTasks,
 }: HomeContentProps) => {
   if (!hasCurrentMove) {
     return <NoMoves />;
@@ -36,7 +41,9 @@ const HomeContent = ({
   return (
     <>
       <MovingInfo moveDate={moveDate} />
+
       <QuickActionsWrapper />
+      <UpNext tasks={checklistTasks.tasks} moveDate={moveDate ?? undefined} />
 
       <ComingSoonBanner>
         <ActionCard

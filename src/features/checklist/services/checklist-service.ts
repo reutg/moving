@@ -240,9 +240,16 @@ const normalizeSectionPositions = async (
 };
 
 export const listChecklist = async (
-  moveId: number,
+  moveId?: number,
   filter: ChecklistFilter = DEFAULT_CHECKLIST_FILTER,
 ): Promise<ChecklistListResult> => {
+  if (!moveId) {
+    return {
+      tasks: [],
+      counts: createEmptyCounts(),
+    };
+  }
+
   await assertMoveAccess(moveId);
 
   const tasks = await listTasksForMove(moveId);

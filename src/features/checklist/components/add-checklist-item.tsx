@@ -3,7 +3,7 @@
 import { PlusIcon } from "lucide-react";
 
 interface AddChecklistItemProps {
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 const AddChecklistItem: React.FC<AddChecklistItemProps> = ({ onClick }) => {

@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 
 import { redirect } from "next/navigation";
+
 import { ChevronLeft, Plus } from "lucide-react";
 
 import ChecklistContent from "@/features/checklist/components/checklist-content";

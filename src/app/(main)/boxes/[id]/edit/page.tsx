@@ -1,4 +1,4 @@
-import BoxForm from "@/features/boxes/components/box-form";
+import BoxForm from "@/features/boxes/components/box-form/box-form";
 import { getBoxById } from "@/features/boxes/services/box-service";
 import PageHeader from "@/components/ui/page-header";
 import { ChevronLeft } from "lucide-react";

@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 
 import {
   BOX_STATUS_LABELS,
@@ -43,6 +43,8 @@ export const useAddBoxForm = (box?: Box) => {
     resolver: zodResolver(BoxFormValuesSchema),
     defaultValues: box ? { ...defaultValues, ...box } : defaultValues,
   });
+
+  const description = useWatch({ control, name: "description" });
 
   const isEdit = box !== undefined;
 
@@ -98,5 +100,6 @@ export const useAddBoxForm = (box?: Box) => {
     commonLocations,
     statusOptions,
     isEdit,
+    description,
   };
 };

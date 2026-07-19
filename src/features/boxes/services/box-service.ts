@@ -3,7 +3,7 @@ import "server-only";
 import { and, count, desc, eq, inArray, like, max, or } from "drizzle-orm";
 import { z } from "zod";
 
-import { BOX_PRIORITIES, BOX_STATUS_LABELS, BOX_STATUSES, type BoxStatus } from "@/constants";
+import { BOX_PRIORITIES, BOX_STATUSES, type BoxStatus } from "@/constants";
 import {
   COMMON_LOCATIONS,
   type CommonLocationKey,
@@ -13,6 +13,11 @@ import { db } from "@/lib/db/client";
 import { type Box, boxes } from "@/lib/db/schema";
 import { internal, notFound } from "@/lib/errors";
 
+import type {
+  BoxSearchBoxResult,
+  BoxSearchItemResult,
+  BoxSearchResult,
+} from "@/features/boxes/types/box-search-result";
 import type { BoxStatusCounts } from "@/features/boxes/types/box-status-counts";
 import {
   getCurrentMove,
@@ -105,8 +110,16 @@ const emptyStatusCounts = (): BoxStatusCounts => {
   return { ...byStatus, total: 0 };
 };
 
-const matchesSearchTerm = (value: string, search: string) =>
-  value.toLowerCase().includes(search.toLowerCase());
+const findMatchingSegment = (value: string, query: string): string | null => {
+  const lowerQuery = query.toLowerCase();
+  const segments = value.split(",").map((segment) => segment.trim());
+  return segments.find((segment) => segment.toLowerCase().includes(lowerQuery)) ?? null;
+};
+
+const getMatchingItems = (description: string, query: string): string[] => {
+  const lowerQuery = query.toLowerCase();
+  return parseCommaSeparated(description).filter((item) => item.toLowerCase().includes(lowerQuery));
+};
 
 const getNextBoxNumber = async (moveId: number): Promise<number> => {
   const [row] = await db
@@ -140,51 +153,48 @@ export async function listRecentlyUpdatedBoxes(limit = 3): Promise<Box[]> {
     .limit(limit);
 }
 
-export async function searchBoxes({ query }: SearchBoxesQuery): Promise<Box[]> {
+export async function searchBoxes({ query }: SearchBoxesQuery): Promise<BoxSearchResult> {
   const moveId = await resolveMoveId();
   if (moveId === null) {
-    return [];
+    return { items: [], boxes: [], totalCount: 0 };
   }
 
   const term = `%${query}%`;
 
-  const matchingRoomKeys = (Object.entries(COMMON_LOCATIONS) as [CommonLocationKey, string][])
-    .filter(
-      ([roomKey, roomLabel]) =>
-        matchesSearchTerm(roomKey, query) || matchesSearchTerm(roomLabel, query),
-    )
-    .map(([roomKey]) => roomKey);
-
-  const matchingStatuses = BOX_STATUSES.filter(
-    (status) =>
-      matchesSearchTerm(status, query) || matchesSearchTerm(BOX_STATUS_LABELS[status], query),
-  );
-
-  const conditions = [
-    like(boxes.name, term),
-    like(boxes.description, term),
-    like(boxes.destinationRoom, term),
-    like(boxes.status, term),
-  ];
-
-  const numericQuery = Number(query);
-  if (!Number.isNaN(numericQuery)) {
-    conditions.push(eq(boxes.number, numericQuery));
-  }
-
-  if (matchingRoomKeys.length > 0) {
-    conditions.push(inArray(boxes.destinationRoom, matchingRoomKeys));
-  }
-
-  if (matchingStatuses.length > 0) {
-    conditions.push(inArray(boxes.status, matchingStatuses));
-  }
-
-  return db
+  const matchingBoxes = await db
     .select()
     .from(boxes)
-    .where(and(eq(boxes.moveId, moveId), or(...conditions)))
+    .where(and(eq(boxes.moveId, moveId), or(like(boxes.name, term), like(boxes.description, term))))
     .orderBy(boxes.number);
+
+  const items: BoxSearchItemResult[] = [];
+  const boxResults: BoxSearchBoxResult[] = [];
+
+  for (const box of matchingBoxes) {
+    for (const item of getMatchingItems(box.description, query)) {
+      items.push({
+        item,
+        boxNumber: box.number,
+        room: box.destinationRoom,
+        status: box.status,
+      });
+    }
+
+    const match =
+      findMatchingSegment(box.name, query) ?? findMatchingSegment(box.description, query);
+
+    if (match) {
+      boxResults.push({
+        title: box.name,
+        boxNumber: box.number,
+        room: box.destinationRoom,
+        status: box.status,
+        match,
+      });
+    }
+  }
+
+  return { items, boxes: boxResults, totalCount: items.length + boxResults.length };
 }
 
 export async function filterBoxes(
@@ -248,6 +258,11 @@ export async function updateBox(id: number, input: UpdateBoxInput): Promise<Box>
   return box;
 }
 
+export type {
+  BoxSearchBoxResult,
+  BoxSearchItemResult,
+  BoxSearchResult,
+} from "@/features/boxes/types/box-search-result";
 export type { BoxStatusCounts } from "@/features/boxes/types/box-status-counts";
 
 export type BoxesSummary = {

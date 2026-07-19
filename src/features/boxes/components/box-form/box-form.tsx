@@ -9,7 +9,9 @@ import FormTextarea from "@/components/form/form-textarea";
 import { Button } from "@/components/ui/button";
 import PhotoUpload from "@/components/ui/photo-upload";
 
-import { useAddBoxForm } from "../hooks/use-add-box-form";
+import { useAddBoxForm } from "../../hooks/use-add-box-form";
+
+import SuggestedItems from "./suggested-items";
 
 interface BoxFormProps {
   box?: Box;
@@ -25,6 +27,7 @@ const BoxForm = ({ box }: BoxFormProps) => {
     isSubmitting,
     submitError,
     isEdit,
+    description,
   } = useAddBoxForm(box);
 
   return (
@@ -45,6 +48,8 @@ const BoxForm = ({ box }: BoxFormProps) => {
           placeholder="Auto generated description will be shown here"
           control={control}
         />
+
+        {description && <SuggestedItems description={description} />}
 
         <FormSelect
           name="destinationRoom"

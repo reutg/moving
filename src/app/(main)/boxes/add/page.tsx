@@ -1,7 +1,9 @@
 "use client";
 
-import BoxForm from "@/features/boxes/components/box-form";
 import { X } from "lucide-react";
+
+import BoxForm from "@/features/boxes/components/box-form/box-form";
+
 import PageHeader from "@/components/ui/page-header";
 
 interface AddBoxPageProps {}

@@ -1,12 +1,15 @@
-import type { LucideIcon } from "lucide-react";
+import { type LucideIcon, XIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+
+import Button from "../button";
 
 export const CHIP_VARIANTS = {
   default: "bg-chip-background text-chip-text",
   amber: "bg-chip-amber-bg text-chip-amber-text",
   neutral: "bg-chip-neutral-bg text-chip-neutral-text",
   destructive: "bg-destructive-border text-destructive",
+  removable: "bg-card text-foreground border border-input-border px-2 py-1",
 } as const;
 
 export type ChipVariant = keyof typeof CHIP_VARIANTS;
@@ -37,6 +40,11 @@ const Chip: React.FC<ChipProps> = ({
     >
       {Icon && <Icon className="size-2.5" />}
       <span className="text-xs font-semibold">{label}</span>
+      {variant === "removable" && (
+        <Button variant="ghost" className="bg-input-border h-fit p-1">
+          <XIcon className="size-2.5" />
+        </Button>
+      )}
     </div>
   );
 };

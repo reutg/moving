@@ -3,6 +3,7 @@ import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const sizeStyles = {
+  xs: { container: "size-8 rounded-lg", icon: "size-4" },
   sm: { container: "size-11 rounded-xl", icon: "size-5" },
   md: { container: "size-16 rounded-2xl", icon: "size-8" },
   lg: { container: "size-20", icon: "size-10" },
@@ -18,6 +19,10 @@ const variantStyles = {
   outline: {
     container: "border-border bg-white border",
     icon: "text-foreground",
+  },
+  gray: {
+    container: "bg-background",
+    icon: "text-field-label",
   },
 } as const;
 
@@ -50,7 +55,7 @@ const IconTile = ({
   const styles = sizeStyles[size];
   const variantStyle = variantStyles[variant];
 
-  if (backgroundColor !== undefined && iconColor !== undefined) {
+  if (backgroundColor !== undefined || iconColor !== undefined || label !== undefined) {
     const iconOnly = !label;
     const iconClassName = iconSize ?? (iconOnly ? styles.icon : "size-[13px]");
 
@@ -59,15 +64,19 @@ const IconTile = ({
         aria-hidden
         className={cn(
           "flex flex-none flex-col items-center justify-center rounded-3xl",
-          variant === "outline" && variantStyle.container,
+          variant === "outline" && "border-border border",
+          backgroundColor === undefined && variantStyle.container,
           iconOnly ? styles.container : "h-[50px] w-[50px]",
           className,
         )}
-        style={{ backgroundColor }}
+        style={backgroundColor !== undefined ? { backgroundColor } : undefined}
       >
         {Icon && (
           <Icon
-            className={cn(iconOnly ? iconClassName : cn("mb-0.5", iconClassName))}
+            className={cn(
+              iconOnly ? iconClassName : cn("mb-0.5", iconClassName),
+              iconColor === undefined && variantStyle.icon,
+            )}
             color={iconColor}
             strokeWidth={2}
           />

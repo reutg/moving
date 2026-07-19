@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Box, Home, LayoutGrid, Plus, Search, type LucideIcon } from "lucide-react";
+
+import { Box, Home, LayoutGrid, type LucideIcon, Plus, Search } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 

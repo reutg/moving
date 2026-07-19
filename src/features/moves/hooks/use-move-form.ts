@@ -1,15 +1,18 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+import { useRouter } from "next/navigation";
+
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 import type { ApiResponse } from "@/lib/api/response";
+import { formatDate } from "@/lib/date-utils";
 import type { Move } from "@/lib/db/schema";
 
-import { MoveFormValues, MoveFormValuesSchema } from "../schemas/move-form-schema";
-import { formatDate } from "@/lib/date-utils";
+import type { MoveFormValues } from "../schemas/move-form-schema";
+import { MoveFormValuesSchema } from "../schemas/move-form-schema";
 
 const defaultValues: MoveFormValues = {
   name: "",
@@ -37,7 +40,7 @@ export const useMoveForm = (move?: Move) => {
       setValue("address", move.address);
       setValue("moveDate", formatDate(move.moveDate, "YYYY-MM-DD"));
     }
-  }, [move]);
+  }, [move, setValue]);
 
   const onSubmit = async (values: MoveFormValues) => {
     setSubmitError(null);

@@ -1,14 +1,17 @@
 "use client";
 
-import ButtonsSwitch from "@/components/inputs/buttons-switch";
-import Spinner from "@/components/ui/spinner";
-import type { BoxStatusCounts } from "@/features/boxes/types/box-status-counts";
 import type { Box } from "@/lib/db/schema";
 
-import { useBoxesList } from "../../hooks/use-boxes-list";
-import RoomFilter from "./room-filter";
-import BoxCard from "../../box-card";
+import type { BoxStatusCounts } from "@/features/boxes/types/box-status-counts";
+
+import ButtonsSwitch from "@/components/inputs/buttons-switch";
 import { Card, CardContent } from "@/components/ui/card";
+import Spinner from "@/components/ui/spinner";
+
+import { useBoxesList } from "../../hooks/use-boxes-list";
+
+import BoxCard from "./box-card";
+import RoomFilter from "./room-filter";
 
 type BoxesListProps = {
   moveId: number;

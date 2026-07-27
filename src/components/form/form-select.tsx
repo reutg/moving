@@ -3,7 +3,7 @@
 import type { LucideIcon } from "lucide-react";
 import { type FieldValues, useController } from "react-hook-form";
 
-import { Field, FieldDescription, FieldLabel } from "../ui/field";
+import { Field, FieldDescription, FieldError, FieldLabel } from "../ui/field";
 import {
   Select,
   SelectContent,
@@ -25,6 +25,7 @@ type FormSelectProps<T extends FieldValues> = FormFieldProps<T> & {
   options: FormSelectOption[];
   placeholder?: string;
   getOptionLabel?: (key: string) => string;
+  isLoading?: boolean;
 };
 
 const triggerIconClass = "text-muted-foreground mr-1.5 size-4 shrink-0";
@@ -36,9 +37,13 @@ const FormSelect = <T extends FieldValues>({
   options,
   placeholder,
   control,
+  isLoading,
   getOptionLabel,
 }: FormSelectProps<T>) => {
-  const { field } = useController({ name, control });
+  const {
+    field,
+    fieldState: { error },
+  } = useController({ name, control });
 
   const selectedOption = options.find((option) => option.key === field.value);
   const SelectedIcon = selectedOption?.icon ?? null;
@@ -46,7 +51,7 @@ const FormSelect = <T extends FieldValues>({
     getOptionLabel?.(key) ?? options.find((option) => option.key === key)?.label ?? key;
 
   return (
-    <Field>
+    <Field data-invalid={!!error}>
       <FieldLabel>{label}</FieldLabel>
       <Select onValueChange={field.onChange} value={field.value || null}>
         <SelectTrigger>
@@ -73,6 +78,7 @@ const FormSelect = <T extends FieldValues>({
         </SelectContent>
       </Select>
       {description && <FieldDescription>{description}</FieldDescription>}
+      {error && <FieldError>{error.message}</FieldError>}
     </Field>
   );
 };

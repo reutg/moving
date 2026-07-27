@@ -20,7 +20,8 @@ interface BoxFormProps {
 const BoxForm = ({ box }: BoxFormProps) => {
   const {
     onFinishedAnalyzing,
-    commonLocations,
+    roomOptions,
+    isLoadingRoomOptions,
     statusOptions,
     control,
     submit,
@@ -54,9 +55,10 @@ const BoxForm = ({ box }: BoxFormProps) => {
         <FormSelect
           name="destinationRoom"
           label="Destination room"
-          options={commonLocations}
+          options={roomOptions}
           placeholder="Select destination room"
           control={control}
+          isLoading={isLoadingRoomOptions}
         />
 
         <FormButtonsSwitch

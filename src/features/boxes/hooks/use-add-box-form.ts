@@ -1,23 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { camelCase } from "lodash";
 import { useForm, useWatch } from "react-hook-form";
 
 import {
   BOX_STATUS_LABELS,
   BOX_STATUSES,
-  COMMON_LOCATIONS,
   DEFAULT_BOX_STATUS,
   FALLBACK_LOCATION_ICON,
   LOCATION_ICONS,
 } from "@/constants";
-import type { CommonLocationKey } from "@/constants/common-locations";
 import type { ApiResponse } from "@/lib/api/response";
-import type { Box } from "@/lib/db/schema";
+import type { Box, Room } from "@/lib/db/schema";
 
 import type { BoxFormValues } from "../schemas/box-form-schema";
 import { BoxFormValuesSchema } from "../schemas/box-form-schema";
@@ -26,6 +25,35 @@ import type { BoxPhotoAnalysis } from "../services/analyze-box-photo-service";
 export const useAddBoxForm = (box?: Box) => {
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const [isLoadingRoomOptions, setIsLoadingRoomOptions] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadRooms = async () => {
+      setIsLoadingRoomOptions(true);
+      try {
+        const response = await fetch("/api/rooms", {
+          headers: { "content-type": "application/json" },
+        });
+        const json: ApiResponse<Room[]> = await response.json();
+        if (active && json.ok) {
+          setRooms(json.data);
+        }
+      } catch {
+        setIsLoadingRoomOptions(false);
+      } finally {
+        setIsLoadingRoomOptions(false);
+      }
+    };
+
+    loadRooms();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const defaultValues: BoxFormValues = {
     name: "",
@@ -56,12 +84,12 @@ export const useAddBoxForm = (box?: Box) => {
         headers: { "content-type": "application/json" },
         body: JSON.stringify(values),
       });
-      const json: ApiResponse<unknown> = await response.json();
+      const json: ApiResponse<Box> = await response.json();
       if (!json.ok) {
         setSubmitError(json.error.message);
         return;
       }
-      router.push(isEdit ? `/boxes/${box.id}` : "/");
+      router.push(`/boxes/${json.data.id}/preview`);
       router.refresh();
     } catch (cause) {
       setSubmitError(cause instanceof Error ? cause.message : "Failed to save box.");
@@ -69,6 +97,7 @@ export const useAddBoxForm = (box?: Box) => {
   };
 
   const submit = handleSubmit(onSubmit);
+
   const onFinishedAnalyzing = (analysis: BoxPhotoAnalysis) => {
     setValue("name", analysis.name);
     setValue("description", analysis.description);
@@ -77,13 +106,13 @@ export const useAddBoxForm = (box?: Box) => {
     }
   };
 
-  const commonLocations = (Object.entries(COMMON_LOCATIONS) as [CommonLocationKey, string][]).map(
-    ([key, label]) => ({
-      key,
-      label,
-      icon: LOCATION_ICONS[key] ?? FALLBACK_LOCATION_ICON,
-    }),
-  );
+  const getRoomKey = (room: Room) => (room.type === "other" ? camelCase(room.name) : room.type);
+
+  const roomOptions = rooms.map((room) => ({
+    key: getRoomKey(room),
+    label: room.name,
+    icon: LOCATION_ICONS[room.type] ?? FALLBACK_LOCATION_ICON,
+  }));
 
   const statusOptions = BOX_STATUSES.map((status) => ({
     value: status,
@@ -97,9 +126,10 @@ export const useAddBoxForm = (box?: Box) => {
     isDirty,
     submitError,
     onFinishedAnalyzing,
-    commonLocations,
+    roomOptions,
     statusOptions,
     isEdit,
     description,
+    isLoadingRoomOptions,
   };
 };

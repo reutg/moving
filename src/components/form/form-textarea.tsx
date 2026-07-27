@@ -2,7 +2,7 @@
 
 import { type FieldValues, useController } from "react-hook-form";
 
-import { Field, FieldDescription, FieldLabel } from "../ui/field";
+import { Field, FieldDescription, FieldError, FieldLabel } from "../ui/field";
 import { Textarea } from "../ui/textarea";
 
 import type { FormFieldProps } from "./types";
@@ -14,7 +14,10 @@ const FormTextarea = <T extends FieldValues>({
   description,
   placeholder,
 }: FormFieldProps<T>) => {
-  const { field } = useController({ name, control });
+  const {
+    field,
+    fieldState: { error },
+  } = useController({ name, control });
 
   return (
     <Field>
@@ -27,6 +30,7 @@ const FormTextarea = <T extends FieldValues>({
         value={field.value ?? ""}
       />
       {description && <FieldDescription>{description}</FieldDescription>}
+      {error && <FieldError>{error.message}</FieldError>}
     </Field>
   );
 };

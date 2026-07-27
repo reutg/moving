@@ -21,7 +21,7 @@ const FormInput = <T extends FieldValues>({
 }: FormFieldProps<T>) => {
   const {
     field,
-    formState: { errors },
+    fieldState: { error },
   } = useController({ name, control });
 
   const inputProps = {
@@ -34,7 +34,7 @@ const FormInput = <T extends FieldValues>({
   };
 
   return (
-    <Field data-invalid={!!errors[name]}>
+    <Field data-invalid={!!error}>
       {label && <FieldLabel htmlFor={name}>{label}</FieldLabel>}
       {type === "date" ? (
         <DateInput {...inputProps} />
@@ -50,7 +50,7 @@ const FormInput = <T extends FieldValues>({
           {description}
         </FieldDescription>
       )}
-      {errors[name] && <FieldError>{errors[name]?.message as string}</FieldError>}
+      {error && <FieldError>{error.message}</FieldError>}
     </Field>
   );
 };

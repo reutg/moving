@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { camelCase } from "lodash";
 import { useForm, useWatch } from "react-hook-form";
 
 import {
@@ -16,13 +15,14 @@ import {
   LOCATION_ICONS,
 } from "@/constants";
 import type { ApiResponse } from "@/lib/api/response";
-import type { Box, Room } from "@/lib/db/schema";
+import type { Room } from "@/lib/db/schema";
 
 import type { BoxFormValues } from "../schemas/box-form-schema";
 import { BoxFormValuesSchema } from "../schemas/box-form-schema";
 import type { BoxPhotoAnalysis } from "../services/analyze-box-photo-service";
+import type { BoxWithRoom } from "../services/box-service";
 
-export const useAddBoxForm = (box?: Box) => {
+export const useAddBoxForm = (box?: BoxWithRoom) => {
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -56,10 +56,10 @@ export const useAddBoxForm = (box?: Box) => {
   }, []);
 
   const defaultValues: BoxFormValues = {
-    name: "",
-    description: "",
-    destinationRoom: "",
-    status: DEFAULT_BOX_STATUS,
+    name: box?.name ?? "",
+    description: box?.description ?? "",
+    roomId: box?.roomId !== undefined ? String(box.roomId) : "",
+    status: box?.status ?? DEFAULT_BOX_STATUS,
   };
 
   const {
@@ -69,7 +69,7 @@ export const useAddBoxForm = (box?: Box) => {
     formState: { isSubmitting, isDirty },
   } = useForm<BoxFormValues>({
     resolver: zodResolver(BoxFormValuesSchema),
-    defaultValues: box ? { ...defaultValues, ...box } : defaultValues,
+    defaultValues,
   });
 
   const description = useWatch({ control, name: "description" });
@@ -82,10 +82,11 @@ export const useAddBoxForm = (box?: Box) => {
       const response = await fetch(isEdit ? `/api/boxes/${box.id}` : "/api/boxes", {
         method: isEdit ? "PATCH" : "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify(values),
+        body: JSON.stringify({ ...values, roomId: Number(values.roomId) }),
       });
-      const json: ApiResponse<Box> = await response.json();
+      const json: ApiResponse<BoxWithRoom> = await response.json();
       if (!json.ok) {
+        å;
         setSubmitError(json.error.message);
         return;
       }
@@ -102,14 +103,15 @@ export const useAddBoxForm = (box?: Box) => {
     setValue("name", analysis.name);
     setValue("description", analysis.description);
     if (analysis.destinationRoom) {
-      setValue("destinationRoom", analysis.destinationRoom);
+      const suggestedRoom = rooms.find((room) => room.type === analysis.destinationRoom);
+      if (suggestedRoom) {
+        setValue("roomId", String(suggestedRoom.id));
+      }
     }
   };
 
-  const getRoomKey = (room: Room) => (room.type === "other" ? camelCase(room.name) : room.type);
-
   const roomOptions = rooms.map((room) => ({
-    key: getRoomKey(room),
+    key: String(room.id),
     label: room.name,
     icon: LOCATION_ICONS[room.type] ?? FALLBACK_LOCATION_ICON,
   }));

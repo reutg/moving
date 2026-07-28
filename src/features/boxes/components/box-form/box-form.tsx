@@ -1,6 +1,6 @@
 "use client";
 
-import type { Box } from "@/lib/db/schema";
+import type { BoxWithRoom } from "@/features/boxes/services/box-service";
 
 import FormButtonsSwitch from "@/components/form/form-buttons-switch";
 import FormInput from "@/components/form/form-input";
@@ -14,7 +14,7 @@ import { useAddBoxForm } from "../../hooks/use-add-box-form";
 import SuggestedItems from "./suggested-items";
 
 interface BoxFormProps {
-  box?: Box;
+  box?: BoxWithRoom;
 }
 
 const BoxForm = ({ box }: BoxFormProps) => {
@@ -53,7 +53,7 @@ const BoxForm = ({ box }: BoxFormProps) => {
         {description && <SuggestedItems description={description} />}
 
         <FormSelect
-          name="destinationRoom"
+          name="roomId"
           label="Destination room"
           options={roomOptions}
           placeholder="Select destination room"

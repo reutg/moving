@@ -6,16 +6,16 @@ import {
   FALLBACK_LOCATION_ICON_TILE,
   LOCATION_ICON_TILE,
   LOCATION_ICONS,
-  type CommonLocationKey,
 } from "@/constants";
-import type { Box } from "@/lib/db/schema";
+
+import type { BoxWithRoom } from "@/features/boxes/services/box-service";
 
 type RoomIconProps = {
-  box: Box;
+  box: BoxWithRoom;
 };
 
 const RoomIcon = ({ box }: RoomIconProps) => {
-  const roomKey = box.destinationRoom as CommonLocationKey;
+  const roomKey = box.roomType;
   const RoomIconComponent = LOCATION_ICONS[roomKey] ?? FALLBACK_LOCATION_ICON;
   const tileColors = LOCATION_ICON_TILE[roomKey] ?? FALLBACK_LOCATION_ICON_TILE;
 

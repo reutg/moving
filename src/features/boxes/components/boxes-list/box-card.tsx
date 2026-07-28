@@ -3,21 +3,20 @@ import Link from "next/link";
 import {
   BOX_STATUS_LABELS,
   type BoxStatus,
-  COMMON_LOCATIONS,
-  type CommonLocationKey,
   FALLBACK_LOCATION_ICON,
   FALLBACK_LOCATION_ICON_TILE,
   LOCATION_ICON_TILE,
   LOCATION_ICONS,
 } from "@/constants";
-import type { Box } from "@/lib/db/schema";
+
+import type { BoxWithRoom } from "@/features/boxes/services/box-service";
 
 import Chip from "@/components/ui/chip";
 import ListItemContent from "@/components/ui/list-item-content";
 import SeparatorDot from "@/components/ui/separator-dot";
 
 type BoxCardProps = {
-  box: Box;
+  box: BoxWithRoom;
 };
 
 const STATUS_CHIP_CLASS: Record<BoxStatus, string> = {
@@ -27,10 +26,10 @@ const STATUS_CHIP_CLASS: Record<BoxStatus, string> = {
 
 const BoxCard = ({ box }: BoxCardProps) => {
   const status = box.status as BoxStatus;
-  const roomKey = box.destinationRoom as CommonLocationKey;
+  const roomKey = box.roomType;
   const RoomIcon = LOCATION_ICONS[roomKey] ?? FALLBACK_LOCATION_ICON;
   const tileColors = LOCATION_ICON_TILE[roomKey] ?? FALLBACK_LOCATION_ICON_TILE;
-  const destinationRoom = COMMON_LOCATIONS[roomKey] ?? box.destinationRoom;
+  const destinationRoom = box.roomName;
 
   return (
     <Link href={`/boxes/${box.id}/preview`} className="flex min-w-0 flex-1 items-center">

@@ -1,14 +1,13 @@
 import Link from "next/link";
 
-import type { Box } from "@/lib/db/schema";
-
 import BoxCard from "@/features/boxes/components/boxes-list/box-card";
+import type { BoxWithRoom } from "@/features/boxes/services/box-service";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { SectionHeader } from "@/components/ui/text";
 
 type RecentlyUpdatedProps = {
-  boxes: Box[];
+  boxes: BoxWithRoom[];
 };
 
 const RecentlyUpdated = ({ boxes }: RecentlyUpdatedProps) => {

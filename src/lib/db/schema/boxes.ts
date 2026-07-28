@@ -9,6 +9,7 @@ import {
 } from "@/constants";
 
 import { moves } from "./moves";
+import { rooms } from "./rooms";
 
 export const boxes = sqliteTable(
   "boxes",
@@ -19,16 +20,17 @@ export const boxes = sqliteTable(
       .notNull()
       .references(() => moves.id, { onDelete: "cascade" }),
 
-    // Per-move label number. Assigned once at creation, never renumbered on delete.
     number: integer("number").notNull(),
 
-    // Empty `name` on insert is rewritten to `Box #<number>` by the
-    // `boxes_set_default_name` trigger (see drizzle/0006_box_numbers.sql).
     name: text("name").notNull().default(""),
     description: text("description").notNull().default(""),
 
     sourceRoom: text("source_room"),
-    destinationRoom: text("destination_room").notNull(),
+
+    // Destination is the specific room this box is assigned to.
+    roomId: integer("room_id")
+      .notNull()
+      .references(() => rooms.id, { onDelete: "restrict" }),
 
     status: text("status", { enum: BOX_STATUSES }).notNull().default(DEFAULT_BOX_STATUS),
 

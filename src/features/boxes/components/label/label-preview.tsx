@@ -3,7 +3,8 @@
 import { useFormContext } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
-import type { Box } from "@/lib/db/schema";
+
+import type { BoxWithRoom } from "@/features/boxes/services/box-service";
 
 import { LABEL_SIZE_STYLES } from "../../constants/label-size-styles";
 import { LABEL_SIZES } from "../../constants/label-sizes";
@@ -11,7 +12,7 @@ import type { BoxLabelValues } from "../../schemas/box-label-schema";
 import LabelContent from "./label-content";
 
 type LabelPreviewProps = {
-  box: Box;
+  box: BoxWithRoom;
 };
 
 const LabelPreview = ({ box }: LabelPreviewProps) => {

@@ -1,6 +1,8 @@
 "use client";
 
-import type { LucideIcon } from "lucide-react";
+import { useState } from "react";
+
+import { Loader2, type LucideIcon } from "lucide-react";
 import { type FieldValues, useController } from "react-hook-form";
 
 import { Field, FieldDescription, FieldError, FieldLabel } from "../ui/field";
@@ -30,6 +32,10 @@ type FormSelectProps<T extends FieldValues> = FormFieldProps<T> & {
 
 const triggerIconClass = "text-muted-foreground mr-1.5 size-4 shrink-0";
 
+const loaderIcon = (
+  <Loader2 aria-hidden className="text-muted-foreground pointer-events-none size-4 animate-spin" />
+);
+
 const FormSelect = <T extends FieldValues>({
   name,
   label,
@@ -44,17 +50,27 @@ const FormSelect = <T extends FieldValues>({
     field,
     fieldState: { error },
   } = useController({ name, control });
+  const [open, setOpen] = useState(false);
 
-  const selectedOption = options.find((option) => option.key === field.value);
-  const SelectedIcon = selectedOption?.icon ?? null;
+  const SelectedIcon = options.find((option) => option.key === field.value)?.icon;
   const getLabel = (key: string) =>
     getOptionLabel?.(key) ?? options.find((option) => option.key === key)?.label ?? key;
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (isLoading) return;
+    setOpen(nextOpen);
+  };
 
   return (
     <Field data-invalid={!!error}>
       <FieldLabel>{label}</FieldLabel>
-      <Select onValueChange={field.onChange} value={field.value || null}>
-        <SelectTrigger>
+      <Select
+        onValueChange={field.onChange}
+        value={field.value || null}
+        open={open}
+        onOpenChange={handleOpenChange}
+      >
+        <SelectTrigger icon={isLoading ? loaderIcon : undefined}>
           {SelectedIcon && <SelectedIcon aria-hidden className={triggerIconClass} />}
           <SelectValue placeholder={placeholder}>
             {field.value ? getLabel(field.value) : null}

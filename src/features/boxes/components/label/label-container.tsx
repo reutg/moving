@@ -3,7 +3,8 @@
 import { FormProvider } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
-import type { Box } from "@/lib/db/schema";
+
+import type { BoxWithRoom } from "@/features/boxes/services/box-service";
 
 import useBoxLabelActions from "../../hooks/use-box-label-actions";
 import LabelConfig from "./label-config";
@@ -11,7 +12,7 @@ import LabelPreview from "./label-preview";
 import LabelPrintArea from "./label-print-area";
 
 type LabelContainerProps = {
-  box: Box;
+  box: BoxWithRoom;
 };
 
 const LabelContainer = ({ box }: LabelContainerProps) => {

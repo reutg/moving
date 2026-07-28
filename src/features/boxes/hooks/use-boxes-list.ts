@@ -3,9 +3,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { BOX_STATUS_LABELS, type CommonLocationKey } from "@/constants";
+import type { BoxWithRoom } from "@/features/boxes/services/box-service";
 import type { BoxStatusCounts } from "@/features/boxes/types/box-status-counts";
 import type { ApiResponse } from "@/lib/api/response";
-import type { Box } from "@/lib/db/schema";
 
 import { BOX_LIST_STATUS_FILTERS, BoxListStatusFilter } from "../schemas/boxes-list-schema";
 import {
@@ -17,7 +17,7 @@ import {
 
 type UseBoxesListOptions = {
   moveId: number;
-  initialBoxes?: Box[];
+  initialBoxes?: BoxWithRoom[];
   initialStatusCounts?: BoxStatusCounts;
 };
 
@@ -26,7 +26,7 @@ export const useBoxesList = ({
   initialBoxes,
   initialStatusCounts,
 }: UseBoxesListOptions) => {
-  const [boxes, setBoxes] = useState<Box[]>(initialBoxes ?? []);
+  const [boxes, setBoxes] = useState<BoxWithRoom[]>(initialBoxes ?? []);
   const [statusCounts, setStatusCounts] = useState<BoxStatusCounts | null>(
     initialStatusCounts ?? null,
   );
@@ -42,7 +42,7 @@ export const useBoxesList = ({
         return false;
       }
 
-      if (selectedRoom && box.destinationRoom !== selectedRoom) {
+      if (selectedRoom && box.roomType !== selectedRoom) {
         return false;
       }
 

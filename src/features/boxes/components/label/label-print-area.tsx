@@ -5,14 +5,14 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useFormContext } from "react-hook-form";
 
-import type { Box } from "@/lib/db/schema";
+import type { BoxWithRoom } from "@/features/boxes/services/box-service";
 
 import type { BoxLabelValues } from "../../schemas/box-label-schema";
 import LabelContent from "./label-content";
 import LabelPrintStyles from "./label-print-styles";
 
 type LabelPrintAreaProps = {
-  box: Box;
+  box: BoxWithRoom;
   labelRef: RefObject<HTMLDivElement | null>;
 };
 

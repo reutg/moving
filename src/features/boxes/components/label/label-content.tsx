@@ -1,16 +1,15 @@
 import { Separator } from "@/components/ui/separator";
-import { COMMON_LOCATIONS, type CommonLocationKey } from "@/constants";
 import { appUrl } from "@/lib/app-url";
 import { cn } from "@/lib/utils";
-import type { Box } from "@/lib/db/schema";
 
+import type { BoxWithRoom } from "../../services/box-service";
 import { LABEL_SIZE_STYLES, getLabelPrintLayout } from "../../constants/label-size-styles";
 import { LABEL_SIZES, type LabelSizeId } from "../../constants/label-sizes";
 import type { BoxLabelValues } from "../../schemas/box-label-schema";
 import QrGenerator from "../qr-generator";
 
 type LabelContentProps = {
-  box: Box;
+  box: BoxWithRoom;
   content: BoxLabelValues["content"];
   sizeId: LabelSizeId;
   variant: "preview" | "print";
@@ -79,7 +78,7 @@ const LabelContent = ({ box, content, sizeId, variant }: LabelContentProps) => {
               isPrint ? { fontSize: `${printLayout.roomFontMm}mm`, lineHeight: 1.1 } : undefined
             }
           >
-            {COMMON_LOCATIONS[box.destinationRoom as CommonLocationKey]}
+            {box.roomName}
           </p>
           {content.name && (
             <span

@@ -1,7 +1,6 @@
 "use client";
 
-import type { Box } from "@/lib/db/schema";
-
+import type { BoxWithRoom } from "@/features/boxes/services/box-service";
 import type { BoxStatusCounts } from "@/features/boxes/types/box-status-counts";
 
 import ButtonsSwitch from "@/components/inputs/buttons-switch";
@@ -15,7 +14,7 @@ import RoomFilter from "./room-filter";
 
 type BoxesListProps = {
   moveId: number;
-  initialBoxes?: Box[];
+  initialBoxes?: BoxWithRoom[];
   initialStatusCounts?: BoxStatusCounts;
 };
 

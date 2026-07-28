@@ -6,8 +6,6 @@ import SeparatorDot from "@/components/ui/separator-dot";
 import {
   BOX_STATUS_LABELS,
   BoxStatus,
-  COMMON_LOCATIONS,
-  CommonLocationKey,
   FALLBACK_LOCATION_ICON,
   FALLBACK_LOCATION_ICON_TILE,
   LOCATION_ICON_TILE,
@@ -36,9 +34,9 @@ const PreviewBoxPage: React.FC<PreviewBoxPageProps> = async ({ params }) => {
   const { id } = await params;
   const box = await getBoxById(id);
 
-  const roomKey = box.destinationRoom as CommonLocationKey;
+  const roomKey = box.roomType;
   const RoomIconComponent = LOCATION_ICONS[roomKey] ?? FALLBACK_LOCATION_ICON;
-  const destinationRoom = COMMON_LOCATIONS[roomKey] ?? box.destinationRoom;
+  const destinationRoom = box.roomName;
   const tileColors = LOCATION_ICON_TILE[roomKey] ?? FALLBACK_LOCATION_ICON_TILE;
   return (
     <main className="flex-container page-content">

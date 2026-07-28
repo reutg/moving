@@ -3,7 +3,7 @@ import { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import type { Box } from "@/lib/db/schema";
+import type { BoxWithRoom } from "@/features/boxes/services/box-service";
 import { appUrl } from "@/lib/app-url";
 
 import { DEFAULT_LABEL_SIZE, getLabelPixelSize } from "../constants/label-sizes";
@@ -18,7 +18,7 @@ const INITIAL_LABEL_CONTENT: BoxLabelValues["content"] = {
 const hasVisibleLabelContent = (content: BoxLabelValues["content"]) =>
   Object.values(content).some(Boolean);
 
-const useBoxLabelActions = (box: Box) => {
+const useBoxLabelActions = (box: BoxWithRoom) => {
   const form = useForm<BoxLabelValues>({
     resolver: zodResolver(BoxLabelSchema),
     defaultValues: {

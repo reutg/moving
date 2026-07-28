@@ -7,3 +7,4 @@ export {
   type BoxListStatusFilter,
 } from "./schemas/boxes-list-schema";
 export type { Box } from "@/lib/db/schema";
+export type { BoxWithRoom } from "./services/box-service";

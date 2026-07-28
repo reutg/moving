@@ -1,8 +1,8 @@
 import type { RefObject } from "react";
 
 import type { BoxesListFilters } from "@/features/boxes/schemas/boxes-list-schema";
+import type { BoxWithRoom } from "@/features/boxes/services/box-service";
 import type { ApiResponse } from "@/lib/api/response";
-import type { Box } from "@/lib/db/schema";
 
 export const buildBoxesUrl = (
   status: BoxesListFilters["status"],
@@ -22,9 +22,9 @@ export const fetchBoxes = async (
   status: BoxesListFilters["status"],
   moveId: number,
   signal: AbortSignal,
-): Promise<Box[]> => {
+): Promise<BoxWithRoom[]> => {
   const response = await fetch(buildBoxesUrl(status, moveId), { signal });
-  const json: ApiResponse<Box[]> = await response.json();
+  const json: ApiResponse<BoxWithRoom[]> = await response.json();
 
   if (!json.ok) {
     throw new Error(json.error.message);

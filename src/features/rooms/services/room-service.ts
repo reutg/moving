@@ -71,19 +71,17 @@ const resolveMoveId = async (moveId?: number): Promise<number> => {
   return currentMove.id;
 };
 
-const getBoxesCountByDestinationRoom = async (
-  moveId: number,
-): Promise<Record<string, number>> => {
+const getBoxesCountByRoomId = async (moveId: number): Promise<Record<number, number>> => {
   const rows = await db
-    .select({ room: boxes.destinationRoom, count: count() })
+    .select({ roomId: boxes.roomId, count: count() })
     .from(boxes)
     .where(eq(boxes.moveId, moveId))
-    .groupBy(boxes.destinationRoom)
+    .groupBy(boxes.roomId)
     .all();
 
-  const counts: Record<string, number> = {};
+  const counts: Record<number, number> = {};
   for (const row of rows) {
-    counts[row.room] = row.count;
+    counts[row.roomId] = row.count;
   }
 
   return counts;
@@ -119,12 +117,12 @@ export const listRooms = async (moveId?: number): Promise<RoomWithBoxesCount[]> 
 
   const [moveRooms, boxesCountByRoom] = await Promise.all([
     db.select().from(rooms).where(eq(rooms.moveId, resolvedMoveId)).orderBy(rooms.createdAt).all(),
-    getBoxesCountByDestinationRoom(resolvedMoveId),
+    getBoxesCountByRoomId(resolvedMoveId),
   ]);
 
   return moveRooms.map((room) => ({
     ...room,
-    boxesCount: boxesCountByRoom[room.type] ?? 0,
+    boxesCount: boxesCountByRoom[room.id] ?? 0,
   }));
 };
 
@@ -200,6 +198,16 @@ export const deleteRoom = async (id: number): Promise<void> => {
   await getAuthenticatedUserId();
 
   const existing = await getRoomById(id);
+
+  const [boxCountRow] = await db
+    .select({ boxesCount: count() })
+    .from(boxes)
+    .where(eq(boxes.roomId, existing.id))
+    .all();
+
+  if ((boxCountRow?.boxesCount ?? 0) > 0) {
+    throw badRequest("Cannot delete a room that still has boxes assigned to it");
+  }
 
   const result = await db
     .delete(rooms)

@@ -1,13 +1,14 @@
 import { z } from "zod";
 
+import { withApi } from "@/lib/api/handler";
+import { badRequest } from "@/lib/errors";
+
 import {
   deleteBox,
   getBoxById,
   updateBox,
   UpdateBoxInputSchema,
 } from "@/features/boxes/services/box-service";
-import { withApi } from "@/lib/api/handler";
-import { badRequest } from "@/lib/errors";
 
 const IdSchema = z.coerce.number().int().positive();
 

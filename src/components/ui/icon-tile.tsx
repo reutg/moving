@@ -95,7 +95,7 @@ const IconTile = ({
   return (
     <div
       className={cn(
-        "flex items-center justify-center rounded-3xl",
+        "flex shrink-0 items-center justify-center rounded-3xl",
         variantStyle.container,
         styles.container,
         className,

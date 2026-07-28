@@ -58,7 +58,7 @@ export const useAddBoxForm = (box?: BoxWithRoom) => {
   const defaultValues: BoxFormValues = {
     name: box?.name ?? "",
     description: box?.description ?? "",
-    roomId: box?.roomId !== undefined ? String(box.roomId) : "",
+    roomId: box?.roomId ? String(box.roomId) : "",
     status: box?.status ?? DEFAULT_BOX_STATUS,
   };
 
@@ -86,7 +86,6 @@ export const useAddBoxForm = (box?: BoxWithRoom) => {
       });
       const json: ApiResponse<BoxWithRoom> = await response.json();
       if (!json.ok) {
-        å;
         setSubmitError(json.error.message);
         return;
       }

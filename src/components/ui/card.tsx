@@ -2,17 +2,27 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+const cardVariants = {
+  default: "border-border-light bg-card",
+  tip: "border-[#E2F0EB] border-2 bg-[#F4FAF7] text-primary font-light leading-normal",
+} as const;
+
+type CardVariant = keyof typeof cardVariants;
+
 function Card({
   className,
   size = "default",
+  variant = "default",
   ...props
-}: React.ComponentProps<"div"> & { size?: "default" | "sm" }) {
+}: React.ComponentProps<"div"> & { size?: "default" | "sm"; variant?: CardVariant }) {
   return (
     <div
       data-slot="card"
       data-size={size}
+      data-variant={variant}
       className={cn(
-        "group/card border-border-light bg-card text-card-foreground flex flex-col gap-(--card-spacing) overflow-hidden rounded-3xl border py-(--card-spacing) text-sm [--card-spacing:--spacing(4)] has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(3)] data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-3xl *:[img:last-child]:rounded-b-3xl",
+        "group/card text-card-foreground flex flex-col gap-(--card-spacing) overflow-hidden rounded-3xl border py-(--card-spacing) text-sm [--card-spacing:--spacing(4)] has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(3)] data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-3xl *:[img:last-child]:rounded-b-3xl",
+        cardVariants[variant],
         className,
       )}
       {...props}

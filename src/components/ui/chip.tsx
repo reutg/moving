@@ -9,6 +9,7 @@ export const CHIP_VARIANTS = {
   amber: "bg-chip-amber-bg text-chip-amber-text",
   neutral: "bg-chip-neutral-bg text-chip-neutral-text",
   destructive: "bg-destructive-border text-destructive",
+  blue: "bg-chip-blue-bg text-chip-blue-text",
   removable: "bg-card text-foreground border border-input-border px-2 py-1",
 } as const;
 
@@ -38,7 +39,7 @@ const Chip: React.FC<ChipProps> = ({
         className,
       )}
     >
-      {Icon && <Icon className="size-2.5" />}
+      {Icon && <Icon className="size-3 pt-0.5" />}
       <span className="text-xs font-semibold">{label}</span>
       {variant === "removable" && (
         <Button variant="ghost" className="bg-input-border h-fit p-1">

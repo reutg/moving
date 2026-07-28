@@ -42,13 +42,13 @@ const NoResults: React.FC<NoResultsProps> = ({ searchValue }) => {
       <Card className="py-4">
         <CardContent className="flex flex-col gap-2.5 p-0">
           {noResultsTips.map((tip, index) => (
-            <>
-              <div className="flex items-center gap-2 px-4" key={tip.title}>
+            <div key={tip.title} className="flex flex-col gap-2">
+              <div className="flex items-center gap-2 px-4">
                 <IconTile icon={tip.icon} variant="gray" size="xs" />
                 <span className="text-foreground text-sm font-light">{tip.title}</span>
               </div>
               {index !== noResultsTips.length - 1 && <Separator className="bg-border-light" />}
-            </>
+            </div>
           ))}
         </CardContent>
       </Card>

@@ -19,7 +19,7 @@ const HouseholdPage: React.FC<HouseholdPageProps> = async ({}) => {
   const user = session.user;
 
   return (
-    <main className="flex-container page-content">
+    <main className="mx-auto flex min-h-full max-w-[960px] flex-col gap-[1.125rem] px-4 pt-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
       <PageHeader title={household?.name ?? "Household"} backHref="/settings" icon={ChevronLeft} />
 
       <div className="bg-accent flex items-center gap-4 rounded-xl p-4">

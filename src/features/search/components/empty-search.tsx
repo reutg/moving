@@ -8,7 +8,7 @@ interface EmptySearchProps {}
 
 const EmptySearch: React.FC<EmptySearchProps> = ({}) => {
   return (
-    <div className="flex-container items-center justify-center py-10">
+    <div className="flex min-h-full max-w-[960px] flex-col gap-[1.125rem] items-center justify-center py-10">
       <IconTile icon={SearchIcon} variant="outline" size="lg" iconColor="var(--primary)" />
       <div className="flex flex-col gap-2 text-center">
         <h5 className="text-lg font-medium">Find anything you packed</h5>

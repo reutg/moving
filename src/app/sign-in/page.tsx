@@ -33,14 +33,14 @@ const SignInPage = async ({ searchParams }: SignInPageProps) => {
   }
 
   return (
-    <main className="bg-background page-content my-8 flex flex-col gap-4">
+    <main className="bg-background min-h-full px-4 pt-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] my-8 flex flex-col gap-4">
       <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
         <Image
           src="/logo.png"
           alt={process.env.NEXT_PUBLIC_APP_NAME ?? "Moving on"}
           width={88}
           height={88}
-          className="size-[88px] rounded-[26px] object-contain shadow-[0_14px_30px_-10px_rgba(47,111,98,0.5)]"
+          className="size-[88px] rounded-[26px] object-contain shadow-lg"
           priority
         />
         <div className="flex items-center gap-2">

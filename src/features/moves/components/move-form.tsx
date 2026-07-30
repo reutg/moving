@@ -14,7 +14,7 @@ const MoveForm: React.FC<MoveFormProps> = ({ move }) => {
   const saveButtonText = move ? "Save move" : "Create move";
 
   return (
-    <form onSubmit={submit} className="flex-content">
+    <form onSubmit={submit} className="flex flex-1 flex-col gap-4">
       <FormInput
         name="name"
         label="Move name"

@@ -16,7 +16,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ searchValue, searchResult
   const { items, boxes, totalCount } = searchResults;
 
   return (
-    <div className="flex-container py-3">
+    <div className="flex min-h-full max-w-[960px] flex-col gap-[1.125rem] py-3">
       <div className="flex items-center gap-1">
         <span className="text-muted-foreground text-sm font-light">{totalCount} results for</span>
         <span className="text-sm font-semibold">&quot;{searchValue}&quot;</span>

@@ -25,7 +25,7 @@ const NoResults: React.FC<NoResultsProps> = ({ searchValue }) => {
   ];
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex-container py-3">
+      <div className="flex min-h-full max-w-[960px] flex-col gap-[1.125rem] py-3">
         <div className="flex items-center gap-1">
           <span className="text-muted-foreground text-sm font-light">0 results for</span>
           <span className="text-sm font-semibold">&quot;{searchValue}&quot;</span>

@@ -10,7 +10,7 @@ const MovesPage = async () => {
   const [currentMove, otherMoves] = await Promise.all([getCurrentMove(), getOtherMoves()]);
 
   return (
-    <main className="page-content flex flex-col gap-4">
+    <main className="min-h-full px-4 pt-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] flex flex-col gap-4">
       <PageHeader
         title="Your moves"
         backHref="/"

@@ -16,16 +16,16 @@ const buttonVariants = cva(
       variant: {
         default:
           "border-0 bg-primary p-[15px] font-semibold text-primary-foreground transition-colors",
-        outline: "border-border bg-white",
+        outline: "border-border bg-card",
         secondary: "bg-accent text-primary font-semibold",
         ghost:
           "text-foreground w-fit hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
-        destructive: "bg-white border-destructive-border text-destructive p-[15px]",
-        "destructive-filled": "bg-destructive text-white",
+        destructive: "bg-card border-destructive-border text-destructive p-[15px]",
+        "destructive-filled": "bg-destructive text-primary-foreground",
         list: "text-foreground text-start font-base flex items-center gap-2 justify-start",
         selected: "text-primary font-semibold h-9.5",
-        unselected: "text-[#8A8A8F] font-normal h-9.5",
-        icon: "size-10 bg-background text-[#9A9AA0] border border-border",
+        unselected: "text-muted-foreground font-normal h-9.5",
+        icon: "size-10 bg-background text-subtle-foreground border border-border",
       },
       size: {
         default:

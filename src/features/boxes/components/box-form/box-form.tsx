@@ -32,7 +32,7 @@ const BoxForm = ({ box }: BoxFormProps) => {
   } = useAddBoxForm(box);
 
   return (
-    <form onSubmit={submit} className="flex-content">
+    <form onSubmit={submit} className="flex flex-1 flex-col gap-4">
       {!isEdit && <PhotoUpload onFinishedAnalyzing={onFinishedAnalyzing} />}
 
       <div className="flex flex-col gap-4">

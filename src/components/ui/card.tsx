@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 const cardVariants = {
   default: "border-border-light bg-card",
-  tip: "border-[#E2F0EB] border-2 bg-[#F4FAF7] text-primary font-light leading-normal",
+  tip: "border-packed-bg border-2 bg-tint-sage font-light leading-normal text-primary",
 } as const;
 
 type CardVariant = keyof typeof cardVariants;

@@ -17,7 +17,7 @@ const variantStyles = {
     icon: "text-primary",
   },
   outline: {
-    container: "border-border bg-white border",
+    container: "border-border bg-card border",
     icon: "text-foreground",
   },
   gray: {

@@ -13,7 +13,7 @@ const RoomsPage = async () => {
   const rooms = await listRooms();
 
   return (
-    <main className="page-content flex flex-col gap-4">
+    <main className="min-h-full px-4 pt-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] flex flex-col gap-4">
       <ScreenHeader
         title="Rooms"
         actions={

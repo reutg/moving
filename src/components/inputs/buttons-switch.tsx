@@ -38,7 +38,7 @@ const ButtonsSwitch = ({
       <div className="bg-input-border relative flex h-11 w-full rounded-[13px] p-1">
         <div
           aria-hidden
-          className="absolute top-1 bottom-1 left-1 rounded-[10px] bg-white shadow-sm transition-transform duration-200 ease-in-out"
+          className="bg-card absolute top-1 bottom-1 left-1 rounded-[10px] shadow-sm transition-transform duration-200 ease-in-out"
           style={{
             width: `calc((100% - 8px) / ${options.length})`,
             transform: `translateX(calc(${selectedIndex} * 100%))`,

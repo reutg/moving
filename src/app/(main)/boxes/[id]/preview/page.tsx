@@ -39,7 +39,7 @@ const PreviewBoxPage: React.FC<PreviewBoxPageProps> = async ({ params }) => {
   const destinationRoom = box.roomName;
   const tileColors = LOCATION_ICON_TILE[roomKey] ?? FALLBACK_LOCATION_ICON_TILE;
   return (
-    <main className="flex-container page-content">
+    <main className="mx-auto flex min-h-full max-w-[960px] flex-col gap-[1.125rem] px-4 pt-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
       <PageHeader title={`Box ${box.number}`} backHref="/" icon={ChevronLeft} />
 
       <div className="flex gap-4">

@@ -57,7 +57,7 @@ const NavLink = ({ item, pathname }: NavLinkProps) => {
       aria-current={active ? "page" : undefined}
       className={cn(
         "flex min-w-0 flex-1 flex-col items-center gap-1 py-1",
-        active ? "text-primary" : "text-[#8A8A8F]",
+        active ? "text-primary" : "text-muted-foreground",
       )}
     >
       <Icon className="size-6" strokeWidth={active ? 2.25 : 1.75} />
@@ -81,7 +81,7 @@ const BottomNavigation = () => {
           <Link
             href="/boxes/add"
             aria-label="Add box"
-            className="bg-primary text-primary-foreground -mt-7 flex size-14 items-center justify-center rounded-full shadow-[0_4px_12px_rgba(47,111,98,0.35)]"
+            className="bg-primary text-primary-foreground -mt-7 flex size-14 items-center justify-center rounded-full shadow-md"
           >
             <Plus className="size-7" strokeWidth={2.25} />
           </Link>

@@ -34,7 +34,7 @@ const LabelPrintArea = ({ box, labelRef }: LabelPrintAreaProps) => {
   return createPortal(
     <>
       <LabelPrintStyles sizeId={sizeId} />
-      <div className="print-area" aria-hidden>
+      <div className="label-print-root" aria-hidden>
         {Array.from({ length: copies }, (_, index) => (
           <div
             key={index}

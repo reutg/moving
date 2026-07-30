@@ -1,0 +1,378 @@
+/* ============================================================
+   Moving On — App theme tokens
+   Colors, typography, spacing, radii and shadows used across
+   the prototype. Values mirror the inline styles in
+   "Moving On.dc.html".
+
+   `@theme inline` exposes tokens as Tailwind utilities
+   (`bg-primary`, `text-color-muted`, `bg-teal`, …).
+   Semantic aliases below keep existing app class names working.
+   ============================================================ */
+
+@theme inline {
+  --font-sans: var(--font-body);
+  --font-heading: var(--font-heading);
+
+  /* Prototype brand */
+  --color-teal: var(--color-teal);
+  --color-teal-strong: var(--color-teal-strong);
+  --color-sage: var(--color-sage);
+  --color-blue: var(--color-blue);
+  --color-sand: var(--color-sand);
+
+  --color-tint-teal: var(--tint-teal);
+  --color-tint-sage: var(--tint-sage);
+  --color-tint-blue: var(--tint-blue);
+  --color-tint-sand: var(--tint-sand);
+
+  --color-bg: var(--color-bg);
+  --color-surface: var(--color-surface);
+  --color-surface-white: var(--color-surface-white);
+  --color-surface-muted: var(--color-surface-muted);
+  --color-nav: var(--color-nav);
+
+  --color-text: var(--color-text);
+  --color-text-strong: var(--color-text-strong);
+  --color-text-body: var(--color-text-body);
+  --color-text-muted: var(--color-text-muted);
+  --color-text-faint: var(--color-text-faint);
+  --color-text-label: var(--color-text-label);
+  --color-tab-inactive: var(--color-tab-inactive);
+
+  --color-border: var(--color-border);
+  --color-border-soft: var(--color-border-soft);
+  --color-border-dashed: var(--color-border-dashed);
+  --color-handle: var(--color-handle);
+
+  --color-packed-fg: var(--color-packed-fg);
+  --color-packed-bg: var(--color-packed-bg);
+  --color-packing-fg: var(--color-packing-fg);
+  --color-packing-bg: var(--color-packing-bg);
+  --color-owner-fg: var(--color-owner-fg);
+  --color-owner-bg: var(--color-owner-bg);
+
+  --color-danger: var(--color-danger);
+  --color-scrim: var(--color-scrim);
+  --color-scrim-strong: var(--color-scrim-strong);
+  --color-toast-bg: var(--color-toast-bg);
+
+  /* App semantic aliases (existing Tailwind class names) */
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border-light: var(--border-light);
+  --color-destructive: var(--destructive);
+  --color-destructive-border: var(--destructive-border);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-subtle-foreground: var(--subtle-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --color-icon: var(--icon);
+  --color-checkbox-border: var(--checkbox-border);
+  --color-divider: var(--divider);
+  --color-checklist-completed-bg: var(--checklist-completed-bg);
+  --color-checklist-completed-text: var(--checklist-completed-text);
+  --color-checklist-options-bg: var(--checklist-options-bg);
+  --color-checklist-options-border: var(--checklist-options-border);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-light: var(--primary-light);
+  --color-status-packed: var(--status-packed);
+  --color-status-packed-bg: var(--status-packed-bg);
+  --color-status-packing: var(--status-packing);
+  --color-status-packing-bg: var(--status-packing-bg);
+  --color-status-done: var(--status-done);
+  --color-status-done-bg: var(--status-done-bg);
+  --color-ai: var(--ai);
+  --color-ai-bg: var(--ai-bg);
+  --color-label: var(--label);
+  --color-progress-background: var(--progress-background);
+  --color-chip-text: var(--chip-text);
+  --color-chip-background: var(--chip-background);
+  --color-chip-amber-bg: var(--chip-amber-bg);
+  --color-chip-amber-text: var(--chip-amber-text);
+  --color-chip-neutral-bg: var(--chip-neutral-bg);
+  --color-chip-neutral-text: var(--chip-neutral-text);
+  --color-chip-blue-bg: var(--chip-blue-bg);
+  --color-chip-blue-text: var(--chip-blue-text);
+  --color-input-border: var(--input-border);
+  --color-input-text: var(--input-text);
+  --color-input-placeholder: var(--input-placeholder);
+  --color-field-label: var(--field-label);
+  --color-switch-track-off: var(--switch-track-off);
+
+  --color-room-livingRoom: var(--room-livingRoom);
+  --color-room-kitchen: var(--room-kitchen);
+  --color-room-bedroom: var(--room-bedroom);
+  --color-room-bathroom: var(--room-bathroom);
+  --color-room-office: var(--room-office);
+  --color-room-kidsRoom: var(--room-kidsRoom);
+  --color-room-laundryRoom: var(--room-laundryRoom);
+  --color-room-garage: var(--room-garage);
+  --color-room-other: var(--room-other);
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
+  --radius-3xl: var(--radius-3xl);
+  --radius-sheet: var(--radius-sheet);
+  --radius-frame: var(--radius-frame);
+  --radius-pill: var(--radius-pill);
+
+  --shadow-base: var(--shadow-base);
+  --shadow-move: var(--shadow-move);
+  --shadow-fab: var(--shadow-fab);
+  --shadow-sheet: var(--shadow-sheet);
+  --shadow-dialog: var(--shadow-dialog);
+  --shadow-toast: var(--shadow-toast);
+  --shadow-sm: var(--shadow-base);
+  --shadow-md: var(--shadow-move);
+  --shadow-lg: var(--shadow-dialog);
+
+  --spacing-13: 52px;
+  --spacing-screen: var(--screen-pad);
+  --spacing-screen-top: var(--screen-pad-top);
+
+  --text-xs: var(--fs-xs);
+  --text-sm: var(--fs-sm);
+  --text-md: var(--fs-md);
+  --text-base: var(--fs-base);
+  --text-lg: var(--fs-lg);
+  --text-xl: var(--fs-xl);
+  --text-2xl: var(--fs-2xl);
+  --text-3xl: var(--fs-3xl);
+
+  --tracking-tight: var(--tracking-tight);
+  --tracking-snug: var(--tracking-snug);
+  --tracking-wide: var(--tracking-wide);
+
+  --animate-aisrch-bounce: aisrch-bounce 1.1s infinite ease-in-out;
+}
+
+@keyframes aisrch-bounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0.7);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+:root {
+  color-scheme: light;
+
+  /* ---------- Typography ---------- */
+  --font-body: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-heading: var(--font-body);
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --fw-extrabold: 800;
+
+  --fs-xs: 10.5px; /* tab labels, tiny meta */
+  --fs-sm: 12px; /* secondary meta */
+  --fs-md: 13.5px; /* body / list meta */
+  --fs-base: 14.5px; /* default body & inputs */
+  --fs-lg: 16px; /* section titles */
+  --fs-xl: 17px; /* sheet titles */
+  --fs-2xl: 24px; /* screen titles */
+  --fs-3xl: 26px; /* dashboard greeting */
+  --fs-countdown: 38px; /* countdown number */
+
+  --tracking-tight: -0.5px;
+  --tracking-snug: -0.3px;
+  --tracking-wide: 0.4px;
+
+  /* ---------- Brand & accent colors ---------- */
+  --color-teal: oklch(0.55 0.05 195); /* primary brand / actions */
+  --color-teal-strong: oklch(0.48 0.06 195); /* link hover / pressed */
+  --color-sage: oklch(0.68 0.05 150); /* success / packed / complete */
+  --color-blue: oklch(0.62 0.045 240); /* secondary accent */
+  --color-sand: oklch(0.7 0.04 75); /* warning / packing */
+
+  /* Room / avatar tints (soft fills) */
+  --tint-teal: oklch(0.92 0.015 195);
+  --tint-sage: oklch(0.92 0.02 150);
+  --tint-blue: oklch(0.92 0.015 240);
+  --tint-sand: oklch(0.92 0.015 75);
+
+  /* Gradient used on the active-move card */
+  --gradient-move: linear-gradient(135deg, oklch(0.55 0.05 195), oklch(0.62 0.045 240));
+
+  /* ---------- Surfaces & backgrounds ---------- */
+  --color-bg: oklch(0.985 0.005 75); /* app canvas / sheets */
+  --color-surface: oklch(0.995 0.004 75); /* cards, list rows */
+  --color-surface-white: white; /* elevated cards */
+  --color-surface-muted: oklch(0.96 0.012 80); /* subtle fills / assistant banner */
+  --color-nav: oklch(0.995 0.004 75); /* bottom nav bar */
+
+  /* ---------- Text ---------- */
+  --color-text: oklch(0.26 0.02 60); /* strongest headings */
+  --color-text-strong: oklch(0.28 0.02 60);
+  --color-text-body: oklch(0.3 0.02 60);
+  --color-text-muted: oklch(0.52 0.015 60); /* secondary / meta */
+  --color-text-faint: oklch(0.55 0.015 60);
+  --color-text-label: oklch(0.45 0.015 60); /* section uppercase labels */
+  --color-tab-inactive: oklch(0.62 0.01 60);
+
+  /* ---------- Borders & dividers ---------- */
+  --color-border: oklch(0.9 0.01 75); /* card / input borders */
+  --color-border-soft: oklch(0.92 0.008 75); /* nav top border */
+  --color-border-dashed: oklch(0.8 0.015 75); /* dashed add-buttons */
+  --color-handle: oklch(0.85 0.01 75); /* sheet grab handle */
+
+  /* ---------- Status colors ---------- */
+  --color-packed-fg: oklch(0.4 0.06 150);
+  --color-packed-bg: oklch(0.92 0.02 150);
+  --color-packing-fg: oklch(0.5 0.05 75);
+  --color-packing-bg: oklch(0.93 0.02 75);
+  --color-owner-fg: oklch(0.4 0.06 195);
+  --color-owner-bg: oklch(0.92 0.02 195);
+
+  /* ---------- Danger ---------- */
+  --color-danger: oklch(0.55 0.12 25); /* delete text & buttons */
+
+  /* ---------- Overlays ---------- */
+  --color-scrim: oklch(0.2 0.01 60 / 0.4);
+  --color-scrim-strong: oklch(0.2 0.01 60 / 0.42);
+  --color-toast-bg: oklch(0.26 0.02 60);
+
+  /* ---------- Spacing scale ---------- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 10px;
+  --space-4: 12px;
+  --space-5: 14px;
+  --space-6: 16px;
+  --space-7: 18px;
+  --space-8: 20px;
+  --space-9: 22px;
+  --space-10: 24px;
+  --space-12: 28px;
+  --space-14: 32px;
+  --screen-pad: 24px; /* horizontal screen padding */
+  --screen-pad-top: 56px; /* top padding under status area */
+
+  /* ---------- Radii ---------- */
+  --radius-sm: 11px; /* small icon tiles */
+  --radius-md: 14px; /* inputs, small buttons */
+  --radius-lg: 16px; /* list rows, tasks */
+  --radius-xl: 18px; /* cards */
+  --radius-2xl: 20px; /* larger cards */
+  --radius-3xl: 24px; /* feature cards, dialogs */
+  --radius-sheet: 28px; /* bottom-sheet top corners */
+  --radius-frame: 36px; /* outer frame */
+  --radius-pill: 999px; /* chips, buttons, avatars */
+
+  /* ---------- Shadows ---------- */
+  --shadow-base: 0 1px 2px oklch(0 0 0 / 0.05), 0 24px 60px oklch(0 0 0 / 0.14);
+  --shadow-move: 0 12px 28px oklch(0.55 0.05 195 / 0.28);
+  --shadow-fab: 0 6px 16px oklch(0.55 0.05 195 / 0.35);
+  --shadow-sheet: 0 -12px 30px oklch(0 0 0 / 0.12);
+  --shadow-dialog: 0 18px 40px oklch(0 0 0 / 0.22);
+  --shadow-toast: 0 10px 24px oklch(0 0 0 / 0.2);
+
+  /* ---------- Motion ---------- */
+  --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
+  --dur-sheet: 0.3s;
+  --dur-backdrop: 0.25s;
+
+  /* ------------------------------------------------------------------
+   * Semantic aliases — map prototype tokens → existing app utilities
+   * (`bg-primary`, `text-muted-foreground`, status/chip classes, …).
+   * ---------------------------------------------------------------- */
+
+  --background: var(--color-bg);
+  --foreground: var(--color-text);
+  --card: var(--color-surface);
+  --card-foreground: var(--color-text);
+  --popover: var(--color-surface-white);
+  --popover-foreground: var(--color-text);
+
+  --primary: var(--color-teal);
+  --primary-foreground: var(--color-surface-white);
+  --primary-hover: var(--color-teal-strong);
+  --primary-light: var(--color-blue);
+
+  --secondary: var(--color-surface-muted);
+  --secondary-foreground: var(--color-text-body);
+
+  --muted: var(--color-surface-muted);
+  --muted-foreground: var(--color-text-muted);
+  --subtle-foreground: var(--color-text-faint);
+
+  --accent: var(--tint-teal);
+  --accent-foreground: var(--color-owner-fg);
+
+  --destructive: var(--color-danger);
+  --destructive-border: var(--tint-sand);
+
+  --border: var(--color-border);
+  --border-light: var(--color-border-soft);
+  --divider: var(--color-border-soft);
+  --input: var(--color-surface-white);
+  --ring: var(--color-teal);
+  --checkbox-border: var(--color-border-dashed);
+  --icon: var(--color-text-faint);
+
+  --status-packed: var(--color-packed-fg);
+  --status-packed-bg: var(--color-packed-bg);
+  --status-packing: var(--color-packing-fg);
+  --status-packing-bg: var(--color-packing-bg);
+  --status-done: var(--color-owner-fg);
+  --status-done-bg: var(--color-owner-bg);
+
+  --chip-text: var(--color-packed-fg);
+  --chip-background: var(--color-packed-bg);
+  --chip-amber-bg: var(--color-packing-bg);
+  --chip-amber-text: var(--color-packing-fg);
+  --chip-neutral-bg: var(--color-surface-muted);
+  --chip-neutral-text: var(--color-text-muted);
+  --chip-blue-bg: var(--color-owner-bg);
+  --chip-blue-text: var(--color-owner-fg);
+
+  --ai: var(--color-sand);
+  --ai-bg: var(--tint-sand);
+
+  --label: var(--color-text-label);
+  --field-label: var(--color-text-label);
+  --input-border: var(--color-border);
+  --input-text: var(--color-text-body);
+  --input-placeholder: var(--color-text-faint);
+  --switch-track-off: var(--color-handle);
+  --progress-background: var(--color-surface-muted);
+
+  --checklist-completed-bg: var(--color-surface-muted);
+  --checklist-completed-text: var(--color-text-faint);
+  --checklist-options-bg: var(--color-surface);
+  --checklist-options-border: var(--color-border-soft);
+
+  --blue: var(--color-blue);
+
+  --room-livingRoom: var(--color-sand);
+  --room-kitchen: var(--color-sage);
+  --room-bedroom: var(--color-blue);
+  --room-bathroom: var(--color-teal);
+  --room-office: var(--color-teal-strong);
+  --room-kidsRoom: var(--color-sand);
+  --room-laundryRoom: var(--color-sage);
+  --room-garage: var(--color-text-label);
+  --room-other: var(--color-text-muted);
+}

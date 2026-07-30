@@ -1,11 +1,19 @@
 import type { ReactNode } from "react";
 
 import type { Metadata, Viewport } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
 
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
+
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-body",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Moving On",
@@ -29,7 +37,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#2f6f62",
+  themeColor: "#4d8380",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -37,8 +45,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
-      <body className="flex h-dvh flex-col">
+    <html lang="en" className={plusJakarta.variable}>
+      <body className={`${plusJakarta.className} flex h-dvh flex-col`}>
         {children}
         <ServiceWorkerRegistration />
         <Toaster />

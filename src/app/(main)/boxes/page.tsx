@@ -30,7 +30,7 @@ const BoxesPage = async ({ searchParams }: BoxesPageProps) => {
   const [boxes, statusCounts] = await Promise.all([listBoxes(moveId), getBoxStatusCounts(moveId)]);
 
   return (
-    <main className="page-content flex flex-col gap-4">
+    <main className="min-h-full px-4 pt-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] flex flex-col gap-4">
       <ScreenHeader title="Boxes" />
       {boxes.length > 0 ? (
         <BoxesList moveId={moveId} initialBoxes={boxes} initialStatusCounts={statusCounts} />

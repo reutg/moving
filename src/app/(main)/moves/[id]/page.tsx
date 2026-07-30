@@ -13,7 +13,7 @@ const EditMovePage: React.FC<EditMovePageProps> = async ({ params }) => {
   const { id } = await params;
   const move = await getMoveById(Number(id));
   return (
-    <main className="flex-container page-content">
+    <main className="mx-auto flex min-h-full max-w-[960px] flex-col gap-[1.125rem] px-4 pt-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
       <PageHeader title="Edit move" backHref="/moves" icon={ChevronLeft} />
       <div className="flex flex-col items-center gap-3">
         <IconTile icon={Truck} className="rounded-2xl" size="lg" />

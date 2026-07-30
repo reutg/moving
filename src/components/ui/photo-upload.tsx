@@ -66,7 +66,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ onFinishedAnalyzing }) => {
         aria-busy={isAnalyzing}
         className={cn(
           "border-border bg-card relative flex h-44 flex-col items-center justify-center gap-2 overflow-hidden rounded-xl border p-4",
-          previewUrl ? "border-solid" : "border-dash",
+          previewUrl ? "border-solid" : "border-[1.5px] border-dashed",
           isAnalyzing ? "cursor-wait" : "cursor-pointer",
         )}
       >

@@ -18,6 +18,7 @@ type HomeContentProps = {
   isEmptyMove: boolean;
   recentlyUpdatedBoxes: BoxWithRoom[];
   moveDate: Date | null;
+  boxesCount: number;
   checklistTasks: ChecklistListResult;
 };
 
@@ -26,6 +27,7 @@ const HomeContent = ({
   isEmptyMove,
   recentlyUpdatedBoxes,
   moveDate,
+  boxesCount,
   checklistTasks,
 }: HomeContentProps) => {
   if (!hasCurrentMove) {
@@ -38,7 +40,7 @@ const HomeContent = ({
 
   return (
     <>
-      <MovingInfo moveDate={moveDate} />
+      <MovingInfo moveDate={moveDate} boxesCount={boxesCount} />
 
       <QuickActionsWrapper />
       <UpNext tasks={checklistTasks.tasks} moveDate={moveDate ?? undefined} />

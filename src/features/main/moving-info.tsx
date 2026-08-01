@@ -8,15 +8,15 @@ import { SectionSubheader } from "@/components/ui/text";
 
 interface MovingInfoProps {
   moveDate: Date | null;
+  boxesCount: number;
 }
 
-const MovingInfo: React.FC<MovingInfoProps> = ({ moveDate }) => {
+const MovingInfo: React.FC<MovingInfoProps> = ({ moveDate, boxesCount }) => {
   if (!moveDate) {
     return null;
   }
 
   const daysCount = getDaysUntilDate(moveDate);
-  const boxesCount = 13;
 
   return (
     <Card className="border-0 bg-[linear-gradient(120deg,var(--primary),var(--primary-light))] text-white">

@@ -2,7 +2,6 @@ import { Sparkles } from "lucide-react";
 
 import type { BoxWithRoom } from "@/features/boxes/services/box-service";
 import EmptyMove from "@/features/main/empty-move";
-import QuickActionsWrapper from "@/features/main/quick-actions-wrapper";
 import RecentlyUpdated from "@/features/main/recently-updated";
 import NoMoves from "@/features/moves/components/no-moves";
 
@@ -42,7 +41,7 @@ const HomeContent = ({
     <>
       <MovingInfo moveDate={moveDate} boxesCount={boxesCount} />
 
-      <QuickActionsWrapper />
+      {/* <QuickActionsWrapper /> */}
       <UpNext tasks={checklistTasks.tasks} moveDate={moveDate ?? undefined} />
 
       <ActionCard

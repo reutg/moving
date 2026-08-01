@@ -32,7 +32,7 @@ const ChecklistContent = ({ moveId, initialTasks }: ChecklistContentProps) => {
 
   return (
     <>
-      <div className="flex min-h-full max-w-[960px] flex-col gap-[1.125rem]">
+      <div className="flex min-h-full max-w-240 flex-col gap-4.5">
         <ButtonsSwitch
           name="status"
           value={selectedStatus}

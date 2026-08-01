@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { CHECKLIST_SECTION_ORDER, type ChecklistSectionKey } from "@/constants";
 import type { ChecklistTask } from "@/lib/db/schema";
 
@@ -67,7 +69,12 @@ const UpNext = ({ tasks, moveDate }: UpNextProps) => {
 
   return (
     <div className="space-y-2">
-      <SectionHeader>Up next</SectionHeader>
+      <div className="flex items-center justify-between">
+        <SectionHeader>Up next</SectionHeader>
+        <Link href="/checklist" className="text-primary text-[12.5px] font-medium">
+          See all
+        </Link>
+      </div>
       <ChecklistSection nameKey={startingSection} items={upNextTasks} mode="preview" />
     </div>
   );

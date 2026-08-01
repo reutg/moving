@@ -8,9 +8,7 @@ interface TextProps {
 }
 
 export const SectionHeader: React.FC<TextProps> = ({ children, className }) => {
-  return (
-    <div className={cn("text-foreground text-[13px] font-semibold", className)}>{children}</div>
-  );
+  return <div className={cn("text-text text-base font-bold", className)}>{children}</div>;
 };
 
 export const SectionSubheader: React.FC<TextProps> = ({ children, className }) => {

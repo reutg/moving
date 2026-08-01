@@ -84,9 +84,9 @@ const EmptySearch: React.FC<EmptySearchProps> = ({}) => {
       </Card>
 
       <Card variant="tip">
-        <CardContent className="flex items-start gap-2 px-4">
-          <Sparkles className="text-primary size-12 pb-4" />
-          <span>
+        <CardContent className="flex items-start gap-2 px-3">
+          <Sparkles className="text-primary size-12 pb-6" />
+          <span className="text-sm font-light">
             You don&apos;t need exact words. Even if an item was never labeled, AI reads your box
             contents and photos to surface likely matches — ranked by how confident it is.
           </span>

@@ -75,11 +75,11 @@ const SearchResultItem: React.FC<SearchResultItemProps> = ({ result }) => {
         ) : (
           <div
             className={cn(
-              "border-input-border flex items-start gap-1.5 border-t p-4",
+              "border-input-border flex items-start gap-1.5 border-t p-4 leading-normal",
               explanationBackground,
             )}
           >
-            <Sparkle className={cn("size-4 pt-1", explanationIconColor)} />
+            <Sparkle className={cn("size-4", explanationIconColor)} />
             <span className={cn("text-sm font-light", explanationLabelColor)}>{explanation}</span>
           </div>
         )}

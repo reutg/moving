@@ -35,7 +35,7 @@ const Chip: React.FC<ChipProps> = ({
       className={cn(
         "flex w-fit items-center gap-1 rounded-full font-semibold",
         CHIP_VARIANTS[variant],
-        size === "sm" ? "px-[10px] py-[3px] text-xs" : "px-3 py-1.5 text-sm",
+        size === "sm" ? "px-2.5 py-0.5 text-xs" : "px-3 py-1.5 text-sm",
         className,
       )}
     >

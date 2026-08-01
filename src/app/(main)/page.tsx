@@ -20,7 +20,7 @@ export default async function HomePage() {
   ]);
 
   return (
-    <main className="mx-auto flex min-h-full max-w-[960px] flex-col gap-[1.125rem] px-4 pt-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+    <main className="mx-auto flex min-h-full max-w-240 flex-col gap-4.5 px-4 pt-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
       <HomeHeader
         firstName={user.firstName}
         moveName={currentMove?.name}

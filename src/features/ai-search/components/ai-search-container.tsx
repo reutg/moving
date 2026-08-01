@@ -2,8 +2,6 @@
 
 import { Sparkles } from "lucide-react";
 
-import NoResults from "@/features/search/components/no-results";
-
 import Button from "@/components/button";
 import ClearButton from "@/components/inputs/clear-button";
 import { Field } from "@/components/ui/field";
@@ -11,9 +9,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/in
 
 import useAiSearch from "../hooks/use-ai-search";
 
-import EmptySearch from "./empty-search";
-import SearchResultItem from "./search-result-item";
-import SearchingSkeleton from "./searching-skeleton";
+import AiSearchContent from "./ai-search-content";
 
 interface AiSearchContainerProps {}
 
@@ -45,28 +41,11 @@ const AiSearchContainer: React.FC<AiSearchContainerProps> = ({}) => {
         </Button>
       </div>
 
-      {searchValue &&
-        !isSearching &&
-        (searchResults?.totalResults && searchResults.totalResults > 0 ? (
-          <>
-            <div className="flex items-center gap-1">
-              <span className="text-muted-foreground text-sm font-light">
-                {searchResults.totalResults} results for
-              </span>
-              <span className="text-sm font-semibold">&quot;{searchValue}&quot;</span>
-            </div>
-            <div className="flex flex-col gap-4">
-              {searchResults.results?.map((result) => (
-                <SearchResultItem key={result.boxId} result={result} />
-              ))}
-            </div>
-          </>
-        ) : (
-          <NoResults searchValue={searchValue} />
-        ))}
-
-      {!searchValue && !isSearching && <EmptySearch />}
-      {isSearching && <SearchingSkeleton />}
+      <AiSearchContent
+        searchValue={searchValue}
+        isSearching={isSearching}
+        searchResults={searchResults}
+      />
     </div>
   );
 };

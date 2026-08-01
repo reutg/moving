@@ -33,7 +33,7 @@ export const useSearchResultItem = (result: AiBoxSearchResult) => {
   const getExplanationBackground = () => {
     if (confidence === "low") return "bg-chip-neutral-bg";
     if (confidence === "medium") return "bg-chip-blue-bg";
-    return "bg-accent";
+    return "bg-chip-background";
   };
 
   const getExplanationIconColor = () => {

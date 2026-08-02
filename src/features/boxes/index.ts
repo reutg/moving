@@ -1,10 +1,6 @@
 export { useAddBoxForm } from "./hooks/use-add-box-form";
 export { useBoxesList } from "./hooks/use-boxes-list";
 export { type BoxFormValues, BoxFormValuesSchema } from "./schemas/box-form-schema";
-export {
-  type BoxesListFilters,
-  BoxesListFiltersSchema,
-  type BoxListStatusFilter,
-} from "./schemas/boxes-list-schema";
+export { type BoxesListFilters, BoxesListFiltersSchema } from "./schemas/boxes-list-schema";
 export type { Box } from "@/lib/db/schema";
 export type { BoxWithRoom } from "./services/box-service";

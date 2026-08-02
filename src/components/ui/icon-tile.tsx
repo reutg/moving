@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 const sizeStyles = {
   xs: { container: "size-8 rounded-sm", icon: "size-4" },
-  sm: { container: "size-11 rounded-xl", icon: "size-5" },
+  sm: { container: "size-11 rounded-md", icon: "size-5" },
   md: { container: "size-16 rounded-2xl", icon: "size-8" },
   lg: { container: "size-20", icon: "size-10" },
   logo: { container: "size-[88px]", icon: "size-[44px]" },

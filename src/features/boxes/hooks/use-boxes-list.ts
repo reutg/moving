@@ -2,12 +2,17 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { BOX_STATUS_LABELS, type CommonLocationKey } from "@/constants";
-import type { BoxWithRoom } from "@/features/boxes/services/box-service";
-import type { BoxStatusCounts } from "@/features/boxes/types/box-status-counts";
+import {
+  BOX_STATUS_LABELS,
+  BOX_STATUSES,
+  type BoxStatus,
+  type CommonLocationKey,
+} from "@/constants";
 import type { ApiResponse } from "@/lib/api/response";
 
-import { BOX_LIST_STATUS_FILTERS, BoxListStatusFilter } from "../schemas/boxes-list-schema";
+import type { BoxWithRoom } from "@/features/boxes/services/box-service";
+import type { BoxStatusCounts } from "@/features/boxes/types/box-status-counts";
+
 import {
   createAbortController,
   fetchBoxes,
@@ -31,14 +36,14 @@ export const useBoxesList = ({
     initialStatusCounts ?? null,
   );
   const [isLoading, setIsLoading] = useState(initialBoxes === undefined);
-  const [selectedStatus, setSelectedStatus] = useState<BoxListStatusFilter>("all");
+  const [selectedStatus, setSelectedStatus] = useState<BoxStatus | null>(null);
   const [selectedRoom, setSelectedRoom] = useState<CommonLocationKey | null>(null);
   const [error, setError] = useState<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const filteredBoxes = useMemo(() => {
     return boxes.filter((box) => {
-      if (selectedStatus !== "all" && box.status !== selectedStatus) {
+      if (selectedStatus && box.status !== selectedStatus) {
         return false;
       }
 
@@ -52,11 +57,7 @@ export const useBoxesList = ({
 
   const statusOptions = useMemo(
     () =>
-      BOX_LIST_STATUS_FILTERS.map((status) => {
-        if (status === "all") {
-          return { value: status, label: "All" };
-        }
-
+      BOX_STATUSES.map((status) => {
         const label = BOX_STATUS_LABELS[status];
 
         return {
@@ -67,12 +68,37 @@ export const useBoxesList = ({
     [statusCounts],
   );
 
-  const handleStatusChange = (value: string) => {
-    setSelectedStatus(value as BoxListStatusFilter);
+  const handleStatusChange = (value: string | null) => {
+    setSelectedStatus(value as BoxStatus | null);
   };
 
-  const handleSelectRoom = (room: CommonLocationKey | null) => {
-    setSelectedRoom(room);
+  const handleSelectRoom = (room: string | null) => {
+    setSelectedRoom(room as CommonLocationKey | null);
+  };
+
+  const handleBoxStatusChange = (boxId: number, nextStatus: BoxStatus) => {
+    const current = boxes.find((box) => box.id === boxId);
+    if (!current || current.status === nextStatus) {
+      return;
+    }
+
+    const previousStatus = current.status as BoxStatus;
+
+    setBoxes((previousBoxes) =>
+      previousBoxes.map((box) => (box.id === boxId ? { ...box, status: nextStatus } : box)),
+    );
+
+    setStatusCounts((previousCounts) => {
+      if (!previousCounts) {
+        return previousCounts;
+      }
+
+      return {
+        ...previousCounts,
+        [previousStatus]: previousCounts[previousStatus] - 1,
+        [nextStatus]: previousCounts[nextStatus] + 1,
+      };
+    });
   };
 
   useEffect(() => {
@@ -108,7 +134,7 @@ export const useBoxesList = ({
       setError(null);
 
       try {
-        setBoxes(await fetchBoxes("all", moveId, controller.signal));
+        setBoxes(await fetchBoxes(null, moveId, controller.signal));
       } catch (cause) {
         if (isAbortError(cause)) {
           return;
@@ -139,5 +165,6 @@ export const useBoxesList = ({
     handleStatusChange,
     selectedRoom,
     handleSelectRoom,
+    handleBoxStatusChange,
   };
 };

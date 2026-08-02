@@ -1,16 +1,14 @@
 import type { RefObject } from "react";
 
-import type { BoxesListFilters } from "@/features/boxes/schemas/boxes-list-schema";
-import type { BoxWithRoom } from "@/features/boxes/services/box-service";
+import type { BoxStatus } from "@/constants";
 import type { ApiResponse } from "@/lib/api/response";
 
-export const buildBoxesUrl = (
-  status: BoxesListFilters["status"],
-  moveId: number,
-): string => {
+import type { BoxWithRoom } from "@/features/boxes/services/box-service";
+
+export const buildBoxesUrl = (status: BoxStatus | null, moveId: number): string => {
   const params = new URLSearchParams({ moveId: String(moveId) });
 
-  if (status !== "all") {
+  if (status) {
     params.set("status", status);
     return `/api/boxes/filter?${params.toString()}`;
   }
@@ -19,7 +17,7 @@ export const buildBoxesUrl = (
 };
 
 export const fetchBoxes = async (
-  status: BoxesListFilters["status"],
+  status: BoxStatus | null,
   moveId: number,
   signal: AbortSignal,
 ): Promise<BoxWithRoom[]> => {

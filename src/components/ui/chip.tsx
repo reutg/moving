@@ -1,3 +1,5 @@
+import type { MouseEventHandler } from "react";
+
 import { type LucideIcon, XIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -21,6 +23,8 @@ interface ChipProps {
   size?: "sm" | "md";
   icon?: LucideIcon;
   variant?: ChipVariant;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
+  disabled?: boolean;
 }
 
 const Chip: React.FC<ChipProps> = ({
@@ -29,16 +33,28 @@ const Chip: React.FC<ChipProps> = ({
   className,
   icon: Icon,
   variant = "default",
+  onClick,
+  disabled = false,
 }) => {
+  const classNames = cn(
+    "flex w-fit items-center gap-1 rounded-full font-semibold",
+    CHIP_VARIANTS[variant],
+    size === "sm" ? "px-2.5 py-0.5 text-xs" : "px-3 py-1.5 text-sm",
+    onClick && "cursor-pointer disabled:cursor-not-allowed disabled:opacity-60",
+    className,
+  );
+
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} disabled={disabled} className={classNames}>
+        {Icon && <Icon className="size-3 pt-0.5" />}
+        <span className="text-xs font-semibold">{label}</span>
+      </button>
+    );
+  }
+
   return (
-    <div
-      className={cn(
-        "flex w-fit items-center gap-1 rounded-full font-semibold",
-        CHIP_VARIANTS[variant],
-        size === "sm" ? "px-2.5 py-0.5 text-xs" : "px-3 py-1.5 text-sm",
-        className,
-      )}
-    >
+    <div className={classNames}>
       {Icon && <Icon className="size-3 pt-0.5" />}
       <span className="text-xs font-semibold">{label}</span>
       {variant === "removable" && (

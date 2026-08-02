@@ -2,23 +2,24 @@
 
 import type { BoxWithRoom } from "@/features/boxes/services/box-service";
 import type { BoxStatusCounts } from "@/features/boxes/types/box-status-counts";
+import type { RoomWithBoxesCount } from "@/features/rooms/services/room-service";
 
-import ButtonsSwitch from "@/components/inputs/buttons-switch";
+import ChipButtonGroup from "@/components/chip-button-group";
 import { Card, CardContent } from "@/components/ui/card";
 import Spinner from "@/components/ui/spinner";
 
 import { useBoxesList } from "../../hooks/use-boxes-list";
 
 import BoxContent from "./box-content";
-import RoomFilter from "./room-filter";
 
 type BoxesListProps = {
   moveId: number;
   initialBoxes?: BoxWithRoom[];
   initialStatusCounts?: BoxStatusCounts;
+  rooms: RoomWithBoxesCount[];
 };
 
-const BoxesList = ({ moveId, initialBoxes, initialStatusCounts }: BoxesListProps) => {
+const BoxesList = ({ moveId, initialBoxes, initialStatusCounts, rooms }: BoxesListProps) => {
   const {
     filteredBoxes,
     statusOptions,
@@ -26,6 +27,7 @@ const BoxesList = ({ moveId, initialBoxes, initialStatusCounts }: BoxesListProps
     handleStatusChange,
     selectedRoom,
     handleSelectRoom,
+    handleBoxStatusChange,
     isLoading,
     error,
   } = useBoxesList({ moveId, initialBoxes, initialStatusCounts });
@@ -38,21 +40,32 @@ const BoxesList = ({ moveId, initialBoxes, initialStatusCounts }: BoxesListProps
     return <p className="text-destructive text-sm">{error}</p>;
   }
 
+  const roomsOptions = rooms.map((room) => ({
+    value: room.type,
+    label: room.name,
+  }));
+
   return (
     <>
-      <ButtonsSwitch
-        name="status"
-        value={selectedStatus}
-        options={statusOptions}
-        handleButtonClick={handleStatusChange}
+      <ChipButtonGroup
+        selectedVariant="default"
+        options={[{ value: null, label: "All" }, ...statusOptions]}
+        selectedValue={selectedStatus}
+        onSelect={handleStatusChange}
       />
-      <RoomFilter selectedRoom={selectedRoom} handleSelectRoom={handleSelectRoom} />
+
+      <ChipButtonGroup
+        showColorDot
+        options={[{ value: null, label: "All rooms" }, ...roomsOptions]}
+        selectedValue={selectedRoom}
+        onSelect={handleSelectRoom}
+      />
 
       <Card className="p-0">
         <CardContent className="p-0">
           <div className="divide-border divide-y">
             {filteredBoxes.map((box) => (
-              <BoxContent key={box.id} box={box} />
+              <BoxContent key={box.id} box={box} onStatusChange={handleBoxStatusChange} />
             ))}
           </div>
         </CardContent>

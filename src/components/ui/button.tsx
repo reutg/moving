@@ -26,6 +26,7 @@ const buttonVariants = cva(
         selected: "text-primary font-semibold h-9.5",
         unselected: "text-muted-foreground font-normal h-9.5",
         icon: "size-10 bg-background text-subtle-foreground border border-border",
+        selectedChip: "bg-toast-bg text-white",
       },
       size: {
         default:
@@ -42,7 +43,7 @@ const buttonVariants = cva(
       },
       shape: {
         default: "",
-        pill: "rounded-full px-3 py-2 text-sm h-fit",
+        pill: "rounded-full px-4 py-2 text-[13px] h-fit",
       },
     },
     defaultVariants: {

@@ -3,7 +3,7 @@ import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const sizeStyles = {
-  xs: { container: "size-8 rounded-lg", icon: "size-4" },
+  xs: { container: "size-8 rounded-sm", icon: "size-4" },
   sm: { container: "size-11 rounded-xl", icon: "size-5" },
   md: { container: "size-16 rounded-2xl", icon: "size-8" },
   lg: { container: "size-20", icon: "size-10" },
@@ -66,7 +66,7 @@ const IconTile = ({
           "flex flex-none flex-col items-center justify-center rounded-3xl",
           variant === "outline" && "border-border border",
           backgroundColor === undefined && variantStyle.container,
-          iconOnly ? styles.container : "h-[50px] w-[50px]",
+          iconOnly ? styles.container : "size-12.5",
           className,
         )}
         style={backgroundColor !== undefined ? { backgroundColor } : undefined}

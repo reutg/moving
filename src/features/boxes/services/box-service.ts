@@ -161,6 +161,18 @@ export async function listBoxes(moveId?: number): Promise<BoxWithRoom[]> {
   return selectBoxesWithRoom(eq(boxes.moveId, resolvedMoveId));
 }
 
+export async function listBoxesByRoomId(roomId: number): Promise<Box[]> {
+  const [room] = await db.select().from(rooms).where(eq(rooms.id, roomId)).limit(1).all();
+
+  if (!room) {
+    throw notFound(`Room ${roomId} not found`);
+  }
+
+  await getMoveById(room.moveId);
+
+  return db.select().from(boxes).where(eq(boxes.roomId, roomId)).orderBy(boxes.number).all();
+}
+
 export async function listRecentlyUpdatedBoxes(limit = 3): Promise<BoxWithRoom[]> {
   const moveId = await resolveMoveId();
   if (moveId === null) {

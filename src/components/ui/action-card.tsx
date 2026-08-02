@@ -17,7 +17,7 @@ const ActionCard = ({ icon: Icon, title, description, linkTo, className }: Actio
     <Link
       href={linkTo}
       className={cn(
-        "border-border bg-surface-muted text-foreground flex items-center gap-3.25 rounded-xl border p-4.25 transition-opacity",
+        "border-border bg-surface-muted text-foreground flex items-center gap-3.25 rounded-lg border p-4.25 transition-opacity",
         className,
       )}
     >

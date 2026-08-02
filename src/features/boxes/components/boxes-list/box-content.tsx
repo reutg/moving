@@ -15,7 +15,7 @@ import Chip from "@/components/ui/chip";
 import ListItemContent from "@/components/ui/list-item-content";
 import SeparatorDot from "@/components/ui/separator-dot";
 
-type BoxCardProps = {
+type BoxContentProps = {
   box: BoxWithRoom;
 };
 
@@ -24,7 +24,7 @@ const STATUS_CHIP_CLASS: Record<BoxStatus, string> = {
   packing: "bg-status-packing-bg text-status-packing",
 };
 
-const BoxCard = ({ box }: BoxCardProps) => {
+const BoxContent = ({ box }: BoxContentProps) => {
   const status = box.status as BoxStatus;
   const roomKey = box.roomType;
   const RoomIcon = LOCATION_ICONS[roomKey] ?? FALLBACK_LOCATION_ICON;
@@ -32,7 +32,7 @@ const BoxCard = ({ box }: BoxCardProps) => {
   const destinationRoom = box.roomName;
 
   return (
-    <Link href={`/boxes/${box.id}/preview`} className="flex min-w-0 flex-1 items-center">
+    <Link href={`/boxes/${box.id}/preview`} className="flex min-w-0 flex-1 items-center px-4">
       <ListItemContent
         icon={RoomIcon}
         backgroundColor={tileColors.backgroundColor}
@@ -55,4 +55,4 @@ const BoxCard = ({ box }: BoxCardProps) => {
   );
 };
 
-export default BoxCard;
+export default BoxContent;

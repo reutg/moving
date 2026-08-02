@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import BoxCard from "@/features/boxes/components/boxes-list/box-card";
+import BoxContent from "@/features/boxes/components/boxes-list/box-content";
 import type { BoxWithRoom } from "@/features/boxes/services/box-service";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -25,10 +25,10 @@ const RecentlyUpdated = ({ boxes }: RecentlyUpdatedProps) => {
       </div>
 
       <Card className="p-0">
-        <CardContent>
+        <CardContent className="p-0">
           <div className="divide-border divide-y">
             {boxes.map((box) => (
-              <BoxCard key={box.id} box={box} />
+              <BoxContent key={box.id} box={box} />
             ))}
           </div>
         </CardContent>

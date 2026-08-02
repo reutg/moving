@@ -9,7 +9,7 @@ import Spinner from "@/components/ui/spinner";
 
 import { useBoxesList } from "../../hooks/use-boxes-list";
 
-import BoxCard from "./box-card";
+import BoxContent from "./box-content";
 import RoomFilter from "./room-filter";
 
 type BoxesListProps = {
@@ -49,10 +49,10 @@ const BoxesList = ({ moveId, initialBoxes, initialStatusCounts }: BoxesListProps
       <RoomFilter selectedRoom={selectedRoom} handleSelectRoom={handleSelectRoom} />
 
       <Card className="p-0">
-        <CardContent>
+        <CardContent className="p-0">
           <div className="divide-border divide-y">
             {filteredBoxes.map((box) => (
-              <BoxCard key={box.id} box={box} />
+              <BoxContent key={box.id} box={box} />
             ))}
           </div>
         </CardContent>

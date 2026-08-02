@@ -26,11 +26,16 @@ export const UpdateRoomInputSchema = z
   .object({
     type: z.enum(ROOM_TYPES).optional(),
     name: z.string().trim().min(1).max(200).optional(),
+    completed: z.boolean().optional(),
   })
   .strict()
-  .refine((value) => value.type !== undefined || value.name !== undefined, {
-    message: "At least one field is required",
-  });
+  .refine(
+    (value) =>
+      value.type !== undefined || value.name !== undefined || value.completed !== undefined,
+    {
+      message: "At least one field is required",
+    },
+  );
 
 export type UpdateRoomInput = z.infer<typeof UpdateRoomInputSchema>;
 
@@ -171,15 +176,18 @@ export const updateRoom = async (id: number, input: UpdateRoomInput): Promise<Ro
   await getAuthenticatedUserId();
 
   const existing = await getRoomById(id);
-  const nextName = input.name ?? existing.name;
 
-  await assertUniqueRoomName(existing.moveId, nextName, existing.id);
+  if (input.name !== undefined || input.type !== undefined) {
+    const nextName = input.name ?? existing.name;
+    await assertUniqueRoomName(existing.moveId, nextName, existing.id);
+  }
 
   const updated = await db
     .update(rooms)
     .set({
       ...(input.type !== undefined ? { type: input.type } : {}),
       ...(input.name !== undefined ? { name: input.name } : {}),
+      ...(input.completed !== undefined ? { completed: input.completed } : {}),
       updatedAt: new Date(),
     })
     .where(and(eq(rooms.id, existing.id), eq(rooms.moveId, existing.moveId)))

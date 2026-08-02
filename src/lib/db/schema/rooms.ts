@@ -18,6 +18,7 @@ export const rooms = sqliteTable(
       .references(() => users.id, { onDelete: "cascade" }),
     type: text("type", { enum: ROOM_TYPES }).notNull().default(DEFAULT_ROOM_TYPE),
     name: text("name").notNull(),
+    completed: integer("completed", { mode: "boolean" }).notNull().default(false),
     createdAt: integer("created_at", { mode: "timestamp_ms" })
       .notNull()
       .default(sql`(unixepoch() * 1000)`),
